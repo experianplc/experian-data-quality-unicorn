@@ -18,6 +18,8 @@
 
 	EDQ.VERSION = '0.1';
 
+	/* TODO: This needs to read from an environment variable of configuration file */
+	AUTH_TOKEN = '46832a16-80c0-43d8-af8e-05b3dde5aaaf';
 
 	if (typeof exports !== 'undefined') {
 		if (typeof module !== 'undefined' && module.exports) {
@@ -33,38 +35,62 @@
 
 		this.webServiceUrl = 'https://ws2.ondemand.qas.com/ProOnDemand/V3/ProOnDemandService.asmx';
 
-		this.helpFn = function() {
-		};
-
 		this.doCanSearch = function() {
-			let soapActionUrl = '';
-
+			let soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoCanSearch';
+			let xmlRequest = SoapQasCaptureHelper.buildDoRefineMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl);
 		};
 
 		this.doGetAddress = function() {
+			let soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetAddress';
+			let xmlRequest = SoapQasCaptureHelper.buildDoRefineMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl);
+
 		};
 
 		this.doGetData = function() {
+			let soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetData';
+			let xmlRequest = SoapQasCaptureHelper.buildDoGetDataMessage();
+			return this.makeRequest(xmlRequest, soapActionUrl)
 		};
 
 		this.doGetDataMapDetail = function() {
+			let soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetDataMapDetail';
+			let xmlRequest = SoapQasCaptureHelper.buildDoRefineMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl);
+
 		};
 
 		this.doGetExampleAddresses = function() {
+			let soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetExampleAddresses';
+			let xmlRequest = SoapQasCaptureHelper.buildDoRefineMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl);
+
 		};
 
 		this.doGetLayouts =  function() {
+			let soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetLayouts';
+			let xmlRequest = SoapQasCaptureHelper.buildDoRefineMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl);
 		};
 
 		this.doGetLicenseInfo = function() {
+			let soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetLicenseInfo';
+			let xmlRequest = SoapQasCaptureHelper.buildDoRefineMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl);
 		};
 
 		this.doGetPromptSet = function() {
+			let soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetPromptSet';
+			let xmlRequest = SoapQasCaptureHelper.buildDoRefineMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl);
 		};
 
 		this.doRefine = function() {
+			let soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoRefine';
+			let xmlRequest = SoapQasCaptureHelper.buildDoRefineMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl);
 		};
-
 
 		/* @param {String} country
 		 * @param {String} engineOptions
@@ -76,10 +102,10 @@
 		 * @returns {String}
 		 */
 		this.doSearch = function({country, engineOptions, engineType, layout, addressQuery, formattedAddressInPicklist}) {
-			const xmlString = buildDoSearchMessage(...arguments);
-			return xmlString;
+			consoapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoSearch';
+			let xmlRequest = SoapQasCaptureHelper.buildDoSearchMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl);
 		};
-
 
 		/* @param {String} country
 		 * @param {String} engineOptions
@@ -106,9 +132,6 @@
 
 			return xmlString;
 		};
-
-
-
 
 		/* Private methods (shouldn't be called from the service directly) */
 
@@ -183,33 +206,46 @@
 			return engineSoapString;
 		};
 
-
+		/* @returns {String} */
 		this._buildSoapNamespaceSubString = function() {
 			return 'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
 				'xmlns:ond="http://www.qas.com/OnDemand-2011-03"';
 		};
 
+		/* @param {String} moniker
+		 * @returns {String} 
+		 */
 		this._buildSoapMonikerString = function(moniker) {
 			return '<ond:Moniker>' + moniker + '</ond:Moniker>';
 		},
 
+		/* @param {String} refinement
+		 * @returns {String} 
+		 */
 		this._buildSoapRefinementString = function(refinement) {
 			return '<ond:Refinement>' + refinement + '</ond:Refinement>';
 		};
 
+		/* @param {String} layoutType
+		 * @returns {String} 
+		 */
 		this._buildSoapLayoutString = function(layoutType = 'AllElements') {
 			return '<ond:Layout>' + layoutType + '</ond:Layout>';
 		};
 
+		/* @param {String} addressQuery
+		 * @returns {String} 
+		 */
 		this._buildSoapSearchString = function(addressQuery) {
 			return '<ond:Search>' + addressQuery + '</ond:Search>';
 		};
 
+		/* @param {String} country
+		 * @returns {String} 
+		 */
 		this._buildSoapCountryString = function(country) {
 			return '<ond:Country>' + country + '</ond:Country>';
 		};
-
-
 
 	};
 
