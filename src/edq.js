@@ -39,55 +39,96 @@
 			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
-		this.doGetAddress = function() {
+    /*
+     * @param {String} layout
+     * @param {String} moniker
+     * @param {Function} callback
+     *
+     * @returns {String}
+     */
+		this.doGetAddress = function({layout, moniker, callback}) {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetAddress';
-			const xmlRequest = this.buildDoRefineMessage(...arguments);
+			const xmlRequest = this.buildDoGetAddressMessage(...arguments);
 			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 
 		};
 
-		this.doGetData = function() {
+    /*
+     * @param {Function} callback
+     *
+     * @returns {undefined}
+     */
+		this.doGetData = function({callback}) {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetData';
 			const xmlRequest = this.buildDoGetDataMessage();
 			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
-		this.doGetDataMapDetail = function() {
+    /*
+     * @param {String} dataMap
+     * @param {Function} callback
+     *
+     * @returns {String}
+     */
+		this.doGetDataMapDetail = function({dataMap, callback}) {
+      if (PRO_WEB_SERVICE_URL === 'https://ws2.ondemand.qas.com/ProOnDemand/V3/ProOnDemandService.asmx') {
+        throw "This SOAP method is not supported in this version of QAS Pro On Demand";
+      }
+
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetDataMapDetail';
-			const xmlRequest = this.buildDoRefineMessage(...arguments);
+			const xmlRequest = this.buildDoGetDataMapDetail(...arguments);
 			return this.makeRequest(xmlRequest, soapActionUrl, callback);
-
 		};
 
-		this.doGetExampleAddresses = function() {
+    /*
+     * @param {String} country
+     * @param {String} layout
+     * @param {Function} callback
+     *
+     * @returns {String}
+     */
+		this.doGetExampleAddresses = function({country, layout, callback}) {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetExampleAddresses';
-			const xmlRequest = this.buildDoRefineMessage(...arguments);
+			const xmlRequest = this.buildDoGetExampleAddressesMessage(...arguments);
 			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 
 		};
 
-		this.doGetLayouts =  function() {
+    /*
+     * @param {String} country
+     * @param {Function} callback
+     *
+     * @returns {String}
+     */
+		this.doGetLayouts =  function({country, callback}) {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetLayouts';
-			const xmlRequest = this.buildDoRefineMessage(...arguments);
+			const xmlRequest = this.buildDoGetLayoutsMessage(...arguments);
 			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
-		this.doGetLicenseInfo = function() {
+    /*
+     * @param {Function} callback
+     */
+		this.doGetLicenseInfo = function({callback}) {
+      if (PRO_WEB_SERVICE_URL === 'https://ws2.ondemand.qas.com/ProOnDemand/V3/ProOnDemandService.asmx') {
+        throw "This SOAP method is not supported in this version of QAS Pro On Demand";
+      }
+
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetLicenseInfo';
 			const xmlRequest = this.buildDoGetLicenseInfoMessage(...arguments);
 			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
-    /* @param {String} refineOptions
-     * @param {String} moniker
-     * @param {String} refinement
-     * @param {String} layout
-     * @param {Boolean} formattedAddressInPicklist
+    /*
+     * @param {String} country
+     * @param {Object} engineOptions
+     * @param {String} engineType
+     * @param {String} promptSet
      * @param {Function} callback
      *
-     * @returns {undefined}
+     * @returns {XMLHttpRequest}
      */
-		this.doGetPromptSet = function() {
+		this.doGetPromptSet = function({country, engineOptions, engineType, promptSet, callback}) {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetPromptSet';
 			const xmlRequest = this.buildDoGetPromptSetMessage(...arguments);
 			return this.makeRequest(xmlRequest, soapActionUrl, callback);
@@ -95,6 +136,7 @@
 
     /*
      * @param {Function} callback
+     *
      * @returns {undefined}
      */
     this.doGetSystemInfo = function({callback}) {
@@ -103,7 +145,8 @@
 			this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
-    /* @param {String} refineOptions
+    /*
+     * @param {String} refineOptions
      * @param {String} moniker
      * @param {String} refinement
      * @param {String} layout
@@ -125,7 +168,8 @@
 			this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
-		/* @param {String} country
+		/*
+     * @param {String} country
 		 * @param {String} engineOptions
 		 * @param {String} engineType
 		 * @param {String} layout
@@ -190,6 +234,79 @@
     };
 
     /*
+     * @param {String} dataMap
+     *
+     * @returns {String}
+     */
+    this.buildDoGetDataMapDetail = function({dataMap}) {
+      let xmlString =
+        '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
+        '<soapenv:Body>' +
+        '<ond:QAGetDataMapDetail Localisation="">' +
+        this._buildSoapDataMapString(dataMap) +
+        '</ond:QAGetDataMapDetail>' +
+        '</soapenv:Body>' +
+        '</soapenv:Envelope>';
+
+      return xmlString;
+    };
+
+    /*
+     * @returns {String}
+     */
+    this.buildDoGetLicenseInfoMessage = function() {
+      let xmlString =
+        '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
+        '<soapenv:Body>' +
+        '<ond:QAGetLicenseInfo Localisation=""/>' +
+        '</soapenv:Body>' +
+        '</soapenv:Envelope>';
+
+      return xmlString;
+    },
+
+    /*
+     * @param {String} country
+     *
+     * @returns {String}
+     */
+    this.buildDoGetLayoutsMessage = function({country}) {
+      let xmlString =
+        '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
+        '<soapenv:Body>' +
+        '<ond:QAGetLayouts Localisation="">' +
+        this._buildSoapCountryString(country) +
+        '</ond:QAGetLayouts>' +
+        '</soapenv:Body>' +
+        '</soapenv:Envelope>';
+
+      return xmlString;
+    };
+
+    /*
+     * @param {String} country
+     * @param {Object} engineOptions
+     * @param {String} engineType
+     * @param {String} promptSet
+     *
+     * @returns {String}
+     */
+    this.buildDoGetPromptSetMessage = function({country, engineOptions, engineType, promptSet}) {
+      let xmlString =
+        '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
+        '<soapenv:Body>' +
+        '<ond:QAGetPromptSet Localisation="">' +
+        this._buildSoapCountryString(country) +
+        this._buildSoapEngineString({engineOptions, engineType}) +
+        this._buildSoapPromptSetString(promptSet) +
+        '</ond:QAGetPromptSet>' +
+        '</soapenv:Body>' +
+        '</soapenv:Envelope>';
+
+      return xmlString;
+    };
+
+    /*
      * @returns {String}
      */
     this.buildDoGetSystemInfoMessage = function() {
@@ -204,7 +321,8 @@
       return xmlString;
     };
 
-    /* @param {String} refineOptions
+    /*
+     * @param {String} refineOptions
 		 * @param {String} moniker
 		 * @param {String} refineOptions
 		 * @param {String} layout
@@ -235,7 +353,8 @@
       return xmlString;
     };
 
-		/* @param {String} country
+		/*
+     * @param {String} country
 		 * @param {String} engineOptions
 		 * @param {String} engineType
 		 * @param {String} layout
@@ -261,9 +380,11 @@
 			return xmlString;
 		};
 
-    /* @param {String} requestData - a well formed XML string
+    /*
+     * @param {String} requestData - a well formed XML string
      * @param {String} soapActionUrl - the SOAP endpoint where the data should be sent
      * @param {Function} callback - a callback that handles success or error.
+     *
      * @returns {undefined}
      */
     this.makeRequest = ((requestData, soapActionUrl, callback) => {
@@ -308,7 +429,7 @@
 
 			/* We cannot use 'undefined' as a string, so we use a blank string, as an alternative  */
 			return {
-				flatten:   flatten   || true, /* TODO: Check if this is the right default */
+				flatten:   flatten   || true,
 				intensity: intensity || 'Close',
 				promptSet: promptSet || 'Default',
 				threshold: this._cleanThreshold(threshold),
@@ -317,30 +438,37 @@
 
 		};
 
-		/* @param {Number} threshold
+		/*
+     * @param {Number} threshold
+     *
 		 * @returns {Number}
 		 */
 		this._cleanThreshold = function(threshold) {
 			return threshold || 10000;
     };
 
-		/* @param {Number} timeout
+		/*
+     * @param {Number} timeout
+     *
 		 * @returns {Number}
 		 */
 		this._cleanTimeout = function(timeout) {
 			return timeout || 10000;
 		};
 
-		/* @param {String} formatAddress
+		/*
+     * @param {String} formatAddress
+     *
 		 * @returns {String}
 		 */
 		this._buildSoapFormatString = function(formatAddress) {
 			return '<ond:FormattedAddressInPicklist>' + formatAddress + '</ond:FormattedAddressInPicklist>';
 		};
 
-
-		/* @param {Object} object.engineOptions - contains an object that has the engine options (see #_cleanEngineOptions)
+		/*
+     * @param {Object} object.engineOptions - contains an object that has the engine options (see #_cleanEngineOptions)
 		 * @param {String} engineType
+     *
 		 * @returns {String}
 		 */
 		this._buildSoapEngineString = function (object) {
@@ -355,7 +483,6 @@
 			let threshold = result.threshold;
 			let timeout   = result.timeout;
 
-
 			var engineSoapString =
 				'<ond:Engine' + ' ' +
 				'Flatten='   + '\'' + flatten   + '\' ' +
@@ -368,27 +495,35 @@
 			return engineSoapString;
 		};
 
-		/* @returns {String} */
+		/*
+      * @returns {String}
+      */
 		this._buildSoapNamespaceSubString = function() {
 			return 'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
 				'xmlns:ond="http://www.qas.com/OnDemand-2011-03"';
 		};
 
-		/* @param {String} moniker
+		/*
+     * @param {String} moniker
+     *
 		 * @returns {String}
 		 */
 		this._buildSoapMonikerString = function(moniker) {
 			return '<ond:Moniker>' + moniker + '</ond:Moniker>';
 		},
 
-		/* @param {String} refinement
+		/*
+     * @param {String} refinement
+     *
 		 * @returns {String}
 		 */
 		this._buildSoapRefinementString = function(refinement) {
 			return '<ond:Refinement>' + refinement + '</ond:Refinement>';
 		};
 
-		/* @param {String} layoutType
+		/*
+     * @param {String} layoutType
+     *
 		 * @returns {String}
 		 */
 		this._buildSoapLayoutString = function(layoutType = 'AllElements') {
@@ -396,18 +531,37 @@
 		};
 
 		/* @param {String} addressQuery
+     *
 		 * @returns {String}
 		 */
 		this._buildSoapSearchString = function(addressQuery) {
 			return '<ond:Search>' + addressQuery + '</ond:Search>';
 		};
 
+		/* @param {String} promptSet
+     *
+		 * @returns {String}
+		 */
+		this._buildSoapPromptSetString = function(promptSet) {
+			return '<ond:PromptSet>' + promptSet + '</ond:PromptSet>';
+		};
+
 		/* @param {String} country
+     *
 		 * @returns {String}
 		 */
 		this._buildSoapCountryString = function(country) {
 			return '<ond:Country>' + country + '</ond:Country>';
 		};
+
+    /*
+     * @param {String} dataMap
+     *
+     * @returns {String}
+     */
+    this._buildSoapDataMapString = function(dataMap) {
+      return '<ond:DataMap>' + dataMap + '</ond:DataMap>';
+    }
 
     /* Taken from X2JS */
     this._parseDOMChildren = function(node, path, config = {}) {
@@ -688,7 +842,7 @@
   /* Public API */
   EDQ.address = {
 
-    /* ProWeb is an abstraction of our ProOnDemandService, which interoperates with the SOAP XML service in this case. */
+    /* ProWeb is an abstraction of our ProOnDemandService, which interoperates with the SOAP XML service */
     proWeb: {
       doCanSearch:           helper.doCanSearch.bind(helper),
       doGetAddress:          helper.doGetAddress.bind(helper),
