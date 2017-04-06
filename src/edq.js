@@ -35,59 +35,94 @@
 
 		this.doCanSearch = function() {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoCanSearch';
-			const xmlRequest = buildDoRefineMessage(...arguments);
-			return this.makeRequest(xmlRequest, soapActionUrl);
+			const xmlRequest = this.buildDoRefineMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
 		this.doGetAddress = function() {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetAddress';
-			const xmlRequest = buildDoRefineMessage(...arguments);
-			return this.makeRequest(xmlRequest, soapActionUrl);
+			const xmlRequest = this.buildDoRefineMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 
 		};
 
 		this.doGetData = function() {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetData';
-			const xmlRequest = buildDoGetDataMessage();
-			return this.makeRequest(xmlRequest, soapActionUrl)
+			const xmlRequest = this.buildDoGetDataMessage();
+			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
 		this.doGetDataMapDetail = function() {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetDataMapDetail';
-			const xmlRequest = buildDoRefineMessage(...arguments);
-			return this.makeRequest(xmlRequest, soapActionUrl);
+			const xmlRequest = this.buildDoRefineMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 
 		};
 
 		this.doGetExampleAddresses = function() {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetExampleAddresses';
-			const xmlRequest = buildDoRefineMessage(...arguments);
-			return this.makeRequest(xmlRequest, soapActionUrl);
+			const xmlRequest = this.buildDoRefineMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 
 		};
 
 		this.doGetLayouts =  function() {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetLayouts';
-			const xmlRequest = buildDoRefineMessage(...arguments);
-			return this.makeRequest(xmlRequest, soapActionUrl);
+			const xmlRequest = this.buildDoRefineMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
 		this.doGetLicenseInfo = function() {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetLicenseInfo';
-			const xmlRequest = buildDoRefineMessage(...arguments);
-			return this.makeRequest(xmlRequest, soapActionUrl);
+			const xmlRequest = this.buildDoGetLicenseInfoMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
+    /* @param {String} refineOptions
+     * @param {String} moniker
+     * @param {String} refinement
+     * @param {String} layout
+     * @param {Boolean} formattedAddressInPicklist
+     * @param {Function} callback
+     *
+     * @returns {undefined}
+     */
 		this.doGetPromptSet = function() {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetPromptSet';
-			const xmlRequest = buildDoRefineMessage(...arguments);
-			return this.makeRequest(xmlRequest, soapActionUrl);
+			const xmlRequest = this.buildDoGetPromptSetMessage(...arguments);
+			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
-		this.doRefine = function() {
+    /*
+     * @param {Function} callback
+     * @returns {undefined}
+     */
+    this.doGetSystemInfo = function({callback}) {
+			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetSystemInfo';
+			const xmlRequest = this.buildDoGetSystemInfoMessage();
+			this.makeRequest(xmlRequest, soapActionUrl, callback);
+		};
+
+    /* @param {String} refineOptions
+     * @param {String} moniker
+     * @param {String} refinement
+     * @param {String} layout
+     * @param {Boolean} formattedAddressInPicklist
+     * @param {Function} callback
+     *
+     * @returns {undefined}
+     */
+    this.doRefine = function({
+      refineOptions,
+      moniker,
+      refinement,
+      layout,
+      formattedAddressInPicklist,
+      callback
+    }) {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoRefine';
-			const xmlRequest = buildDoRefineMessage(...arguments);
-			return this.makeRequest(xmlRequest, soapActionUrl);
+			const xmlRequest = this.buildDoRefineMessage(...arguments);
+			this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
 		/* @param {String} country
@@ -113,6 +148,92 @@
       const xmlRequest = this.buildDoSearchMessage(...arguments);
       return this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
+
+    this.buildDoGetExampleAddressesMessage = function({country, layout}) {
+      let xmlString =
+        '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
+        '<soapenv:Body>' +
+        '<ond:QAGetExampleAddresses Localisation="" RequestTag="">' +
+        this._buildSoapCountryString(country) +
+        this._buildSoapLayoutString(layout) +
+        '</ond:QAGetExampleAddresses>' +
+        '</soapenv:Body>' +
+        '</soapenv:Envelope>';
+
+      return xmlString;
+    };
+
+    this.buildDoGetDataMessage = function() {
+      let xmlString =
+        '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
+        '<soapenv:Body>' +
+        '<ond:QAGetData Localisation="" >' +
+        '</ond:QAGetData>' +
+        '</soapenv:Body>' +
+        '</soapenv:Envelope>';
+
+      return xmlString;
+    };
+
+    this.buildDoGetAddressMessage = function({layout, moniker}) {
+      let xmlString =
+        '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
+        '<soapenv:Body>' +
+        '<ond:QAGetAddress Localisation="" RequestTag="">' +
+        this._buildSoapLayoutString(layout) +
+        '<ond:Moniker>' + moniker + '</ond:Moniker>' +
+        '</ond:QAGetAddress>' +
+        '</soapenv:Body>' +
+        '</soapenv:Envelope>';
+
+      return xmlString;
+    };
+
+    /*
+     * @returns {String}
+     */
+    this.buildDoGetSystemInfoMessage = function() {
+
+      let xmlString =
+        '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
+        '<soapenv:Body>' +
+        '<ond:QAGetSystemInfo Localisation=""/>' +
+        '</soapenv:Body>' +
+        '</soapenv:Envelope>';
+
+      return xmlString;
+    };
+
+    /* @param {String} refineOptions
+		 * @param {String} moniker
+		 * @param {String} refineOptions
+		 * @param {String} layout
+		 * @param {Boolean} formattedAddressInPicklist
+		 *
+		 * @returns {String}
+		 */
+    this.buildDoRefineMessage = function({refineOptions, moniker, refinement, layout, formattedAddressInPicklist}) {
+      let threshold = this._cleanThreshold(refineOptions.threshold);
+      let timeout   = this._cleanTimeout(refineOptions.timeout);
+
+      let xmlString =
+        '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
+        '<soapenv:Body>' +
+        '<ond:QARefine Threshold=' + '\"'  + threshold +  '\"' + ' ' +
+        'Timeout='  +  '\"' + timeout   +  '\"' + ' ' +
+        'Localisation=""' + ' ' +
+        'RequestTag=""' +
+        '>' +
+        this._buildSoapMonikerString(moniker) +
+        this._buildSoapRefinementString(refinement) +
+        this._buildSoapLayoutString(layout) +
+        this._buildSoapFormatString(formattedAddressInPicklist) +
+        '</ond:QARefine>' +
+        '</soapenv:Body>' +
+        '</soapenv:Envelope>';
+
+      return xmlString;
+    };
 
 		/* @param {String} country
 		 * @param {String} engineOptions
@@ -143,7 +264,8 @@
     /* @param {String} requestData - a well formed XML string
      * @param {String} soapActionUrl - the SOAP endpoint where the data should be sent
      * @param {Function} callback - a callback that handles success or error.
-     * @returns {Promise} resolving to the XML object */
+     * @returns {undefined}
+     */
     this.makeRequest = ((requestData, soapActionUrl, callback) => {
       let xhr = new XMLHttpRequest();
       let self = this;
@@ -151,18 +273,25 @@
       xhr.withCredentials = false;
       xhr.onreadystatechange = function () {
         if (this.readyState === 4) {
+
           if (this.status === 200) {
             callback(self._parseDOMChildren(this.responseXML), null);
           } else {
-            callback(null, this.statusText);
+            callback(null, {
+              status: 500,
+              statusText: 'Internal Server Error',
+              responseType: 'text',
+              response: 'Due to limitations in cross origin requests (CORS), the error frome the server could not be ' +
+              'referenced here. For more details about the error, resend this request from a client that is not an internet browser'
+            });
           }
         }
       };
 
-      xhr.open("POST", PRO_WEB_SERVICE_URL);
-      xhr.setRequestHeader("Auth-Token", AUTH_TOKEN);
-      xhr.setRequestHeader("SOAPAction", soapActionUrl);
-      xhr.setRequestHeader("Content-Type", "text/xml; charset=\'UTF-8\'");
+      xhr.open('POST', PRO_WEB_SERVICE_URL);
+      xhr.setRequestHeader('Auth-Token', AUTH_TOKEN);
+      xhr.setRequestHeader('SOAPAction', soapActionUrl);
+      xhr.setRequestHeader('Content-Type', 'text/xml');
       xhr.send(requestData);
     });
 
@@ -561,15 +690,16 @@
 
     /* ProWeb is an abstraction of our ProOnDemandService, which interoperates with the SOAP XML service in this case. */
     proWeb: {
-      doCanSearch:           helper.doCanSearch,
-      doGetAddress:          helper.doGetAddress,
-      doGetData:             helper.doGetData,
-      doGetDataMapDetail:    helper.doGetDataMapDetail,
-      doGetExampleAddresses: helper.doGetExampleAddresses,
-      doGetLayouts: 	       helper.doGetLayouts,
-      doGetLicenseInfo:      helper.doGetLicenseInfo,
-      doGetPromptSet:        helper.doGetPromptSet,
-      doRefine: 	           helper.doRefine,
+      doCanSearch:           helper.doCanSearch.bind(helper),
+      doGetAddress:          helper.doGetAddress.bind(helper),
+      doGetData:             helper.doGetData.bind(helper),
+      doGetDataMapDetail:    helper.doGetDataMapDetail.bind(helper),
+      doGetExampleAddresses: helper.doGetExampleAddresses.bind(helper),
+      doGetLayouts: 	       helper.doGetLayouts.bind(helper),
+      doGetLicenseInfo:      helper.doGetLicenseInfo.bind(helper),
+      doGetPromptSet:        helper.doGetPromptSet.bind(helper),
+      doGetSystemInfo:       helper.doGetSystemInfo.bind(helper),
+      doRefine: 	           helper.doRefine.bind(helper),
       doSearch: 	           helper.doSearch.bind(helper),
     },
   }
