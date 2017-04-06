@@ -18,6 +18,22 @@ var successCallback = function(data) {
 
 
 QUnit.test('DoCanSearch functions as intended', function(assert) {
+  assert.equal(Boolean(EDQ.address.proWeb.doGetAddress), true, "The request can be made");
+
+  EDQ.address.proWeb.doCanSearch({
+    country: 'USA',
+    engineOptions: {},
+    layout: 'EDQDemoLayout',
+    callback: successCallback.bind(assert)
+  });
+
+  EDQ.address.proWeb.doCanSearch({
+    country: '',
+    engineOptions: {},
+    layout: '',
+    callback: failureCallback.bind(assert)
+  });
+
 });
 
 QUnit.test('DoGetAddress functions as intended', function(assert) {

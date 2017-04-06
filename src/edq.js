@@ -33,9 +33,9 @@
 
 	function _proWebHelpers() {
 
-		this.doCanSearch = function() {
+		this.doCanSearch = function({country, engineOptions, engineType, layout, callback}) {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoCanSearch';
-			const xmlRequest = this.buildDoRefineMessage(...arguments);
+			const xmlRequest = this.buildDoCanSearch(...arguments);
 			return this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
@@ -50,7 +50,6 @@
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetAddress';
 			const xmlRequest = this.buildDoGetAddressMessage(...arguments);
 			return this.makeRequest(xmlRequest, soapActionUrl, callback);
-
 		};
 
     /*
@@ -193,6 +192,55 @@
       return this.makeRequest(xmlRequest, soapActionUrl, callback);
 		};
 
+		/*
+     * @param {String} country
+		 * @param {String} engineOptions
+		 * @param {String} engineType
+		 * @param {String} layout
+		 *
+		 * @returns {String}
+		 */
+		this.buildDoCanSearch = function({country, engineOptions, engineType, layout}) {
+			const xmlString =
+				'<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
+				'<soapenv:Body>' +
+				'<ond:QASearch Localisation="" RequestTag="">' +
+				this._buildSoapCountryString(country) +
+				this._buildSoapEngineString({engineOptions, engineType}) +
+				this._buildSoapLayoutString(layout) +
+				'</ond:QASearch>' +
+				'</soapenv:Body>' +
+				'</soapenv:Envelope>';
+
+			return xmlString;
+		};
+
+		/*
+     * @param {String} layout
+		 * @param {String} moniker
+		 *
+		 * @returns {String}
+		 */
+    this.buildDoGetAddressMessage = function({layout, moniker}) {
+      let xmlString =
+        '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
+        '<soapenv:Body>' +
+        '<ond:QAGetAddress Localisation="" RequestTag="">' +
+        this._buildSoapLayoutString(layout) +
+        '<ond:Moniker>' + moniker + '</ond:Moniker>' +
+        '</ond:QAGetAddress>' +
+        '</soapenv:Body>' +
+        '</soapenv:Envelope>';
+
+      return xmlString;
+    };
+
+		/*
+     * @param {String} country
+		 * @param {String} layout
+		 *
+		 * @returns {String}
+		 */
     this.buildDoGetExampleAddressesMessage = function({country, layout}) {
       let xmlString =
         '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
@@ -207,26 +255,15 @@
       return xmlString;
     };
 
+		/*
+		 * @returns {String}
+		 */
     this.buildDoGetDataMessage = function() {
       let xmlString =
         '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
         '<soapenv:Body>' +
         '<ond:QAGetData Localisation="" >' +
         '</ond:QAGetData>' +
-        '</soapenv:Body>' +
-        '</soapenv:Envelope>';
-
-      return xmlString;
-    };
-
-    this.buildDoGetAddressMessage = function({layout, moniker}) {
-      let xmlString =
-        '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
-        '<soapenv:Body>' +
-        '<ond:QAGetAddress Localisation="" RequestTag="">' +
-        this._buildSoapLayoutString(layout) +
-        '<ond:Moniker>' + moniker + '</ond:Moniker>' +
-        '</ond:QAGetAddress>' +
         '</soapenv:Body>' +
         '</soapenv:Envelope>';
 
@@ -310,7 +347,6 @@
      * @returns {String}
      */
     this.buildDoGetSystemInfoMessage = function() {
-
       let xmlString =
         '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' +
         '<soapenv:Body>' +
@@ -426,7 +462,6 @@
 		 */
 
 		this._cleanEngineOptions = function({flatten, intensity, promptSet, threshold, timeout}) {
-
 			/* We cannot use 'undefined' as a string, so we use a blank string, as an alternative  */
 			return {
 				flatten:   flatten   || true,
@@ -437,6 +472,7 @@
 			}
 
 		};
+
 
 		/*
      * @param {Number} threshold
