@@ -3,6 +3,22 @@
  */
 
 (function() {
+  /* Configuration */
+
+  /** Used to be granted authorization to make calls to the ProWebOnDemand webservice
+   * @name PRO_WEB_AUTH_TOKEN
+   * @type {String}
+   */
+	PRO_WEB_AUTH_TOKEN  = '46832a16-80c0-43d8-af8e-05b3dde5aaaf';
+
+  /** Service endpoint. Do not change unless you have a proxy to use
+   * @name PRO_WEB_SERVICE_URL
+   * @type {String}
+   */
+	PRO_WEB_SERVICE_URL = 'https://ws2.ondemand.qas.com/ProOnDemand/V3/ProOnDemandService.asmx';
+
+  /************************** end Configuration *********************************/
+
 	const root = this;
 	const previousEdq = root.EDQ;
 
@@ -18,12 +34,6 @@
 		if (!(this instanceof EDQ)) return new EDQ;
 		this._wrapped = object;
 	}
-
-	EDQ.VERSION = '0.1';
-
-	/* TODO: This needs to read from an environment variable of configuration file */
-	AUTH_TOKEN          = '46832a16-80c0-43d8-af8e-05b3dde5aaaf';
-	PRO_WEB_SERVICE_URL = 'https://ws2.ondemand.qas.com/ProOnDemand/V3/ProOnDemandService.asmx';
 
 	if (typeof exports !== 'undefined') {
 		if (typeof module !== 'undefined' && module.exports) {
@@ -461,7 +471,7 @@
       };
 
       xhr.open('POST', PRO_WEB_SERVICE_URL);
-      xhr.setRequestHeader('Auth-Token', AUTH_TOKEN);
+      xhr.setRequestHeader('Auth-Token', PRO_WEB_AUTH_TOKEN);
       xhr.setRequestHeader('SOAPAction', soapActionUrl);
       xhr.setRequestHeader('Content-Type', 'text/xml');
       xhr.send(requestData);
