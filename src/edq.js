@@ -33,6 +33,15 @@
 
 	function _proWebHelpers() {
 
+    /*
+     * @param {String} country
+     * @param {Object} engineOptions
+     * @param {String} engineType
+     * @param {String} layout
+     * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
+     */
 		this.doCanSearch = function({country, engineOptions, engineType, layout, callback}) {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoCanSearch';
 			const xmlRequest = this.buildDoCanSearch(...arguments);
@@ -44,7 +53,7 @@
      * @param {String} moniker
      * @param {Function} callback
      *
-     * @returns {String}
+     * @returns {XMLHttpRequest}
      */
 		this.doGetAddress = function({layout, moniker, callback}) {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetAddress';
@@ -55,7 +64,7 @@
     /*
      * @param {Function} callback
      *
-     * @returns {undefined}
+     * @returns {XMLHttpRequest}
      */
 		this.doGetData = function({callback}) {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetData';
@@ -67,7 +76,7 @@
      * @param {String} dataMap
      * @param {Function} callback
      *
-     * @returns {String}
+     * @returns {XMLHttpRequest}
      */
 		this.doGetDataMapDetail = function({dataMap, callback}) {
       if (PRO_WEB_SERVICE_URL === 'https://ws2.ondemand.qas.com/ProOnDemand/V3/ProOnDemandService.asmx') {
@@ -84,7 +93,7 @@
      * @param {String} layout
      * @param {Function} callback
      *
-     * @returns {String}
+     * @returns {XMLHttpRequest}
      */
 		this.doGetExampleAddresses = function({country, layout, callback}) {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetExampleAddresses';
@@ -97,7 +106,7 @@
      * @param {String} country
      * @param {Function} callback
      *
-     * @returns {String}
+     * @returns {XMLHttpRequest}
      */
 		this.doGetLayouts =  function({country, callback}) {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetLayouts';
@@ -107,6 +116,8 @@
 
     /*
      * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
      */
 		this.doGetLicenseInfo = function({callback}) {
       if (PRO_WEB_SERVICE_URL === 'https://ws2.ondemand.qas.com/ProOnDemand/V3/ProOnDemandService.asmx') {
@@ -136,7 +147,7 @@
     /*
      * @param {Function} callback
      *
-     * @returns {undefined}
+     * @returns {XMLHttpRequest}
      */
     this.doGetSystemInfo = function({callback}) {
 			const soapActionUrl = 'http://www.qas.com/OnDemand-2011-03/DoGetSystemInfo';
@@ -152,7 +163,7 @@
      * @param {Boolean} formattedAddressInPicklist
      * @param {Function} callback
      *
-     * @returns {undefined}
+     * @returns {XMLHttpRequest}
      */
     this.doRefine = function({
       refineOptions,
@@ -176,7 +187,7 @@
 		 * @param {Boolean} formattedAddressInPicklist
      * @param {Function} callback
 		 *
-		 * @returns {String}
+     * @returns {XMLHttpRequest}
 		 */
     this.doSearch = function({
       country,
@@ -450,19 +461,23 @@
       xhr.setRequestHeader('SOAPAction', soapActionUrl);
       xhr.setRequestHeader('Content-Type', 'text/xml');
       xhr.send(requestData);
+      return xhr;
     });
 
-		/* Private methods (shouldn't be called from the service directly) */
+		/*** Private methods (shouldn't be called from the service directly) ***/
 
-		/* @param {Object} engineOptions - a pure javascript object containing 6 key value pairs,
-		 * associated with the possible engine parameters
-		 *
+		/*
+     * @param {Boolean} flatten
+     * @param {String} intensity
+     * @param {String} promptSet
+     * @param {Number} threshold
+     * @param {Number} timeout
+     *
 		 * @returns {Object} - a new object that's similar to 'engineOptions', except there are no
 		 * undefined values, and instead are replaced with empty strings.
 		 */
 
 		this._cleanEngineOptions = function({flatten, intensity, promptSet, threshold, timeout}) {
-			/* We cannot use 'undefined' as a string, so we use a blank string, as an alternative  */
 			return {
 				flatten:   flatten   || true,
 				intensity: intensity || 'Close',
@@ -532,8 +547,8 @@
 		};
 
 		/*
-      * @returns {String}
-      */
+     * @returns {String}
+     */
 		this._buildSoapNamespaceSubString = function() {
 			return 'xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
 				'xmlns:ond="http://www.qas.com/OnDemand-2011-03"';
@@ -599,53 +614,38 @@
       return '<ond:DataMap>' + dataMap + '</ond:DataMap>';
     }
 
-    /* Taken from X2JS */
+    /*** Taken from X2JS ***/
+
     this._parseDOMChildren = function(node, path, config = {}) {
-      config = config || {};
-      initConfigDefaults();
+      config = initConfigDefaults(config);
 
-      function initConfigDefaults() {
-        if(config.escapeMode === undefined) {
-          config.escapeMode = true;
-        }
-
-        config.attributePrefix = config.attributePrefix || "_";
-        config.arrayAccessForm = config.arrayAccessForm || "none";
-        config.emptyNodeForm = config.emptyNodeForm || "text";
-
-        if(config.enableToStringFunc === undefined) {
-          config.enableToStringFunc = true;
-        }
-        config.arrayAccessFormPaths = config.arrayAccessFormPaths || [];
-        if(config.skipEmptyTextNodesForObj === undefined) {
-          config.skipEmptyTextNodesForObj = true;
-        }
-        if(config.stripWhitespaces === undefined) {
-          config.stripWhitespaces = true;
-        }
-        config.datetimeAccessFormPaths = config.datetimeAccessFormPaths || [];
-
-        if(config.useDoubleQuotes === undefined) {
-          config.useDoubleQuotes = false;
-        }
-
-        config.xmlElementsFilter = config.xmlElementsFilter || [];
-        config.jsonPropertiesFilter = config.jsonPropertiesFilter || [];
-
-        if(config.keepCData === undefined) {
-          config.keepCData = false;
-        }
+      function initConfigDefaults(config) {
+        return {
+          escapeMode: config.escapeMode || true,
+          attributePrefix: config.attributePrefix || "_",
+          arrayAccessForm: config.arrayAccessForm || "none",
+          emptyNodeForm: config.emptyNodeForm || "text",
+          enableToStringFunc: config.enableToStringFunc || true,
+          arrayAccessFormPaths: config.arrayAccessFormPaths || [],
+          skipEmptyTextNodesForObj: config.skipEmptyTextNodesForObj || true,
+          stripWhitespaces: config.stripWhitespaces || true,
+          datetimeAccessFormPaths: config.datetimeAccessFormPaths || [],
+          useDoubleQuotes: config.useDoubleQuotes || false,
+          xmlElementsFilter: config.xmlElementsFilter || [],
+          jsonPropertiesFilter: config.jsonPropertiesFilter || [],
+          keepCData: config.keepCData || false
+        };
       }
 
       const DOMNodeTypes = {
-        ELEMENT_NODE 	   : 1,
-        TEXT_NODE    	   : 3,
+        ELEMENT_NODE 	     : 1,
+        TEXT_NODE    	     : 3,
         CDATA_SECTION_NODE : 4,
-        COMMENT_NODE	   : 8,
+        COMMENT_NODE	     : 8,
         DOCUMENT_NODE 	   : 9
       };
 
-      function getNodeLocalName( node ) {
+      function getNodeLocalName(node) {
         var nodeLocalName = node.localName;
         if(nodeLocalName == null) // Yeah, this is IE!!
           nodeLocalName = node.baseName;

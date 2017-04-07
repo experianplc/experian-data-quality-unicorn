@@ -31,7 +31,7 @@ QUnit.test('DoCanSearch functions as intended', function(assert) {
     country: '',
     engineOptions: {},
     layout: '',
-    callback: failureCallback.bind(assert)
+    callback: successCallback.bind(assert)
   });
 
 });
