@@ -16,16 +16,22 @@
    *
    *  @type {Object}
    */
-  EDQ_CONFIG = window.EDQConfig || {};
+  EDQ_CONFIG = window.EdqConfig || {};
 
-	PRO_WEB_AUTH_TOKEN  = EDQ_CONFIG.PRO_WEB_AUTH_TOKEN || '46832a16-80c0-43d8-af8e-05b3dde5aaaf';
+	PRO_WEB_AUTH_TOKEN               = EDQ_CONFIG.PRO_WEB_AUTH_TOKEN || '46832a16-80c0-43d8-af8e-05b3dde5aaaf';
+  PHONE_VALIDATE_PLUS_AUTH_TOKEN   = EDQ_CONFIG.PHONE_VALIDATE_PLUS_AUTH_TOKEN || '1793360f-3d97-451a-81b8-d7e765c48894';
+  GLOBAL_PHONE_VALIDATE_AUTH_TOKEN = EDQ_CONFIG.GLOBAL_PHONE_VALIDATE_AUTH_TOKEN || '1793360f-3d97-451a-81b8-d7e765c48894';
+  EMAIL_VALIDATE_AUTH_TOKEN        = EDQ_CONFIG.EMAIL_VALIDATE_AUTH_TOKEN || '1793360f-3d97-451a-81b8-d7e765c48894';
 
-  /** Service endpoint. Do not change unless you have a proxy to use
+  /** Service for ProWebOnDemand endpoint. Do not change unless you have a proxy to use
    *
    * @name PRO_WEB_SERVICE_URL
    * @type {String}
    */
-	PRO_WEB_SERVICE_URL = EDQ_CONFIG.PRO_WEB_SERVICE_URL || 'https://ws2.ondemand.qas.com/ProOnDemand/V3/ProOnDemandService.asmx';
+	PRO_WEB_SERVICE_URL       = EDQ_CONFIG.PRO_WEB_SERVICE_URL || 'https://ws2.ondemand.qas.com/ProOnDemand/V3/ProOnDemandService.asmx';
+  PHONE_VALIDATE_PLUS_URL   = 'https://api.experianmarketingservices.com/sync/queryresult/PhoneValidatePlus/1.0/';
+  GLOBAL_PHONE_VALIDATE_URL = 'https://api.experianmarketingservices.com/sync/queryresult/PhoneValidate/3.0/';
+  EMAIL_VALIDATE_URL        = 'https://api.experianmarketingservices.com/sync/queryresult/EmailValidate/1.0/';
 
   /************************** end Configuration *********************************/
 
@@ -459,6 +465,12 @@
      * @returns {undefined}
      */
     this.makeRequest = ((requestData, soapActionUrl, callback) => {
+      if (!PRO_WEB_SERVICE_URL) {
+        throw 'Missing PRO_WEB_SERVICE_URL.';
+      } else if (!PRO_WEB_AUTH_TOKEN) {
+        throw 'Missing PRO_WEB_AUTH_TOKEN';
+      }
+
       let xhr = new XMLHttpRequest();
       let self = this;
 
@@ -897,16 +909,187 @@
     };
   };
 
-  const helper = new _proWebHelpers();
+  function _emailValidateHelper() {
+    /*
+     * @param {String} phoneNumber
+     * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
+     */
+    this.emailValidate = (({emailAddress, timeout = 15, verbose = true, callback}) => {
+      if (!EMAIL_VALIDATE_URL) {
+        throw 'Missing EMAIL_VALIDATE_URL.';
+      } else if (!EMAIL_VALIDATE_AUTH_TOKEN) {
+        throw 'Missing EMAIL_VALIDATE_AUTH_TOKEN';
+      }
 
-  /**
-   * Represents a book.
-   * @constructor
-   * @param {string} title - The title of the book.
-   * @param {string} author - The author of the book.
-   */
-  function Book(title, author) {
+      return this.makeRequest(emailAddress, timeout, verbose, callback)
+    });
+
+    /*
+     * @param {String} emailAddress
+     * @param {Number} timeout
+     * @param {Boolean} verbose
+     * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
+     */
+    this.makeRequest = ((emailAddress, timeout, verbose, callback) => {
+      let xhr = new XMLHttpRequest();
+
+      xhr.withCredentials = false;
+      xhr.onreadystatechange = function () {
+        if (this.readyState === 4) {
+
+          if (this.status === 200) {
+            callback(this.response, null);
+          } else {
+            callback(null, {
+              status: this.status,
+              statusText: this.statusText
+            });
+          }
+        }
+      };
+
+      xhr.open('POST', EMAIL_VALIDATE_URL);
+      xhr.setRequestHeader('Auth-Token', EMAIL_VALIDATE_AUTH_TOKEN);
+
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify({
+        email: emailAddress,
+        timeout,
+        verbose
+      }));
+
+      return xhr;
+    });
+
   }
+
+  function _phoneValidateHelper(type) {
+
+
+    this.validationType = type;
+
+    /*
+     * @param {String} phoneNumber
+     * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
+     */
+    this.reversePhoneAppend = (({phoneNumber, callback}) => {
+      if (!PHONE_VALIDATE_PLUS_URL) {
+        throw 'Missing PRO_WEB_SERVICE_URL.';
+      } else if (!PHONE_VALIDATE_PLUS_AUTH_TOKEN) {
+        throw 'Missing PRO_WEB_AUTH_TOKEN';
+      }
+
+      return this.makeRequest(phoneNumber, callback);
+    });
+
+    /*
+     * @param {String} phoneNumber
+     * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
+     */
+    this.globalPhoneValidate = (({phoneNumber, callback}) => {
+      if (!GLOBAL_PHONE_VALIDATE_URL) {
+        throw 'Missing PRO_WEB_SERVICE_URL.';
+      } else if (!GLOBAL_PHONE_VALIDATE_AUTH_TOKEN) {
+        throw 'Missing PRO_WEB_AUTH_TOKEN';
+      }
+
+      return this.makeRequest(phoneNumber, callback);
+    });
+
+    /*
+     * @param {String} phoneNumber
+     * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
+     */
+    this.makeRequest = ((phoneNumber, callback) => {
+      let xhr = new XMLHttpRequest();
+
+      xhr.withCredentials = false;
+      xhr.onreadystatechange = function () {
+        if (this.readyState === 4) {
+
+          if (this.status === 200) {
+            callback(this, null);
+          } else {
+            callback(null, {
+              status: this.status,
+              statusText: this.statusText
+            });
+          }
+        }
+      };
+
+      switch (this.validationType) {
+        case 'reversePhoneAppend':
+          xhr.open('POST', PHONE_VALIDATE_PLUS_URL);
+          xhr.setRequestHeader('Auth-Token', PHONE_VALIDATE_PLUS_AUTH_TOKEN);
+          break;
+
+        case 'globalPhone':
+          xhr.open('POST', GLOBAL_PHONE_VALIDATE_URL);
+          xhr.setRequestHeader('Auth-Token', GLOBAL_PHONE_VALIDATE_AUTH_TOKEN);
+          break;
+      }
+
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify({
+        'Number': phoneNumber
+      }));
+
+      return xhr;
+    });
+
+  };
+
+  const proWebHelper               = new _proWebHelpers();
+  const reversePhoneValidateHelper = new _phoneValidateHelper('reversePhoneAppend');
+  const globalPhoneValidateHelper  = new _phoneValidateHelper('globalPhone');
+  const emailValidateHelper        = new _emailValidateHelper();
+
+  EDQ.email = {
+
+    /**
+     * This module is a wrapper around the REST calls for Email Validateion
+     * Additional documentation for the REST calls can be found here:
+     *
+     * <br><br> {@link https://www.edq.com/documentation/apis/}
+     *
+     * @module Email Validate
+     */
+    emailValidate: emailValidateHelper.emailValidate.bind(emailValidateHelper)
+  };
+
+  EDQ.phone = {
+
+    /**
+     * This module is a wrapper around the REST calls for PhoneValidatePlus (Reverse Phone Append)
+     * Additional documentation for the REST calls can be found here:
+     *
+     * <br><br> {@link https://www.edq.com/documentation/apis/}
+     *
+     * @module Reverse Phone Append
+     */
+    reversePhoneAppend: reversePhoneValidateHelper.reversePhoneAppend.bind(reversePhoneValidateHelper),
+
+    /**
+     * This module is a wrapper around the REST calls for PhoneValidate (Global Phone Validate)
+     * Additional documentation for the REST calls can be found here:
+     *
+     * <br><br> {@link https://www.edq.com/documentation/apis/}
+     *
+     * @module Global Phone Validate
+     */
+    globalPhoneValidate: globalPhoneValidateHelper.globalPhoneValidate.bind(globalPhoneValidateHelper)
+  };
 
   EDQ.address = {
 
@@ -934,7 +1117,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doCanSearch: helper.doCanSearch.bind(helper),
+      doCanSearch: proWebHelper.doCanSearch.bind(proWebHelper),
 
       /**
        * Formats a picklist item to obtain a final, formatted address.
@@ -948,7 +1131,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetAddress: helper.doGetAddress.bind(helper),
+      doGetAddress: proWebHelper.doGetAddress.bind(proWebHelper),
 
       /**
        * Obtains a list of available data mappings
@@ -960,7 +1143,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetData: helper.doGetData.bind(helper),
+      doGetData: proWebHelper.doGetData.bind(proWebHelper),
 
       /**
        * NOTE: This does not function on the latest version of ProWeb
@@ -973,7 +1156,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetDataMapDetail: helper.doGetDataMapDetail.bind(helper),
+      doGetDataMapDetail: proWebHelper.doGetDataMapDetail.bind(proWebHelper),
 
       /**
        * Returns fully formatted example addresses
@@ -987,7 +1170,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetExampleAddresses: helper.doGetExampleAddresses.bind(helper),
+      doGetExampleAddresses: proWebHelper.doGetExampleAddresses.bind(proWebHelper),
 
       /**
        * Obtains a list of layouts that have been configured within the configuration file.
@@ -1000,7 +1183,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetLayouts: helper.doGetLayouts.bind(helper),
+      doGetLayouts: proWebHelper.doGetLayouts.bind(proWebHelper),
 
       /**
        * Returns license information for ProWebOnDemand.
@@ -1012,7 +1195,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetLicenseInfo: helper.doGetLicenseInfo.bind(helper),
+      doGetLicenseInfo: proWebHelper.doGetLicenseInfo.bind(proWebHelper),
 
       /**
        * Returns prompt set information.
@@ -1028,7 +1211,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetPromptSet: helper.doGetPromptSet.bind(helper),
+      doGetPromptSet: proWebHelper.doGetPromptSet.bind(proWebHelper),
 
       /**
        * Returns information about the server
@@ -1040,7 +1223,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetSystemInfo: helper.doGetSystemInfo.bind(helper),
+      doGetSystemInfo: proWebHelper.doGetSystemInfo.bind(proWebHelper),
 
       /**
        * Used to step into and refine a picklist result
@@ -1057,7 +1240,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doRefine: helper.doRefine.bind(helper),
+      doRefine: proWebHelper.doRefine.bind(proWebHelper),
 
       /**
        * Submits an initial search to the server
@@ -1075,7 +1258,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doSearch: helper.doSearch.bind(helper),
+      doSearch: proWebHelper.doSearch.bind(proWebHelper),
     },
   }
 
