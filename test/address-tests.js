@@ -1,7 +1,7 @@
 /* Contains the unit tests */
 
 var addressFailCallback = function(data, error) {
-  this.assert.equal(!Boolean(data) && error.status === 500, true, "The failure condition is caught successfully");
+  this.assert.equal(!Boolean(data) && error.status !== 200, true, "The failure condition is caught successfully");
   this.done();
 };
 
@@ -9,7 +9,7 @@ var addressCallback = function(data) {
   var result;
 
   try {
-    result = Boolean(data.Envelope)
+    result = Boolean(data);
   } catch(e) {
     result = false;
   }
@@ -21,8 +21,6 @@ var addressCallback = function(data) {
 QUnit.module('Address.ProWeb tests');
 
 QUnit.test('DoCanSearch functions as intended', function(assert) {
-  assert.equal(Boolean(EDQ.address.proWeb.doGetAddress), true, "The request can be made");
-
   let proWebSuccess = assert.async(2)
 
   EDQ.address.proWeb.doCanSearch({
@@ -47,10 +45,21 @@ QUnit.test('DoGetAddress functions as intended', function(assert) {
   var proWebSuccess = assert.async();
   var proWebFail    = assert.async();
 
-  EDQ.address.proWeb.doGetAddress({
-    moniker: 'USA|5133da03-d155-42b1-aa14-8f7237ae901c|7.610FOUSADwHhBwAAAAABAwEAAAADmDtekgAhEAIYACAAAAAAAAAAAP..AAAAAAD.....AAAAAAAAAAAAAAAAAAAARXhwZXJpYW4A',
+  EDQ.address.proWeb.doSearch({
+    country: 'USA',
+    engineOptions: {},
+    engineType: 'Verification',
     layout: 'EDQDemoLayout',
-    callback: addressCallback.bind({assert: assert, done: proWebSuccess})
+    addressQuery: '125 Summer Street, Boston MA 02110',
+    formattedAddressInPicklist: false,
+
+    callback: function(data) {
+      EDQ.address.proWeb.doGetAddress({
+        moniker: data.Envelope.Body.QASearchResult.QAPicklist.FullPicklistMoniker,
+        layout: 'EDQDemoLayout',
+        callback: addressCallback.bind({assert: assert, done: proWebSuccess})
+      });
+    }
   });
 
   EDQ.address.proWeb.doGetAddress({
@@ -62,8 +71,6 @@ QUnit.test('DoGetAddress functions as intended', function(assert) {
 });
 
 QUnit.test('DoGetData functions as intended', function(assert) {
-  assert.equal(Boolean(EDQ.address.proWeb.doGetData), true, "The request can be made");
-
   var proWebSuccess = assert.async(2);
 
   EDQ.address.proWeb.doGetData({
@@ -99,8 +106,6 @@ QUnit.test('DoGetExampleAddresses functions as intended', function(assert) {
 });
 
 QUnit.test('DoGetLayouts functions as intended', function(assert) {
-  assert.equal(Boolean(EDQ.address.proWeb.doGetLayouts), true, "The request can be made");
-
   var proWebSuccess = assert.async();
   var proWebFail    = assert.async();
 
@@ -144,8 +149,6 @@ QUnit.test('DoPromptSet functions as intended', function(assert) {
 });
 
 QUnit.test('DoGetSystemInfo functions as intended', function(assert) {
-  assert.equal(Boolean(EDQ.address.proWeb.doRefine), true, "The request can be made");
-
   var proWebSuccess = assert.async(2);
 
   EDQ.address.proWeb.doGetSystemInfo({
@@ -159,20 +162,28 @@ QUnit.test('DoGetSystemInfo functions as intended', function(assert) {
 });
 
 QUnit.test('DoRefine functions as intended', function(assert) {
-  assert.equal(Boolean(EDQ.address.proWeb.doRefine), true, "The request can be made");
-
   var proWebSuccess = assert.async();
   var proWebFail    = assert.async();
 
-  EDQ.address.proWeb.doRefine({
+  EDQ.address.proWeb.doSearch({
     country: 'USA',
-    refineOptions: {},
+    engineOptions: {},
+    engineType: 'Verification',
     layout: 'EDQDemoLayout',
-    moniker: 'USA|b0a60fcd-9dda-4629-a233-a356d35e9aec|7.610jTUSADwHhBwAAAAACAQAAQAAAAAEAAAD3QQAAAAAAADAyMTEwAA--',
-    refinement: '',
+    addressQuery: '02110',
     formattedAddressInPicklist: false,
-    callback: addressCallback.bind({assert: assert, done: proWebSuccess})
-  });
+    callback: function(data) {
+      EDQ.address.proWeb.doRefine({
+        country: 'USA',
+        refineOptions: {},
+        layout: 'EDQDemoLayout',
+        moniker: data.Envelope.Body.QASearchResult.QAPicklist.FullPicklistMoniker,
+        refinement: '',
+        formattedAddressInPicklist: false,
+        callback: addressCallback.bind({assert: assert, done: proWebSuccess})
+      });
+    }
+ });
 
   EDQ.address.proWeb.doRefine({
     country: 'USA',
@@ -187,8 +198,6 @@ QUnit.test('DoRefine functions as intended', function(assert) {
 });
 
 QUnit.test('DoSearch functions as intended', function(assert) {
-  assert.equal(Boolean(EDQ.address.proWeb.doSearch), true, "The request can be made");
-
   var proWebSuccess = assert.async();
   var proWebFail    = assert.async();
 
@@ -213,3 +222,24 @@ QUnit.test('DoSearch functions as intended', function(assert) {
   });
 
 });
+
+QUnit.module('Address.GlobalIntuitive tests');
+
+QUnit.test('Search functions as intended', function(assert) {
+  var searchSuccess = assert.async();
+  var searchFail    = assert.async();
+
+  EDQ.address.globalIntuitive.search({
+    query: '125 Summer Street',
+    country: 'USA',
+    callback: addressCallback.bind({assert: assert, done: searchSuccess})
+  });
+
+  EDQ.address.globalIntuitive.search({
+    query: '',
+    country: 'USA',
+    callback: addressFailCallback.bind({assert: assert, done: searchFail})
+  });
+
+});
+

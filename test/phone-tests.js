@@ -9,7 +9,8 @@ var phoneCallback = function(data) {
   var result;
 
   try {
-    result = Boolean(data.response)
+    console.log(data.response);
+    result = Boolean(data)
   } catch(e) {
     result = false;
   }

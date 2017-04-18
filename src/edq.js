@@ -22,6 +22,7 @@
   PHONE_VALIDATE_PLUS_AUTH_TOKEN   = EDQ_CONFIG.PHONE_VALIDATE_PLUS_AUTH_TOKEN || '1793360f-3d97-451a-81b8-d7e765c48894';
   GLOBAL_PHONE_VALIDATE_AUTH_TOKEN = EDQ_CONFIG.GLOBAL_PHONE_VALIDATE_AUTH_TOKEN || '1793360f-3d97-451a-81b8-d7e765c48894';
   EMAIL_VALIDATE_AUTH_TOKEN        = EDQ_CONFIG.EMAIL_VALIDATE_AUTH_TOKEN || '1793360f-3d97-451a-81b8-d7e765c48894';
+  GLOBAL_INTUITIVE_AUTH_TOKEN      = EDQ_CONFIG.GLOBAL_INTUITIVE_AUTH_TOKEN || '8c9faaa4-a5d2-4036-808d-11208a2e52d8';
 
   /** Service for ProWebOnDemand endpoint. Do not change unless you have a proxy to use
    *
@@ -32,6 +33,7 @@
   PHONE_VALIDATE_PLUS_URL   = 'https://api.experianmarketingservices.com/sync/queryresult/PhoneValidatePlus/1.0/';
   GLOBAL_PHONE_VALIDATE_URL = 'https://api.experianmarketingservices.com/sync/queryresult/PhoneValidate/3.0/';
   EMAIL_VALIDATE_URL        = 'https://api.experianmarketingservices.com/sync/queryresult/EmailValidate/1.0/';
+  GLOBAL_INTUITIVE_URL      = 'https://api.edq.com/capture/address/v2';
 
   /************************** end Configuration *********************************/
 
@@ -909,9 +911,101 @@
     };
   };
 
-  function _emailValidateHelper() {
+  function _globalIntuitiveHelpers() {
+
     /*
-     * @param {String} phoneNumber
+     * @param {String} query
+     * @param {String} country
+     * @param {Number} take
+     * @param {Boolean} verbose
+     * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
+     */
+    this.search = (({ query, country, take = 7, callback }) => {
+      if (!GLOBAL_INTUITIVE_URL) {
+        throw 'Missing GLOBAL_INTUITIVE_URL.';
+      } else if (!GLOBAL_INTUITIVE_AUTH_TOKEN) {
+        throw 'Missing GLOBAL_INTUITIVE_AUTH_TOKEN';
+      }
+
+      let data = `query=${query}&country=${country}&take${take}&auth-token=${GLOBAL_INTUITIVE_AUTH_TOKEN}`;
+      return this.makeRequest(data, `${GLOBAL_INTUITIVE_URL}/Search`, callback);
+    });
+
+    /*
+     * @param {String} formatUrl
+     * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
+     */
+    this.formatByUrl= (({ formatUrl, callback }) => {
+      if (!GLOBAL_INTUITIVE_URL) {
+        throw 'Missing GLOBAL_INTUITIVE_URL.';
+      } else if (!GLOBAL_INTUITIVE_AUTH_TOKEN) {
+        throw 'Missing GLOBAL_INTUITIVE_AUTH_TOKEN';
+      }
+
+      let data = `auth-token=${GLOBAL_INTUITIVE_AUTH_TOKEN}`;
+      return this.makeRequest(data, formatUrl, callback)
+    });
+
+    /*
+     * @param {String} addressId
+     * @param {String} country
+     * @param {Number} take
+     * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
+     */
+    this.format = (({ addressId, country, take = 7, callback }) => {
+      if (!GLOBAL_INTUITIVE_URL) {
+        throw 'Missing GLOBAL_INTUITIVE_URL.';
+      } else if (!GLOBAL_INTUITIVE_AUTH_TOKEN) {
+        throw 'Missing GLOBAL_INTUITIVE_AUTH_TOKEN';
+      }
+
+      let data = `id=${addressId}&country=${country}&take${take}&auth-token=${GLOBAL_INTUITIVE_AUTH_TOKEN}`;
+      return this.makeRequest(data, `${GLOBAL_INTUITIVE_AUTH_TOKEN}/Format`, callback);
+    });
+
+    /*
+     * @param {Object} data
+     * @param {String} url
+     * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
+     */
+    this.makeRequest = ((data, url, callback) => {
+      let xhr = new XMLHttpRequest();
+
+      xhr.onreadystatechange = function () {
+        if (this.readyState === 4) {
+
+          if (this.status === 200) {
+            callback(JSON.parse(this.response), null);
+          } else {
+            callback(null, {
+              status: this.status,
+              statusText: this.statusText
+            });
+          }
+        }
+      };
+
+      xhr.open('GET', `${url}?${data}`);
+      xhr.send();
+      return xhr;
+    });
+
+  }
+
+  function _emailValidateHelper() {
+
+    /*
+     * @param {String} emailAddress
+     * @param {Number} timeout
+     * @param {Boolean} verbose
      * @param {Function} callback
      *
      * @returns {XMLHttpRequest}
@@ -942,7 +1036,7 @@
         if (this.readyState === 4) {
 
           if (this.status === 200) {
-            callback(this.response, null);
+            callback(JSON.parse(this.response), null);
           } else {
             callback(null, {
               status: this.status,
@@ -1018,7 +1112,7 @@
         if (this.readyState === 4) {
 
           if (this.status === 200) {
-            callback(this, null);
+            callback(JSON.parse(this.response), null);
           } else {
             callback(null, {
               status: this.status,
@@ -1054,6 +1148,7 @@
   const reversePhoneValidateHelper = new _phoneValidateHelper('reversePhoneAppend');
   const globalPhoneValidateHelper  = new _phoneValidateHelper('globalPhone');
   const emailValidateHelper        = new _emailValidateHelper();
+  const globalIntuitiveHelper      = new _globalIntuitiveHelpers();
 
   EDQ.email = {
 
@@ -1064,6 +1159,17 @@
      * <br><br> {@link https://www.edq.com/documentation/apis/}
      *
      * @module Email Validate
+     */
+
+    /**
+     * Validates an email address
+     *
+     * @param {String} emailAddress
+     * @param {Number} timeout
+     * @param {Boolean} verbose
+     * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
      */
     emailValidate: emailValidateHelper.emailValidate.bind(emailValidateHelper)
   };
@@ -1078,6 +1184,15 @@
      *
      * @module Reverse Phone Append
      */
+
+    /**
+     * Validates a phone number, and returns any user information, if available
+     *
+     * @param {String} phoneNumber
+     * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
+     */
     reversePhoneAppend: reversePhoneValidateHelper.reversePhoneAppend.bind(reversePhoneValidateHelper),
 
     /**
@@ -1088,10 +1203,55 @@
      *
      * @module Global Phone Validate
      */
+
+    /**
+     * Validates a phone number
+     *
+     * @param {String} phoneNumber
+     * @param {Function} callback
+     *
+     * @returns {XMLHttpRequest}
+     */
     globalPhoneValidate: globalPhoneValidateHelper.globalPhoneValidate.bind(globalPhoneValidateHelper)
   };
 
   EDQ.address = {
+
+    /**
+     * This module is a wrapper around the JSON Global Intuitive calls
+     * Additional documentation for the SOAP calls can be found here:
+     *
+     * <br><br> {@link https://www.edq.com/documentation/apis/address-validate/address-validate-soap/}
+     *
+     * @module ProWeb
+     */
+    globalIntuitive: {
+
+      /** Returns a collection of suggested addresses based on the search query and country
+       *
+       * @param {String} query
+       * @param {String} country - ISO-3 country code
+       * @param {Number} take - the amount of results to be returned
+       *
+       * @returns {XMLHttpRequest}
+       */
+      search: globalIntuitiveHelper.search.bind(globalIntuitiveHelper),
+
+      /** Returns the full address and component breakdown for the chosen address
+       *
+       * @param {String} formatUrl
+       *
+       * @returns {XMLHttpRequest}
+       */
+      formatByUrl: globalIntuitiveHelper.formatByUrl.bind(globalIntuitiveHelper),
+
+      /** Returns the full address and component breakdown for the chosen address
+       *
+       * @param {String} addressId - address id from #search
+       * @returns {XMLHttpRequest}
+       */
+      format: globalIntuitiveHelper.format.bind(globalIntuitiveHelper),
+    },
 
     /**
      * This module is a wrapper around the SOAP XML calls for ProWebOnDemand.
