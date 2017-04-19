@@ -929,7 +929,7 @@
         throw 'Missing GLOBAL_INTUITIVE_AUTH_TOKEN';
       }
 
-      let data = `query=${query}&country=${country}&take${take}&auth-token=${GLOBAL_INTUITIVE_AUTH_TOKEN}`;
+      let data = `?query=${query}&country=${country}&take=${take}&auth-token=${GLOBAL_INTUITIVE_AUTH_TOKEN}`;
       return this.makeRequest(data, `${GLOBAL_INTUITIVE_URL}/Search`, callback);
     });
 
@@ -939,14 +939,14 @@
      *
      * @returns {XMLHttpRequest}
      */
-    this.formatByUrl= (({ formatUrl, callback }) => {
+    this.format = (({ formatUrl, callback }) => {
       if (!GLOBAL_INTUITIVE_URL) {
         throw 'Missing GLOBAL_INTUITIVE_URL.';
       } else if (!GLOBAL_INTUITIVE_AUTH_TOKEN) {
         throw 'Missing GLOBAL_INTUITIVE_AUTH_TOKEN';
       }
 
-      let data = `auth-token=${GLOBAL_INTUITIVE_AUTH_TOKEN}`;
+      let data = `&auth-token=${GLOBAL_INTUITIVE_AUTH_TOKEN}`;
       return this.makeRequest(data, formatUrl, callback)
     });
 
@@ -958,14 +958,14 @@
      *
      * @returns {XMLHttpRequest}
      */
-    this.format = (({ addressId, country, take = 7, callback }) => {
+    this.formatById = (({ addressId, country, take = 7, callback }) => {
       if (!GLOBAL_INTUITIVE_URL) {
         throw 'Missing GLOBAL_INTUITIVE_URL.';
       } else if (!GLOBAL_INTUITIVE_AUTH_TOKEN) {
         throw 'Missing GLOBAL_INTUITIVE_AUTH_TOKEN';
       }
 
-      let data = `id=${addressId}&country=${country}&take${take}&auth-token=${GLOBAL_INTUITIVE_AUTH_TOKEN}`;
+      let data = `?id=${addressId}&country=${country}&take=${take}&auth-token=${GLOBAL_INTUITIVE_AUTH_TOKEN}`;
       return this.makeRequest(data, `${GLOBAL_INTUITIVE_AUTH_TOKEN}/Format`, callback);
     });
 
@@ -981,7 +981,6 @@
 
       xhr.onreadystatechange = function () {
         if (this.readyState === 4) {
-
           if (this.status === 200) {
             callback(JSON.parse(this.response), null);
           } else {
@@ -991,9 +990,9 @@
             });
           }
         }
-      };
+      }
 
-      xhr.open('GET', `${url}?${data}`);
+      xhr.open('GET', `${url}${data}`);
       xhr.send();
       return xhr;
     });
@@ -1243,14 +1242,14 @@
        *
        * @returns {XMLHttpRequest}
        */
-      formatByUrl: globalIntuitiveHelper.formatByUrl.bind(globalIntuitiveHelper),
+      format: globalIntuitiveHelper.format.bind(globalIntuitiveHelper),
 
       /** Returns the full address and component breakdown for the chosen address
        *
        * @param {String} addressId - address id from #search
        * @returns {XMLHttpRequest}
        */
-      format: globalIntuitiveHelper.format.bind(globalIntuitiveHelper),
+      formatById: globalIntuitiveHelper.formatById.bind(globalIntuitiveHelper),
     },
 
     /**

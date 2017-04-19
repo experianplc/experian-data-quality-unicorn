@@ -243,3 +243,25 @@ QUnit.test('Search functions as intended', function(assert) {
 
 });
 
+QUnit.test('Format address by URL functions as intended', function(assert) {
+  var searchSuccess = assert.async();
+  var searchFail    = assert.async();
+
+  EDQ.address.globalIntuitive.search({
+    query: '125 Summer Street',
+    country: 'USA',
+    callback: function(data) {
+      const formatUrl = data.results[0].format;
+
+      EDQ.address.globalIntuitive.format({
+        formatUrl,
+        callback: addressCallback.bind({assert: assert, done: searchSuccess})
+      });
+    }
+  });
+
+  EDQ.address.globalIntuitive.format({
+    formatUrl: '',
+    callback: addressFailCallback.bind({assert: assert, done: searchFail})
+  });
+});

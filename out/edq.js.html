@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: edq.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: edq.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * @module EDQ
  */
 
@@ -16,24 +44,16 @@
    *
    *  @type {Object}
    */
-  EDQ_CONFIG = window.EdqConfig || {};
+  EDQ_CONFIG = window.EDQConfig || {};
 
   PRO_WEB_AUTH_TOKEN = EDQ_CONFIG.PRO_WEB_AUTH_TOKEN || '46832a16-80c0-43d8-af8e-05b3dde5aaaf';
-  PHONE_VALIDATE_PLUS_AUTH_TOKEN = EDQ_CONFIG.PHONE_VALIDATE_PLUS_AUTH_TOKEN || '1793360f-3d97-451a-81b8-d7e765c48894';
-  GLOBAL_PHONE_VALIDATE_AUTH_TOKEN = EDQ_CONFIG.GLOBAL_PHONE_VALIDATE_AUTH_TOKEN || '1793360f-3d97-451a-81b8-d7e765c48894';
-  EMAIL_VALIDATE_AUTH_TOKEN = EDQ_CONFIG.EMAIL_VALIDATE_AUTH_TOKEN || '1793360f-3d97-451a-81b8-d7e765c48894';
-  GLOBAL_INTUITIVE_AUTH_TOKEN = EDQ_CONFIG.GLOBAL_INTUITIVE_AUTH_TOKEN || '8c9faaa4-a5d2-4036-808d-11208a2e52d8';
 
-  /** Service for ProWebOnDemand endpoint. Do not change unless you have a proxy to use
+  /** Service endpoint. Do not change unless you have a proxy to use
    *
    * @name PRO_WEB_SERVICE_URL
    * @type {String}
    */
   PRO_WEB_SERVICE_URL = EDQ_CONFIG.PRO_WEB_SERVICE_URL || 'https://ws2.ondemand.qas.com/ProOnDemand/V3/ProOnDemandService.asmx';
-  PHONE_VALIDATE_PLUS_URL = 'https://api.experianmarketingservices.com/sync/queryresult/PhoneValidatePlus/1.0/';
-  GLOBAL_PHONE_VALIDATE_URL = 'https://api.experianmarketingservices.com/sync/queryresult/PhoneValidate/3.0/';
-  EMAIL_VALIDATE_URL = 'https://api.experianmarketingservices.com/sync/queryresult/EmailValidate/1.0/';
-  GLOBAL_INTUITIVE_URL = 'https://api.edq.com/capture/address/v2';
 
   /************************** end Configuration *********************************/
 
@@ -54,7 +74,7 @@
   };
 
   if (typeof exports !== 'undefined') {
-    if (typeof module !== 'undefined' && module.exports) {
+    if (typeof module !== 'undefined' &amp;&amp; module.exports) {
       exports = module.exports = EDQ;
     }
 
@@ -281,7 +301,7 @@
           engineType = _ref12.engineType,
           layout = _ref12.layout;
 
-      var xmlString = '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '<soapenv:Body>' + '<ond:QASearch Localisation="" RequestTag="">' + this._buildSoapCountryString(country) + this._buildSoapEngineString({ engineOptions: engineOptions, engineType: engineType }) + this._buildSoapLayoutString(layout) + '</ond:QASearch>' + '</soapenv:Body>' + '</soapenv:Envelope>';
+      var xmlString = '&lt;soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '&lt;soapenv:Body>' + '&lt;ond:QASearch Localisation="" RequestTag="">' + this._buildSoapCountryString(country) + this._buildSoapEngineString({ engineOptions: engineOptions, engineType: engineType }) + this._buildSoapLayoutString(layout) + '&lt;/ond:QASearch>' + '&lt;/soapenv:Body>' + '&lt;/soapenv:Envelope>';
 
       return xmlString;
     };
@@ -296,7 +316,7 @@
       var layout = _ref13.layout,
           moniker = _ref13.moniker;
 
-      var xmlString = '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '<soapenv:Body>' + '<ond:QAGetAddress Localisation="" RequestTag="">' + this._buildSoapLayoutString(layout) + '<ond:Moniker>' + moniker + '</ond:Moniker>' + '</ond:QAGetAddress>' + '</soapenv:Body>' + '</soapenv:Envelope>';
+      var xmlString = '&lt;soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '&lt;soapenv:Body>' + '&lt;ond:QAGetAddress Localisation="" RequestTag="">' + this._buildSoapLayoutString(layout) + '&lt;ond:Moniker>' + moniker + '&lt;/ond:Moniker>' + '&lt;/ond:QAGetAddress>' + '&lt;/soapenv:Body>' + '&lt;/soapenv:Envelope>';
 
       return xmlString;
     };
@@ -311,7 +331,7 @@
       var country = _ref14.country,
           layout = _ref14.layout;
 
-      var xmlString = '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '<soapenv:Body>' + '<ond:QAGetExampleAddresses Localisation="" RequestTag="">' + this._buildSoapCountryString(country) + this._buildSoapLayoutString(layout) + '</ond:QAGetExampleAddresses>' + '</soapenv:Body>' + '</soapenv:Envelope>';
+      var xmlString = '&lt;soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '&lt;soapenv:Body>' + '&lt;ond:QAGetExampleAddresses Localisation="" RequestTag="">' + this._buildSoapCountryString(country) + this._buildSoapLayoutString(layout) + '&lt;/ond:QAGetExampleAddresses>' + '&lt;/soapenv:Body>' + '&lt;/soapenv:Envelope>';
 
       return xmlString;
     };
@@ -320,7 +340,7 @@
      * @returns {String}
      */
     this.buildDoGetDataMessage = function () {
-      var xmlString = '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '<soapenv:Body>' + '<ond:QAGetData Localisation="" >' + '</ond:QAGetData>' + '</soapenv:Body>' + '</soapenv:Envelope>';
+      var xmlString = '&lt;soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '&lt;soapenv:Body>' + '&lt;ond:QAGetData Localisation="" >' + '&lt;/ond:QAGetData>' + '&lt;/soapenv:Body>' + '&lt;/soapenv:Envelope>';
 
       return xmlString;
     };
@@ -333,7 +353,7 @@
     this.buildDoGetDataMapDetail = function (_ref15) {
       var dataMap = _ref15.dataMap;
 
-      var xmlString = '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '<soapenv:Body>' + '<ond:QAGetDataMapDetail Localisation="">' + this._buildSoapDataMapString(dataMap) + '</ond:QAGetDataMapDetail>' + '</soapenv:Body>' + '</soapenv:Envelope>';
+      var xmlString = '&lt;soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '&lt;soapenv:Body>' + '&lt;ond:QAGetDataMapDetail Localisation="">' + this._buildSoapDataMapString(dataMap) + '&lt;/ond:QAGetDataMapDetail>' + '&lt;/soapenv:Body>' + '&lt;/soapenv:Envelope>';
 
       return xmlString;
     };
@@ -342,7 +362,7 @@
      * @returns {String}
      */
     this.buildDoGetLicenseInfoMessage = function () {
-      var xmlString = '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '<soapenv:Body>' + '<ond:QAGetLicenseInfo Localisation=""/>' + '</soapenv:Body>' + '</soapenv:Envelope>';
+      var xmlString = '&lt;soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '&lt;soapenv:Body>' + '&lt;ond:QAGetLicenseInfo Localisation=""/>' + '&lt;/soapenv:Body>' + '&lt;/soapenv:Envelope>';
 
       return xmlString;
     },
@@ -355,7 +375,7 @@
     this.buildDoGetLayoutsMessage = function (_ref16) {
       var country = _ref16.country;
 
-      var xmlString = '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '<soapenv:Body>' + '<ond:QAGetLayouts Localisation="">' + this._buildSoapCountryString(country) + '</ond:QAGetLayouts>' + '</soapenv:Body>' + '</soapenv:Envelope>';
+      var xmlString = '&lt;soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '&lt;soapenv:Body>' + '&lt;ond:QAGetLayouts Localisation="">' + this._buildSoapCountryString(country) + '&lt;/ond:QAGetLayouts>' + '&lt;/soapenv:Body>' + '&lt;/soapenv:Envelope>';
 
       return xmlString;
     };
@@ -374,7 +394,7 @@
           engineType = _ref17.engineType,
           promptSet = _ref17.promptSet;
 
-      var xmlString = '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '<soapenv:Body>' + '<ond:QAGetPromptSet Localisation="">' + this._buildSoapCountryString(country) + this._buildSoapEngineString({ engineOptions: engineOptions, engineType: engineType }) + this._buildSoapPromptSetString(promptSet) + '</ond:QAGetPromptSet>' + '</soapenv:Body>' + '</soapenv:Envelope>';
+      var xmlString = '&lt;soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '&lt;soapenv:Body>' + '&lt;ond:QAGetPromptSet Localisation="">' + this._buildSoapCountryString(country) + this._buildSoapEngineString({ engineOptions: engineOptions, engineType: engineType }) + this._buildSoapPromptSetString(promptSet) + '&lt;/ond:QAGetPromptSet>' + '&lt;/soapenv:Body>' + '&lt;/soapenv:Envelope>';
 
       return xmlString;
     };
@@ -383,7 +403,7 @@
      * @returns {String}
      */
     this.buildDoGetSystemInfoMessage = function () {
-      var xmlString = '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '<soapenv:Body>' + '<ond:QAGetSystemInfo Localisation=""/>' + '</soapenv:Body>' + '</soapenv:Envelope>';
+      var xmlString = '&lt;soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '&lt;soapenv:Body>' + '&lt;ond:QAGetSystemInfo Localisation=""/>' + '&lt;/soapenv:Body>' + '&lt;/soapenv:Envelope>';
 
       return xmlString;
     };
@@ -407,7 +427,7 @@
       var threshold = this._cleanThreshold(refineOptions.threshold);
       var timeout = this._cleanTimeout(refineOptions.timeout);
 
-      var xmlString = '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '<soapenv:Body>' + '<ond:QARefine Threshold=' + '\"' + threshold + '\"' + ' ' + 'Timeout=' + '\"' + timeout + '\"' + ' ' + 'Localisation=""' + ' ' + 'RequestTag=""' + '>' + this._buildSoapMonikerString(moniker) + this._buildSoapRefinementString(refinement) + this._buildSoapLayoutString(layout) + this._buildSoapFormatString(formattedAddressInPicklist) + '</ond:QARefine>' + '</soapenv:Body>' + '</soapenv:Envelope>';
+      var xmlString = '&lt;soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '&lt;soapenv:Body>' + '&lt;ond:QARefine Threshold=' + '\"' + threshold + '\"' + ' ' + 'Timeout=' + '\"' + timeout + '\"' + ' ' + 'Localisation=""' + ' ' + 'RequestTag=""' + '>' + this._buildSoapMonikerString(moniker) + this._buildSoapRefinementString(refinement) + this._buildSoapLayoutString(layout) + this._buildSoapFormatString(formattedAddressInPicklist) + '&lt;/ond:QARefine>' + '&lt;/soapenv:Body>' + '&lt;/soapenv:Envelope>';
 
       return xmlString;
     };
@@ -430,7 +450,7 @@
           addressQuery = _ref19.addressQuery,
           formattedAddressInPicklist = _ref19.formattedAddressInPicklist;
 
-      var xmlString = '<soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '<soapenv:Body>' + '<ond:QASearch Localisation="" RequestTag="">' + this._buildSoapCountryString(country) + this._buildSoapEngineString({ engineOptions: engineOptions, engineType: engineType }) + this._buildSoapLayoutString(layout) + this._buildSoapSearchString(addressQuery) + this._buildSoapFormatString(formattedAddressInPicklist) + '</ond:QASearch>' + '</soapenv:Body>' + '</soapenv:Envelope>';
+      var xmlString = '&lt;soapenv:Envelope ' + this._buildSoapNamespaceSubString() + '>' + '&lt;soapenv:Body>' + '&lt;ond:QASearch Localisation="" RequestTag="">' + this._buildSoapCountryString(country) + this._buildSoapEngineString({ engineOptions: engineOptions, engineType: engineType }) + this._buildSoapLayoutString(layout) + this._buildSoapSearchString(addressQuery) + this._buildSoapFormatString(formattedAddressInPicklist) + '&lt;/ond:QASearch>' + '&lt;/soapenv:Body>' + '&lt;/soapenv:Envelope>';
 
       return xmlString;
     };
@@ -443,12 +463,6 @@
      * @returns {undefined}
      */
     this.makeRequest = function (requestData, soapActionUrl, callback) {
-      if (!PRO_WEB_SERVICE_URL) {
-        throw 'Missing PRO_WEB_SERVICE_URL.';
-      } else if (!PRO_WEB_AUTH_TOKEN) {
-        throw 'Missing PRO_WEB_AUTH_TOKEN';
-      }
-
       var xhr = new XMLHttpRequest();
       var self = _this;
 
@@ -530,7 +544,7 @@
      * @returns {String}
      */
     this._buildSoapFormatString = function (formatAddress) {
-      return '<ond:FormattedAddressInPicklist>' + formatAddress + '</ond:FormattedAddressInPicklist>';
+      return '&lt;ond:FormattedAddressInPicklist>' + formatAddress + '&lt;/ond:FormattedAddressInPicklist>';
     };
 
     /*
@@ -551,7 +565,7 @@
       var threshold = result.threshold;
       var timeout = result.timeout;
 
-      var engineSoapString = '<ond:Engine' + ' ' + 'Flatten=' + '\'' + flatten + '\' ' + 'Intensity=' + '\'' + intensity + '\' ' + 'PromptSet=' + '\'' + promptSet + '\' ' + 'Threshold=' + '\'' + threshold + '\' ' + 'Timeout=' + '\'' + timeout + '\' ' + '>' + engineType + '</ond:Engine>';
+      var engineSoapString = '&lt;ond:Engine' + ' ' + 'Flatten=' + '\'' + flatten + '\' ' + 'Intensity=' + '\'' + intensity + '\' ' + 'PromptSet=' + '\'' + promptSet + '\' ' + 'Threshold=' + '\'' + threshold + '\' ' + 'Timeout=' + '\'' + timeout + '\' ' + '>' + engineType + '&lt;/ond:Engine>';
 
       return engineSoapString;
     };
@@ -569,7 +583,7 @@
      * @returns {String}
      */
     this._buildSoapMonikerString = function (moniker) {
-      return '<ond:Moniker>' + moniker + '</ond:Moniker>';
+      return '&lt;ond:Moniker>' + moniker + '&lt;/ond:Moniker>';
     },
 
     /*
@@ -578,7 +592,7 @@
      * @returns {String}
      */
     this._buildSoapRefinementString = function (refinement) {
-      return '<ond:Refinement>' + refinement + '</ond:Refinement>';
+      return '&lt;ond:Refinement>' + refinement + '&lt;/ond:Refinement>';
     };
 
     /*
@@ -587,9 +601,9 @@
      * @returns {String}
      */
     this._buildSoapLayoutString = function () {
-      var layoutType = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'AllElements';
+      var layoutType = arguments.length > 0 &amp;&amp; arguments[0] !== undefined ? arguments[0] : 'AllElements';
 
-      return '<ond:Layout>' + layoutType + '</ond:Layout>';
+      return '&lt;ond:Layout>' + layoutType + '&lt;/ond:Layout>';
     };
 
     /* @param {String} addressQuery
@@ -597,7 +611,7 @@
      * @returns {String}
      */
     this._buildSoapSearchString = function (addressQuery) {
-      return '<ond:Search>' + addressQuery + '</ond:Search>';
+      return '&lt;ond:Search>' + addressQuery + '&lt;/ond:Search>';
     };
 
     /* @param {String} promptSet
@@ -605,7 +619,7 @@
      * @returns {String}
      */
     this._buildSoapPromptSetString = function (promptSet) {
-      return '<ond:PromptSet>' + promptSet + '</ond:PromptSet>';
+      return '&lt;ond:PromptSet>' + promptSet + '&lt;/ond:PromptSet>';
     };
 
     /* @param {String} country
@@ -613,7 +627,7 @@
      * @returns {String}
      */
     this._buildSoapCountryString = function (country) {
-      return '<ond:Country>' + country + '</ond:Country>';
+      return '&lt;ond:Country>' + country + '&lt;/ond:Country>';
     };
 
     /*
@@ -622,13 +636,13 @@
      * @returns {String}
      */
     this._buildSoapDataMapString = function (dataMap) {
-      return '<ond:DataMap>' + dataMap + '</ond:DataMap>';
+      return '&lt;ond:DataMap>' + dataMap + '&lt;/ond:DataMap>';
     };
 
     /*** Taken from X2JS ***/
 
     this._parseDOMChildren = function (node, path) {
-      var config = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      var config = arguments.length > 2 &amp;&amp; arguments[2] !== undefined ? arguments[2] : {};
 
       config = initConfigDefaults(config);
 
@@ -672,16 +686,16 @@
       }
 
       function escapeXmlChars(str) {
-        if (typeof str == "string") return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');else return str;
+        if (typeof str == "string") return str.replace(/&amp;/g, '&amp;amp;').replace(/&lt;/g, '&amp;lt;').replace(/>/g, '&amp;gt;').replace(/"/g, '&amp;quot;').replace(/'/g, '&amp;apos;');else return str;
       }
 
       function unescapeXmlChars(str) {
-        return str.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&amp;/g, '&');
+        return str.replace(/&amp;lt;/g, '&lt;').replace(/&amp;gt;/g, '>').replace(/&amp;quot;/g, '"').replace(/&amp;apos;/g, "'").replace(/&amp;amp;/g, '&amp;');
       }
 
       function checkInStdFiltersArrayForm(stdFiltersArrayForm, obj, name, path) {
         var idx = 0;
-        for (; idx < stdFiltersArrayForm.length; idx++) {
+        for (; idx &lt; stdFiltersArrayForm.length; idx++) {
           var filterPath = stdFiltersArrayForm[idx];
           if (typeof filterPath === "string") {
             if (filterPath == path) break;
@@ -703,7 +717,7 @@
           	break;*/
         }
 
-        if (!(obj[childName] instanceof Array) && config.arrayAccessFormPaths.length > 0) {
+        if (!(obj[childName] instanceof Array) &amp;&amp; config.arrayAccessFormPaths.length > 0) {
           if (checkInStdFiltersArrayForm(config.arrayAccessFormPaths, obj, childName, path)) {
             obj[childName] = [obj[childName]];
           }
@@ -721,7 +735,7 @@
         if (secondBits.length > 1) d.setMilliseconds(secondBits[1]);
 
         // Get supplied time zone offset in minutes
-        if (bits[6] && bits[7]) {
+        if (bits[6] &amp;&amp; bits[7]) {
           var offsetMinutes = bits[6] * 60 + Number(bits[7]);
           var sign = /\d\d-\d\d:\d\d$/.test(prop) ? '-' : '+';
 
@@ -748,7 +762,7 @@
       }
 
       function checkXmlElementsFilter(obj, childType, childName, childPath) {
-        if (childType == DOMNodeTypes.ELEMENT_NODE && config.xmlElementsFilter.length > 0) {
+        if (childType == DOMNodeTypes.ELEMENT_NODE &amp;&amp; config.xmlElementsFilter.length > 0) {
           return checkInStdFiltersArrayForm(config.xmlElementsFilter, obj, childName, childPath);
         } else return true;
       }
@@ -757,7 +771,7 @@
         var result = new Object();
         var nodeChildren = node.childNodes;
         // Alternative for firstElementChild which is not supported in some environments
-        for (var cidx = 0; cidx < nodeChildren.length; cidx++) {
+        for (var cidx = 0; cidx &lt; nodeChildren.length; cidx++) {
           var child = nodeChildren.item(cidx);
           if (child.nodeType == DOMNodeTypes.ELEMENT_NODE) {
             var childName = getNodeLocalName(child);
@@ -772,7 +786,7 @@
         var nodeChildren = node.childNodes;
 
         // Children nodes
-        for (var cidx = 0; cidx < nodeChildren.length; cidx++) {
+        for (var cidx = 0; cidx &lt; nodeChildren.length; cidx++) {
           var child = nodeChildren.item(cidx); // nodeChildren[cidx];
           var childName = getNodeLocalName(child);
 
@@ -796,14 +810,14 @@
           }
         }
 
-        for (var aidx = 0; aidx < node.attributes.length; aidx++) {
+        for (var aidx = 0; aidx &lt; node.attributes.length; aidx++) {
           var attr = node.attributes.item(aidx);
           result.__cnt++;
           result[config.attributePrefix + attr.name] = attr.value;
         }
 
         var nodePrefix = getNodePrefix(node);
-        if (nodePrefix != null && nodePrefix != "") {
+        if (nodePrefix != null &amp;&amp; nodePrefix != "") {
           result.__cnt++;
           result.__prefix = nodePrefix;
         }
@@ -824,20 +838,20 @@
           if (config.arrayAccessForm == "property") delete result["#cdata-section_asArray"];
         }
 
-        if (result.__cnt == 0 && config.emptyNodeForm == "text") {
+        if (result.__cnt == 0 &amp;&amp; config.emptyNodeForm == "text") {
           result = '';
-        } else if (result.__cnt == 1 && result.__text != null) {
+        } else if (result.__cnt == 1 &amp;&amp; result.__text != null) {
           result = result.__text;
-        } else if (result.__cnt == 1 && result.__cdata != null && !config.keepCData) {
+        } else if (result.__cnt == 1 &amp;&amp; result.__cdata != null &amp;&amp; !config.keepCData) {
           result = result.__cdata;
-        } else if (result.__cnt > 1 && result.__text != null && config.skipEmptyTextNodesForObj) {
-          if (config.stripWhitespaces && result.__text == "" || result.__text.trim() == "") {
+        } else if (result.__cnt > 1 &amp;&amp; result.__text != null &amp;&amp; config.skipEmptyTextNodesForObj) {
+          if (config.stripWhitespaces &amp;&amp; result.__text == "" || result.__text.trim() == "") {
             delete result.__text;
           }
         }
         delete result.__cnt;
 
-        if (config.enableToStringFunc && (result.__text != null || result.__cdata != null)) {
+        if (config.enableToStringFunc &amp;&amp; (result.__text != null || result.__cdata != null)) {
           result.toString = function () {
             return (this.__text != null ? this.__text : '') + (this.__cdata != null ? this.__cdata : '');
           };
@@ -850,379 +864,23 @@
     };
   };
 
-  function _globalIntuitiveHelpers() {
-    var _this2 = this;
+  var helper = new _proWebHelpers();
 
-    /*
-     * @param {String} query
-     * @param {String} country
-     * @param {Number} take
-     * @param {Boolean} verbose
-     * @param {Function} callback
-     *
-     * @returns {XMLHttpRequest}
-     */
-    this.search = function (_ref21) {
-      var query = _ref21.query,
-          country = _ref21.country,
-          _ref21$take = _ref21.take,
-          take = _ref21$take === undefined ? 7 : _ref21$take,
-          callback = _ref21.callback;
-
-      if (!GLOBAL_INTUITIVE_URL) {
-        throw 'Missing GLOBAL_INTUITIVE_URL.';
-      } else if (!GLOBAL_INTUITIVE_AUTH_TOKEN) {
-        throw 'Missing GLOBAL_INTUITIVE_AUTH_TOKEN';
-      }
-
-      var data = '?query=' + query + '&country=' + country + '&take=' + take + '&auth-token=' + GLOBAL_INTUITIVE_AUTH_TOKEN;
-      return _this2.makeRequest(data, GLOBAL_INTUITIVE_URL + '/Search', callback);
-    };
-
-    /*
-     * @param {String} formatUrl
-     * @param {Function} callback
-     *
-     * @returns {XMLHttpRequest}
-     */
-    this.format = function (_ref22) {
-      var formatUrl = _ref22.formatUrl,
-          callback = _ref22.callback;
-
-      if (!GLOBAL_INTUITIVE_URL) {
-        throw 'Missing GLOBAL_INTUITIVE_URL.';
-      } else if (!GLOBAL_INTUITIVE_AUTH_TOKEN) {
-        throw 'Missing GLOBAL_INTUITIVE_AUTH_TOKEN';
-      }
-
-      var data = '&auth-token=' + GLOBAL_INTUITIVE_AUTH_TOKEN;
-      return _this2.makeRequest(data, formatUrl, callback);
-    };
-
-    /*
-     * @param {String} addressId
-     * @param {String} country
-     * @param {Number} take
-     * @param {Function} callback
-     *
-     * @returns {XMLHttpRequest}
-     */
-    this.formatById = function (_ref23) {
-      var addressId = _ref23.addressId,
-          country = _ref23.country,
-          _ref23$take = _ref23.take,
-          take = _ref23$take === undefined ? 7 : _ref23$take,
-          callback = _ref23.callback;
-
-      if (!GLOBAL_INTUITIVE_URL) {
-        throw 'Missing GLOBAL_INTUITIVE_URL.';
-      } else if (!GLOBAL_INTUITIVE_AUTH_TOKEN) {
-        throw 'Missing GLOBAL_INTUITIVE_AUTH_TOKEN';
-      }
-
-      var data = '?id=' + addressId + '&country=' + country + '&take=' + take + '&auth-token=' + GLOBAL_INTUITIVE_AUTH_TOKEN;
-      return _this2.makeRequest(data, GLOBAL_INTUITIVE_AUTH_TOKEN + '/Format', callback);
-    };
-
-    /*
-     * @param {Object} data
-     * @param {String} url
-     * @param {Function} callback
-     *
-     * @returns {XMLHttpRequest}
-     */
-    this.makeRequest = function (data, url, callback) {
-      var xhr = new XMLHttpRequest();
-
-      xhr.onreadystatechange = function () {
-        if (this.readyState === 4) {
-          if (this.status === 200) {
-            callback(JSON.parse(this.response), null);
-          } else {
-            callback(null, {
-              status: this.status,
-              statusText: this.statusText
-            });
-          }
-        }
-      };
-
-      xhr.open('GET', '' + url + data);
-      xhr.send();
-      return xhr;
-    };
-  }
-
-  function _emailValidateHelper() {
-    var _this3 = this;
-
-    /*
-     * @param {String} emailAddress
-     * @param {Number} timeout
-     * @param {Boolean} verbose
-     * @param {Function} callback
-     *
-     * @returns {XMLHttpRequest}
-     */
-    this.emailValidate = function (_ref24) {
-      var emailAddress = _ref24.emailAddress,
-          _ref24$timeout = _ref24.timeout,
-          timeout = _ref24$timeout === undefined ? 15 : _ref24$timeout,
-          _ref24$verbose = _ref24.verbose,
-          verbose = _ref24$verbose === undefined ? true : _ref24$verbose,
-          callback = _ref24.callback;
-
-      if (!EMAIL_VALIDATE_URL) {
-        throw 'Missing EMAIL_VALIDATE_URL.';
-      } else if (!EMAIL_VALIDATE_AUTH_TOKEN) {
-        throw 'Missing EMAIL_VALIDATE_AUTH_TOKEN';
-      }
-
-      return _this3.makeRequest(emailAddress, timeout, verbose, callback);
-    };
-
-    /*
-     * @param {String} emailAddress
-     * @param {Number} timeout
-     * @param {Boolean} verbose
-     * @param {Function} callback
-     *
-     * @returns {XMLHttpRequest}
-     */
-    this.makeRequest = function (emailAddress, timeout, verbose, callback) {
-      var xhr = new XMLHttpRequest();
-
-      xhr.withCredentials = false;
-      xhr.onreadystatechange = function () {
-        if (this.readyState === 4) {
-
-          if (this.status === 200) {
-            callback(JSON.parse(this.response), null);
-          } else {
-            callback(null, {
-              status: this.status,
-              statusText: this.statusText
-            });
-          }
-        }
-      };
-
-      xhr.open('POST', EMAIL_VALIDATE_URL);
-      xhr.setRequestHeader('Auth-Token', EMAIL_VALIDATE_AUTH_TOKEN);
-
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.send(JSON.stringify({
-        email: emailAddress,
-        timeout: timeout,
-        verbose: verbose
-      }));
-
-      return xhr;
-    };
-  }
-
-  function _phoneValidateHelper(type) {
-    var _this4 = this;
-
-    this.validationType = type;
-
-    /*
-     * @param {String} phoneNumber
-     * @param {Function} callback
-     *
-     * @returns {XMLHttpRequest}
-     */
-    this.reversePhoneAppend = function (_ref25) {
-      var phoneNumber = _ref25.phoneNumber,
-          callback = _ref25.callback;
-
-      if (!PHONE_VALIDATE_PLUS_URL) {
-        throw 'Missing PRO_WEB_SERVICE_URL.';
-      } else if (!PHONE_VALIDATE_PLUS_AUTH_TOKEN) {
-        throw 'Missing PRO_WEB_AUTH_TOKEN';
-      }
-
-      return _this4.makeRequest(phoneNumber, callback);
-    };
-
-    /*
-     * @param {String} phoneNumber
-     * @param {Function} callback
-     *
-     * @returns {XMLHttpRequest}
-     */
-    this.globalPhoneValidate = function (_ref26) {
-      var phoneNumber = _ref26.phoneNumber,
-          callback = _ref26.callback;
-
-      if (!GLOBAL_PHONE_VALIDATE_URL) {
-        throw 'Missing PRO_WEB_SERVICE_URL.';
-      } else if (!GLOBAL_PHONE_VALIDATE_AUTH_TOKEN) {
-        throw 'Missing PRO_WEB_AUTH_TOKEN';
-      }
-
-      return _this4.makeRequest(phoneNumber, callback);
-    };
-
-    /*
-     * @param {String} phoneNumber
-     * @param {Function} callback
-     *
-     * @returns {XMLHttpRequest}
-     */
-    this.makeRequest = function (phoneNumber, callback) {
-      var xhr = new XMLHttpRequest();
-
-      xhr.withCredentials = false;
-      xhr.onreadystatechange = function () {
-        if (this.readyState === 4) {
-
-          if (this.status === 200) {
-            callback(JSON.parse(this.response), null);
-          } else {
-            callback(null, {
-              status: this.status,
-              statusText: this.statusText
-            });
-          }
-        }
-      };
-
-      switch (_this4.validationType) {
-        case 'reversePhoneAppend':
-          xhr.open('POST', PHONE_VALIDATE_PLUS_URL);
-          xhr.setRequestHeader('Auth-Token', PHONE_VALIDATE_PLUS_AUTH_TOKEN);
-          break;
-
-        case 'globalPhone':
-          xhr.open('POST', GLOBAL_PHONE_VALIDATE_URL);
-          xhr.setRequestHeader('Auth-Token', GLOBAL_PHONE_VALIDATE_AUTH_TOKEN);
-          break;
-      }
-
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.send(JSON.stringify({
-        'Number': phoneNumber
-      }));
-
-      return xhr;
-    };
-  };
-
-  var proWebHelper = new _proWebHelpers();
-  var reversePhoneValidateHelper = new _phoneValidateHelper('reversePhoneAppend');
-  var globalPhoneValidateHelper = new _phoneValidateHelper('globalPhone');
-  var emailValidateHelper = new _emailValidateHelper();
-  var globalIntuitiveHelper = new _globalIntuitiveHelpers();
-
-  EDQ.email = {
-
-    /**
-     * This module is a wrapper around the REST calls for Email Validateion
-     * Additional documentation for the REST calls can be found here:
-     *
-     * <br><br> {@link https://www.edq.com/documentation/apis/}
-     *
-     * @module Email Validate
-     */
-
-    /**
-     * Validates an email address
-     *
-     * @param {String} emailAddress
-     * @param {Number} timeout
-     * @param {Boolean} verbose
-     * @param {Function} callback
-     *
-     * @returns {XMLHttpRequest}
-     */
-    emailValidate: emailValidateHelper.emailValidate.bind(emailValidateHelper)
-  };
-
-  EDQ.phone = {
-
-    /**
-     * This module is a wrapper around the REST calls for PhoneValidatePlus (Reverse Phone Append)
-     * Additional documentation for the REST calls can be found here:
-     *
-     * <br><br> {@link https://www.edq.com/documentation/apis/}
-     *
-     * @module Reverse Phone Append
-     */
-
-    /**
-     * Validates a phone number, and returns any user information, if available
-     *
-     * @param {String} phoneNumber
-     * @param {Function} callback
-     *
-     * @returns {XMLHttpRequest}
-     */
-    reversePhoneAppend: reversePhoneValidateHelper.reversePhoneAppend.bind(reversePhoneValidateHelper),
-
-    /**
-     * This module is a wrapper around the REST calls for PhoneValidate (Global Phone Validate)
-     * Additional documentation for the REST calls can be found here:
-     *
-     * <br><br> {@link https://www.edq.com/documentation/apis/}
-     *
-     * @module Global Phone Validate
-     */
-
-    /**
-     * Validates a phone number
-     *
-     * @param {String} phoneNumber
-     * @param {Function} callback
-     *
-     * @returns {XMLHttpRequest}
-     */
-    globalPhoneValidate: globalPhoneValidateHelper.globalPhoneValidate.bind(globalPhoneValidateHelper)
-  };
+  /**
+   * Represents a book.
+   * @constructor
+   * @param {string} title - The title of the book.
+   * @param {string} author - The author of the book.
+   */
+  function Book(title, author) {}
 
   EDQ.address = {
-
-    /**
-     * This module is a wrapper around the JSON Global Intuitive calls
-     * Additional documentation for the SOAP calls can be found here:
-     *
-     * <br><br> {@link https://www.edq.com/documentation/apis/address-validate/address-validate-soap/}
-     *
-     * @module ProWeb
-     */
-    globalIntuitive: {
-
-      /** Returns a collection of suggested addresses based on the search query and country
-       *
-       * @param {String} query
-       * @param {String} country - ISO-3 country code
-       * @param {Number} take - the amount of results to be returned
-       *
-       * @returns {XMLHttpRequest}
-       */
-      search: globalIntuitiveHelper.search.bind(globalIntuitiveHelper),
-
-      /** Returns the full address and component breakdown for the chosen address
-       *
-       * @param {String} formatUrl
-       *
-       * @returns {XMLHttpRequest}
-       */
-      format: globalIntuitiveHelper.format.bind(globalIntuitiveHelper),
-
-      /** Returns the full address and component breakdown for the chosen address
-       *
-       * @param {String} addressId - address id from #search
-       * @returns {XMLHttpRequest}
-       */
-      formatById: globalIntuitiveHelper.formatById.bind(globalIntuitiveHelper)
-    },
 
     /**
      * This module is a wrapper around the SOAP XML calls for ProWebOnDemand.
      * Additional documentation for the SOAP calls can be found here:
      *
-     * <br><br> {@link https://www.edq.com/documentation/apis/address-validate/address-validate-soap/}
+     * &lt;br>&lt;br> {@link https://www.edq.com/documentation/apis/address-validate/address-validate-soap/}
      *
      * @module ProWeb
      */
@@ -1242,7 +900,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doCanSearch: proWebHelper.doCanSearch.bind(proWebHelper),
+      doCanSearch: helper.doCanSearch.bind(helper),
 
       /**
        * Formats a picklist item to obtain a final, formatted address.
@@ -1256,7 +914,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetAddress: proWebHelper.doGetAddress.bind(proWebHelper),
+      doGetAddress: helper.doGetAddress.bind(helper),
 
       /**
        * Obtains a list of available data mappings
@@ -1268,7 +926,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetData: proWebHelper.doGetData.bind(proWebHelper),
+      doGetData: helper.doGetData.bind(helper),
 
       /**
        * NOTE: This does not function on the latest version of ProWeb
@@ -1281,7 +939,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetDataMapDetail: proWebHelper.doGetDataMapDetail.bind(proWebHelper),
+      doGetDataMapDetail: helper.doGetDataMapDetail.bind(helper),
 
       /**
        * Returns fully formatted example addresses
@@ -1295,7 +953,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetExampleAddresses: proWebHelper.doGetExampleAddresses.bind(proWebHelper),
+      doGetExampleAddresses: helper.doGetExampleAddresses.bind(helper),
 
       /**
        * Obtains a list of layouts that have been configured within the configuration file.
@@ -1308,7 +966,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetLayouts: proWebHelper.doGetLayouts.bind(proWebHelper),
+      doGetLayouts: helper.doGetLayouts.bind(helper),
 
       /**
        * Returns license information for ProWebOnDemand.
@@ -1320,7 +978,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetLicenseInfo: proWebHelper.doGetLicenseInfo.bind(proWebHelper),
+      doGetLicenseInfo: helper.doGetLicenseInfo.bind(helper),
 
       /**
        * Returns prompt set information.
@@ -1336,7 +994,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetPromptSet: proWebHelper.doGetPromptSet.bind(proWebHelper),
+      doGetPromptSet: helper.doGetPromptSet.bind(helper),
 
       /**
        * Returns information about the server
@@ -1348,7 +1006,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doGetSystemInfo: proWebHelper.doGetSystemInfo.bind(proWebHelper),
+      doGetSystemInfo: helper.doGetSystemInfo.bind(helper),
 
       /**
        * Used to step into and refine a picklist result
@@ -1365,7 +1023,7 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doRefine: proWebHelper.doRefine.bind(proWebHelper),
+      doRefine: helper.doRefine.bind(helper),
 
       /**
        * Submits an initial search to the server
@@ -1383,7 +1041,29 @@
        *
        * @returns {XMLHttpRequest}
        */
-      doSearch: proWebHelper.doSearch.bind(proWebHelper)
+      doSearch: helper.doSearch.bind(helper)
     }
   };
-}).call(this);
+}).call(this);</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-EDQ.html">EDQ</a></li><li><a href="module-ProWeb.html">ProWeb</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Apr 07 2017 11:13:22 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
