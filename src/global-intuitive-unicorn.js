@@ -1,3 +1,5 @@
+// @ts-check
+
 /*
     JavaScript autoComplete v1.0.4
     Copyright (c) 2014 Simon Steinberger / Pixabay
@@ -41,7 +43,7 @@ var autoComplete = (function(){
                 // escape special characters
                 search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
                 var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
-                return '<div class="autocomplete-suggestion" data-val="' + item + '">' + item.replace(re, "<b>$1</b>") + '</div>';
+                return '<div class="edq-global-intuitive-address-suggestion" data-format="' + item + '">' + item.replace(re, "<b>$1</b>") + '</div>';
             },
             onSelect: function(e, term, item){}
         };
@@ -54,7 +56,7 @@ var autoComplete = (function(){
 
             // create suggestions container "sc"
             that.sc = document.createElement('div');
-            that.sc.className = 'autocomplete-suggestions '+o.menuClass;
+            that.sc.className = 'edq-global-intuitive-address-suggestions '+o.menuClass;
 
             that.autocompleteAttr = that.getAttribute('autocomplete');
             that.setAttribute('autocomplete', 'off');
@@ -69,7 +71,7 @@ var autoComplete = (function(){
                 if (!resize) {
                     that.sc.style.display = 'block';
                     if (!that.sc.maxHeight) { that.sc.maxHeight = parseInt((window.getComputedStyle ? getComputedStyle(that.sc, null) : that.sc.currentStyle).maxHeight); }
-                    if (!that.sc.suggestionHeight) that.sc.suggestionHeight = that.sc.querySelector('.autocomplete-suggestion').offsetHeight;
+                    if (!that.sc.suggestionHeight) that.sc.suggestionHeight = that.sc.querySelector('.edq-global-intuitive-address-suggestion').offsetHeight;
                     if (that.sc.suggestionHeight)
                         if (!next) that.sc.scrollTop = 0;
                         else {
@@ -84,27 +86,27 @@ var autoComplete = (function(){
             addEvent(window, 'resize', that.updateSC);
             document.body.appendChild(that.sc);
 
-            live('autocomplete-suggestion', 'mouseleave', function(e){
-                var sel = that.sc.querySelector('.autocomplete-suggestion.selected');
+            live('edq-global-intuitive-address-suggestion', 'mouseleave', function(e){
+                var sel = that.sc.querySelector('.edq-global-intuitive-address-suggestion.selected');
                 if (sel) setTimeout(function(){ sel.className = sel.className.replace('selected', ''); }, 20);
             }, that.sc);
 
-            live('autocomplete-suggestion', 'mouseover', function(e){
-                var sel = that.sc.querySelector('.autocomplete-suggestion.selected');
+            live('edq-global-intuitive-address-suggestion', 'mouseover', function(e){
+                var sel = that.sc.querySelector('.edq-global-intuitive-address-suggestion.selected');
                 if (sel) sel.className = sel.className.replace('selected', '');
                 this.className += ' selected';
             }, that.sc);
 
-            live('autocomplete-suggestion', 'mousedown', function(e){
-                if (hasClass(this, 'autocomplete-suggestion')) { // else outside click
-                    var v = this.getAttribute('data-val');
+            live('edq-global-intuitive-address-suggestion', 'mousedown', function(e){
+                if (hasClass(this, 'edq-global-intuitive-address-suggestion')) { // else outside click
+                    var v = this.getAttribute('data-format');
                     o.onSelect(e, v, this);
                     that.sc.style.display = 'none';
                 }
             }, that.sc);
 
             that.blurHandler = function(){
-                try { var over_sb = document.querySelector('.autocomplete-suggestions:hover'); } catch(e){ var over_sb = 0; }
+                try { var over_sb = document.querySelector('.edq-global-intuitive-address-suggestions:hover'); } catch(e){ var over_sb = 0; }
                 if (!over_sb) {
                     that.last_val = that.value;
                     that.sc.style.display = 'none';
@@ -130,17 +132,17 @@ var autoComplete = (function(){
                 var key = window.event ? e.keyCode : e.which;
                 // down (40), up (38)
                 if ((key == 40 || key == 38) && that.sc.innerHTML) {
-                    var next, sel = that.sc.querySelector('.autocomplete-suggestion.selected');
+                    var next, sel = that.sc.querySelector('.edq-global-intuitive-address-suggestion.selected');
                     if (!sel) {
-                        next = (key == 40) ? that.sc.querySelector('.autocomplete-suggestion') : that.sc.childNodes[that.sc.childNodes.length - 1]; // first : last
+                        next = (key == 40) ? that.sc.querySelector('.edq-global-intuitive-address-suggestion') : that.sc.childNodes[that.sc.childNodes.length - 1]; // first : last
                         next.className += ' selected';
-                        that.value = next.getAttribute('data-val');
+                        that.value = next.getAttribute('data-suggestion');
                     } else {
                         next = (key == 40) ? sel.nextSibling : sel.previousSibling;
                         if (next) {
                             sel.className = sel.className.replace('selected', '');
                             next.className += ' selected';
-                            that.value = next.getAttribute('data-val');
+                            that.value = next.getAttribute('data-suggestion');
                         }
                         else { sel.className = sel.className.replace('selected', ''); that.value = that.last_val; next = 0; }
                     }
@@ -151,8 +153,8 @@ var autoComplete = (function(){
                 else if (key == 27) { that.value = that.last_val; that.sc.style.display = 'none'; }
                 // enter
                 else if (key == 13 || key == 9) {
-                    var sel = that.sc.querySelector('.autocomplete-suggestion.selected');
-                    if (sel && that.sc.style.display != 'none') { o.onSelect(e, sel.getAttribute('data-val'), sel); setTimeout(function(){ that.sc.style.display = 'none'; }, 20); }
+                    var sel = that.sc.querySelector('.edq-global-intuitive-address-suggestion.selected');
+                    if (sel && that.sc.style.display != 'none') { o.onSelect(e, sel.getAttribute('data-format'), sel); setTimeout(function(){ that.sc.style.display = 'none'; }, 20); }
                 }
             };
             addEvent(that, 'keydown', that.keydownHandler);
@@ -242,9 +244,37 @@ var autoComplete = (function(){
    */
   let EDQ_CONFIG = window.EdqConfig || {};
 
+  let globalIntuitiveSelector = EDQ_CONFIG.GLOBAL_INTUITIVE_SELECTOR;
+  let mapping = EDQ_CONFIG.GLOBAL_INTUITIVE_MAPPING;
+  let debug = EDQ_CONFIG.DEBUG;
+
+  /** Map the specified elements back to the specified fields
+   *
+   * @param {Array} elements
+   * @param {Element} field
+   * @param {Object} data
+   *
+   * @returns {undefined}
+   */
+  let mapElementsToField = function({elements, field, separator = ' ', data}) {
+    try {
+      const fieldValue = elements.map((elementValue) => {
+        return eval(`data.${elementValue}`);
+      });
+
+      /* Regex to find the last instance of the separator, if present */
+      let regex = new RegExp(separator + '$');
+
+      /* Remove the separator if there are no matches */
+      const newValue = fieldValue.join(separator).replace(regex, '');
+      field.value = newValue;
+    } catch(e) {
+    }
+  };
+
   let xhr;
   new autoComplete({
-    selector: '#address-line-one',
+    selector: globalIntuitiveSelector,
     delay: 0,
     onSelect: function(event, term, item) {
       event.preventDefault();
@@ -252,9 +282,33 @@ var autoComplete = (function(){
       EDQ.address.globalIntuitive.format({
         formatUrl: term,
         callback: function(data, error) {
-          document.getElementById('address-line-one').value = `${data.address[0].addressLine1} ${data.address[1].addressLine2}`
+          if (debug) {
+            console.log(`${Date()} ${JSON.stringify(error||data)}`)
+          }
+
+          /* Put the label keys on the top level component */
+          data.address.forEach((a) => {
+            const k = Object.keys(a)[0];
+            let o = {};
+            data.address[k] = a[k];
+          });
+
+          data.components.forEach((a) => {
+            const k = Object.keys(a)[0];
+            let o = {};
+            data.components[k] = a[k];
+          });
+
+          mapping.forEach((mapper) => {
+            mapElementsToField({
+              elements: mapper.elements,
+              field: mapper.field,
+              separator: mapper.separator,
+              data
+            });
+          });
         }
-      })
+      });
     },
 
     renderItem: function(item, search) {
@@ -266,10 +320,11 @@ var autoComplete = (function(){
         suggestion = `${suggestion.substring(0, match[0])}${matchedItem}${suggestion.substring(match[1])}`;
       });
 
-      return `<div style="hover:cursor" data-val='${item.format}' class="autocomplete-suggestion">${suggestion}</div>`;
+      return `<div style="hover:cursor" data-suggestion='${item.suggestion}' data-format='${item.format}' class="edq-global-intuitive-address-suggestion">${suggestion}</div>`;
     },
 
     source: function(term, response) {
+
       try {
         xhr.abort();
       } catch(e) {}
