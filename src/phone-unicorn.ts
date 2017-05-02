@@ -3,8 +3,6 @@
  */
 
 (function() {
-  console.log('Phone Unicorn started');
-
   /* Configuration */
 
   /** Used to be granted authorization to make calls to the ProWebOnDemand webservice
@@ -19,7 +17,6 @@
    *  @type {Object}
    */
   let EDQ_CONFIG = window.EdqConfig || {};
-
 
   const PHONE_ELEMENT_ID = EDQ_CONFIG.PHONE_ELEMENT_ID;
 
@@ -44,7 +41,8 @@
 
   const UNKNOWN_BASE64_ICON = EDQ_CONFIG.UNKNOWN_BASE64_ICON || '';
 
-  let phoneElement = document.getElementById(PHONE_ELEMENT_ID);
+  /* ********************************* */
+
   const changeIcon = function(element, base64DataUri) {
     element.style.backgroundPosition = 'right center';
     element.style.backgroundRepeat = 'no-repeat';
@@ -52,33 +50,101 @@
     element.style.backgroundImage = 'url' + '(' + base64DataUri + ')';
   };
 
-  phoneElement.addEventListener('change', function(event) {
-    var elementValue = event.target.value;
-    if (!elementValue) {
-      changeIcon(phoneElement, '');
-      return;
-    }
+  let EDQ;
+  if (window.EDQ) {
+    EDQ = window.EDQ;
+  } else {
+    throw 'Please make sure that EDQ Pegasus is included in your HTML before EDQ Unicorn.';
+  }
 
-    changeIcon(phoneElement, LOADING_BASE64_ICON);
+  const debug = EDQ_CONFIG.DEBUG;
 
-    let removeSpecial = function(string) {
-      let newString = string.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
-      return newString;
-    };
+  if (debug) {
+    console.log('Phone unicorn started');
+  }
 
-    EDQ.phone.globalPhoneValidate({
-      phoneNumber: removeSpecial(elementValue),
-      callback: function(data, error) {
-        console.log(data);
-        if (data && data.Certainty === 'Verified') {
-          changeIcon(phoneElement, VERIFIED_BASE64_ICON);
-        } else if (data && data.Certainty !== 'Verified') {
-          changeIcon(phoneElement, INVALID_BASE64_ICON);
-        } else if (error) {
-          changeIcon(phoneElement, INVALID_BASE64_ICON);
-        }
+  const activatePhoneValidation = ((element, fn = EDQ.phone.globalPhoneValidate) => {
+    element.addEventListener('change', function(event) {
+      var elementValue = (<HTMLInputElement>event.currentTarget).value;
+      if (!elementValue) {
+        changeIcon(element, '');
+        return;
       }
+
+      changeIcon(element, LOADING_BASE64_ICON);
+
+      let removeSpecial = function(string) {
+        let newString = string.replace(/[`~!@#$%^&*()_|\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
+        return newString;
+      };
+
+      let globalPhoneString = ((string) => {
+        return `1${removeSpecial(string)}`;
+      });
+
+      let reversePhoneString = ((string) => {
+        return `+1${removeSpecial(string)}`;
+      });
+
+      let processPhone = ((string) => {
+        let newString;
+
+        if (string.substring(0, 2) === '+1') {
+          newString = string.slice(2);
+          return (fn == EDQ.phone.globalPhoneValidate) ? globalPhoneString(newString) : reversePhoneString(newString);
+        }
+
+        if (string[0] === '1') {
+          newString = string.slice(1);
+          return (fn == EDQ.phone.globalPhoneValidate) ? globalPhoneString(newString) : reversePhoneString(newString);
+        }
+
+        return (fn == EDQ.phone.globalPhoneValidate) ? globalPhoneString(string) : reversePhoneString(string);
+      });
+
+      fn({
+        phoneNumber: processPhone(elementValue),
+        callback: function(data, error) {
+          if (debug) {
+            console.log(data);
+          }
+
+          if (data && data.Certainty === 'Verified') {
+            changeIcon(element, VERIFIED_BASE64_ICON);
+          } else if (data && data.Certainty !== 'Verified') {
+            changeIcon(element, INVALID_BASE64_ICON);
+          } else if (error) {
+            changeIcon(element, INVALID_BASE64_ICON);
+          }
+        }
+      });
     });
+  });
+
+  activatePhoneValidation(document.getElementById(PHONE_ELEMENT_ID), EDQ.phone.reversePhoneAppend);
+
+  /**
+   *
+   * Activates global phone validation functionality
+   *
+   * @param {Element} element
+   *
+   * @returns {undefined}
+   */
+  EDQ.phone.activateGlobalPhoneValidation = ((element) => {
+    activatePhoneValidation(element, EDQ.phone.globalPhoneValidate);
+  });
+
+  /**
+   *
+   * Activates reverse phone append validation functionality
+   *
+   * @param {Element} element
+   *
+   * @returns {undefined}
+   */
+  EDQ.phone.activateReversePhoneAppendValidation = ((element) => {
+    activatePhoneValidation(element, EDQ.phone.reversePhoneAppend);
   });
 
 }).call(this);

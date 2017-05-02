@@ -3,8 +3,6 @@
  */
 
 (function() {
-  console.log('Email Unicorn started');
-
   /* Configuration */
 
   /** Used to be granted authorization to make calls to the ProWebOnDemand webservice
@@ -13,13 +11,13 @@
    * @type {String}
    */
 
+
   /** Configuration file that can optionally be used, if configuration is external to this library.
    *  This approach is recommended.
    *
    *  @type {Object}
    */
   let EDQ_CONFIG = window.EdqConfig || {};
-
 
   const EMAIL_ELEMENT_ID = EDQ_CONFIG.EMAIL_ELEMENT_ID;
 
@@ -44,17 +42,26 @@
 
   const UNKNOWN_BASE64_ICON = EDQ_CONFIG.UNKNOWN_BASE64_ICON || '';
 
-  const changeIcon = function(element, base64DataUri) {
+  /**
+   * @param {Element} element
+   * @param {String} base64DataUri
+   *
+   * @returns {undefined}
+   */
+  const changeIcon = ((element, base64DataUri) => {
     element.style.backgroundPosition = 'right center';
     element.style.backgroundRepeat = 'no-repeat';
     element.style.backgroundSize = '1rem';
     element.style.backgroundImage = 'url' + '(' + base64DataUri + ')';
-  };
+  });
 
-  /*
+  /**
+   * @param {Array<Object>} data
+   * @param {Element} emailElement
+   *
    * @returns {undefined}
    */
-  const addSuggestion = function(data, emailElement) {
+  const addSuggestion = ((data, emailElement) => {
     if (data.Corrections && data.Corrections.length > 0) {
       let element;
 
@@ -68,65 +75,99 @@
         element.style.cursor = 'pointer';
         element.textContent = `Did you mean: ${data.Corrections[0]}?`;;
 
-        element.addEventListener('click', function(event) {
+        element.addEventListener('click', ((event) => {
           emailElement.value = event.target.textContent.match(/\w+@\w+\.\w+/)[0];
           removeSuggestion();
           changeIcon(emailElement, VERIFIED_BASE64_ICON);
-        });
+        }));
 
         emailElement.parentElement.appendChild(element);
       }
     }
-  }
+  });
 
-  const removeSuggestion = function() {
+  /** 
+   * @returns {undefined}
+   */
+  const removeSuggestion = (() => {
     try {
-      document.getElementById('edq-email-suggestion').remove()
+      document.getElementById('edq-email-suggestion').remove();
     } catch(e) {
     }
-  }
+  });
 
-  const addCorrection = function(correction) {
+  /** 
+   * @param {String} correction
+   *
+   * @returns {Element}
+   */
+  const addCorrection = ((correction) => {
     var element = document.createElement('a');
     element.href = '';
     element.textContent = 'Did you mean ' + correction + '?';
     element.style.fontSize = '0.5rem';
     return element;
+  });
+
+  let EDQ;
+  if (window.EDQ) {
+    EDQ = window.EDQ;
+  } else {
+    throw 'Please make sure that EDQ Pegasus is included in your HTML before EDQ Unicorn.';
   }
 
-  let emailElement = document.getElementById(EMAIL_ELEMENT_ID);
+  /**
+   * @param {Element} element
+   *
+   * @returns {undefined}
+   */
+  const activateEmailValidation = ((element) => {
+    let emailElement = element;
 
-  emailElement.addEventListener('change', function(event) {
-    var elementValue = event.target.value;
-    if (!elementValue) {
-      removeSuggestion();
-      changeIcon(emailElement, '');
-      return;
-    }
-
-    changeIcon(emailElement, LOADING_BASE64_ICON);
-
-    EDQ.email.emailValidate({
-      emailAddress: elementValue,
-      callback: function(data, error) {
-        if (data && data.Certainty === 'verified') {
-          removeSuggestion();
-          changeIcon(emailElement, VERIFIED_BASE64_ICON);
-
-        } else if (data && data.Certainty !== 'verified') {
-          removeSuggestion();
-          changeIcon(emailElement, INVALID_BASE64_ICON);
-
-          if (data.Corrections && data.Corrections.length > 0) {
-            addSuggestion(data, emailElement);
-          }
-
-        } else if (error) {
-          removeSuggestion();
-          changeIcon(emailElement, INVALID_BASE64_ICON);
-        }
+    emailElement.addEventListener('change', ((event) => {
+      var elementValue = event.target.value;
+      if (!elementValue) {
+        removeSuggestion();
+        changeIcon(emailElement, '');
+        return;
       }
-    });
+
+      changeIcon(emailElement, LOADING_BASE64_ICON);
+
+      EDQ.email.emailValidate({
+        emailAddress: elementValue,
+
+        callback(data, error) {
+          if (data && data.Certainty === 'verified') {
+            removeSuggestion();
+            changeIcon(emailElement, VERIFIED_BASE64_ICON);
+
+          } else if (data && data.Certainty !== 'verified') {
+            removeSuggestion();
+            changeIcon(emailElement, INVALID_BASE64_ICON);
+
+            if (data.Corrections && data.Corrections.length > 0) {
+              addSuggestion(data, emailElement);
+            }
+
+          } else if (error) {
+            removeSuggestion();
+            changeIcon(emailElement, INVALID_BASE64_ICON);
+          }
+        }
+      });
+    }));
   });
+
+  activateEmailValidation(document.getElementById(EMAIL_ELEMENT_ID));
+
+  /**
+   * Activates email validation functionality
+   *
+   * @param {Element} element
+   *
+   * @returns {undefined}
+   */
+  EDQ.email.activateEmailValidation = activateEmailValidation;
 
 }).call(this);

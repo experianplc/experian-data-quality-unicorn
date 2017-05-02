@@ -1,5 +1,3 @@
-// @ts-check
-
 /*
     JavaScript autoComplete v1.0.4
     Copyright (c) 2014 Simon Steinberger / Pixabay
@@ -31,8 +29,8 @@ var autoComplete = (function(){
         }
 
         var o = {
-            selector: 0,
-            source: 0,
+            selector: '',
+            source: function(v,s) {},
             minChars: 3,
             delay: 150,
             offsetLeft: 0,
@@ -47,6 +45,7 @@ var autoComplete = (function(){
             },
             onSelect: function(e, term, item){}
         };
+
         for (var k in options) { if (options.hasOwnProperty(k)) o[k] = options[k]; }
 
         // init
@@ -61,7 +60,7 @@ var autoComplete = (function(){
             that.autocompleteAttr = that.getAttribute('autocomplete');
             that.setAttribute('autocomplete', 'off');
             that.cache = {};
-            that.last_val = '';
+            that.lastVal = '';
 
             that.updateSC = function(resize, next){
                 var rect = that.getBoundingClientRect();
@@ -70,7 +69,7 @@ var autoComplete = (function(){
                 that.sc.style.width = Math.round(rect.right - rect.left) + 'px'; // outerWidth
                 if (!resize) {
                     that.sc.style.display = 'block';
-                    if (!that.sc.maxHeight) { that.sc.maxHeight = parseInt((window.getComputedStyle ? getComputedStyle(that.sc, null) : that.sc.currentStyle).maxHeight); }
+                    if (!that.sc.maxHeight) { that.sc.maxHeight = parseInt(String((window.getComputedStyle ? getComputedStyle(that.sc, null) : that.sc.currentStyle).maxHeight)); }
                     if (!that.sc.suggestionHeight) that.sc.suggestionHeight = that.sc.querySelector('.edq-global-intuitive-address-suggestion').offsetHeight;
                     if (that.sc.suggestionHeight)
                         if (!next) that.sc.scrollTop = 0;
@@ -106,9 +105,10 @@ var autoComplete = (function(){
             }, that.sc);
 
             that.blurHandler = function(){
-                try { var over_sb = document.querySelector('.edq-global-intuitive-address-suggestions:hover'); } catch(e){ var over_sb = 0; }
+              var over_sb;
+                try { over_sb = document.querySelector('.edq-global-intuitive-address-suggestions:hover'); } catch(e){ over_sb = 0; }
                 if (!over_sb) {
-                    that.last_val = that.value;
+                    that.lastVal = that.value;
                     that.sc.style.display = 'none';
                     setTimeout(function(){ that.sc.style.display = 'none'; }, 350); // hide suggestions on fast input
                 } else if (that !== document.activeElement) setTimeout(function(){ that.focus(); }, 20);
@@ -144,13 +144,13 @@ var autoComplete = (function(){
                             next.className += ' selected';
                             that.value = next.getAttribute('data-suggestion');
                         }
-                        else { sel.className = sel.className.replace('selected', ''); that.value = that.last_val; next = 0; }
+                        else { sel.className = sel.className.replace('selected', ''); that.value = that.lastVal; next = 0; }
                     }
                     that.updateSC(0, next);
                     return false;
                 }
                 // esc
-                else if (key == 27) { that.value = that.last_val; that.sc.style.display = 'none'; }
+                else if (key == 27) { that.value = that.lastVal; that.sc.style.display = 'none'; }
                 // enter
                 else if (key == 13 || key == 9) {
                     var sel = that.sc.querySelector('.edq-global-intuitive-address-suggestion.selected');
@@ -164,8 +164,8 @@ var autoComplete = (function(){
                 if (!key || (key < 35 || key > 40) && key != 13 && key != 27) {
                     var val = that.value;
                     if (val.length >= o.minChars) {
-                        if (val != that.last_val) {
-                            that.last_val = val;
+                        if (val != that.lastVal) {
+                            that.lastVal = val;
                             clearTimeout(that.timer);
                             if (o.cache) {
                                 if (val in that.cache) { suggest(that.cache[val]); return; }
@@ -178,7 +178,7 @@ var autoComplete = (function(){
                             that.timer = setTimeout(function(){ o.source(val, suggest) }, o.delay);
                         }
                     } else {
-                        that.last_val = val;
+                        that.lastVal = val;
                         that.sc.style.display = 'none';
                     }
                 }
@@ -186,7 +186,7 @@ var autoComplete = (function(){
             addEvent(that, 'keyup', that.keyupHandler);
 
             that.focusHandler = function(e){
-                that.last_val = '\n';
+                that.lastVal = '\n';
                 that.keyupHandler(e)
             };
             if (!o.minChars) addEvent(that, 'focus', that.focusHandler);
@@ -214,12 +214,7 @@ var autoComplete = (function(){
 })();
 
 (function(){
-    if (typeof define === 'function' && define.amd)
-        define('autoComplete', function () { return autoComplete; });
-    else if (typeof module !== 'undefined' && module.exports)
-        module.exports = autoComplete;
-    else
-        window.autoComplete = autoComplete;
+  window.autoComplete = autoComplete;
 })();
 
 /**
@@ -227,8 +222,6 @@ var autoComplete = (function(){
  */
 
 (function() {
-  console.log('Global Intuitive Unicorn started');
-
   /* Configuration */
 
   /** Used to be granted authorization to make calls to the ProWebOnDemand webservice
@@ -247,6 +240,10 @@ var autoComplete = (function(){
   let globalIntuitiveSelector = EDQ_CONFIG.GLOBAL_INTUITIVE_SELECTOR;
   let mapping = EDQ_CONFIG.GLOBAL_INTUITIVE_MAPPING;
   let debug = EDQ_CONFIG.DEBUG;
+
+  if (debug){
+    console.log('Global Intuitive Unicorn started');
+  }
 
   /** Map the specified elements back to the specified fields
    *
@@ -273,74 +270,95 @@ var autoComplete = (function(){
   };
 
   let xhr;
-  new autoComplete({
-    selector: globalIntuitiveSelector,
-    delay: 0,
-    onSelect: function(event, term, item) {
-      event.preventDefault();
+  let EDQ;
+  if (window.EDQ) {
+    EDQ = window.EDQ;
+  } else {
+    throw 'Please make sure that EDQ Pegasus is included in your HTML before EDQ Unicorn.';
+  }
 
-      EDQ.address.globalIntuitive.format({
-        formatUrl: term,
-        callback: function(data, error) {
-          if (debug) {
-            console.log(`${Date()} ${JSON.stringify(error||data)}`)
-          }
+  const onSelect = ((event, term, item ) => {
+    event.preventDefault();
 
-          /* Put the label keys on the top level component */
-          data.address.forEach((a) => {
-            const k = Object.keys(a)[0];
-            let o = {};
-            data.address[k] = a[k];
-          });
-
-          data.components.forEach((a) => {
-            const k = Object.keys(a)[0];
-            let o = {};
-            data.components[k] = a[k];
-          });
-
-          mapping.forEach((mapper) => {
-            mapElementsToField({
-              elements: mapper.elements,
-              field: mapper.field,
-              separator: mapper.separator,
-              data
-            });
-          });
+    EDQ.address.globalIntuitive.format({
+      formatUrl: term,
+      callback: function(data, error) {
+        if (debug) {
+          console.log(`${Date()} ${JSON.stringify(error||data)}`)
         }
-      });
-    },
 
-    renderItem: function(item, search) {
-      let matched = item.matched;
-      let suggestion = item.suggestion;
+        /* Put the label keys on the top level component */
+        data.address.forEach((a) => {
+          const k = Object.keys(a)[0];
+          let o = {};
+          data.address[k] = a[k];
+        });
 
-      matched.forEach((match) => {
-        let matchedItem = `<strong>${suggestion.substring(match[0], match[1])}</strong>`;
-        suggestion = `${suggestion.substring(0, match[0])}${matchedItem}${suggestion.substring(match[1])}`;
-      });
+        data.components.forEach((a) => {
+          const k = Object.keys(a)[0];
+          let o = {};
+          data.components[k] = a[k];
+        });
 
-      return `<div style="hover:cursor" data-suggestion='${item.suggestion}' data-format='${item.format}' class="edq-global-intuitive-address-suggestion">${suggestion}</div>`;
-    },
-
-    source: function(term, response) {
-
-      try {
-        xhr.abort();
-      } catch(e) {}
-
-      xhr = EDQ.address.globalIntuitive.search({
-        query: term,
-        country: 'usa',
-        take: 7,
-        callback: function(data, error) {
-          try {
-            response(data.results);
-          } catch(e) {
-          }
-        }
-      });
-    }
+        mapping.forEach((mapper) => {
+          mapElementsToField({
+            elements: mapper.elements,
+            field: mapper.field,
+            separator: mapper.separator,
+            data
+          });
+        });
+      }
+    });
   });
+
+  const renderItem = ((item, search) => {
+    let matched = item.matched;
+    let suggestion = item.suggestion;
+
+    matched.forEach((match) => {
+      let matchedItem = `<strong>${suggestion.substring(match[0], match[1])}</strong>`;
+      suggestion = `${suggestion.substring(0, match[0])}${matchedItem}${suggestion.substring(match[1])}`;
+    });
+
+    return `<div style="hover:cursor" data-suggestion='${item.suggestion}' data-format='${item.format}' class="edq-global-intuitive-address-suggestion">${suggestion}</div>`;
+  });
+
+  const source = ((term, response) => {
+    try {
+      xhr.abort();
+    } catch(e) {}
+
+    xhr = EDQ.address.globalIntuitive.search({
+      query: term,
+      country: 'usa',
+      take: 7,
+      callback: function(data, error) {
+        try {
+          response(data.results);
+        } catch(e) {
+        }
+      }
+    });
+  });
+
+  /**
+   * Activates global intuitive search
+   *
+   * @param {Element} element
+   *
+   * @returns {undefined}
+   */
+  EDQ.address.globalIntuitive.activateValidation = ((element) => {
+    new autoComplete({
+      selector: element,
+      delay: 0,
+      onSelect,
+      renderItem,
+      source
+    })
+  });
+
+  EDQ.address.globalIntuitive.activateValidation(globalIntuitiveSelector);
 
 }).call(this);
