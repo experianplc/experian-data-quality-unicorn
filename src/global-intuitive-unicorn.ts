@@ -237,11 +237,11 @@ var autoComplete = (function(){
    */
   let EDQ_CONFIG = window.EdqConfig || {};
 
-  let globalIntuitiveSelector = EDQ_CONFIG.GLOBAL_INTUITIVE_SELECTOR;
+  let globalIntuitiveElement = EDQ_CONFIG.GLOBAL_INTUITIVE_ELEMENT;
   let mapping = EDQ_CONFIG.GLOBAL_INTUITIVE_MAPPING;
   let debug = EDQ_CONFIG.DEBUG;
 
-  if (debug){
+  if (debug) {
     console.log('Global Intuitive Unicorn started');
   }
 
@@ -359,6 +359,6 @@ var autoComplete = (function(){
     })
   });
 
-  EDQ.address.globalIntuitive.activateValidation(globalIntuitiveSelector);
+  EDQ.address.globalIntuitive.activateValidation(globalIntuitiveElement);
 
 }).call(this);

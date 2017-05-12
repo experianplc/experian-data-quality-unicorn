@@ -35,15 +35,15 @@ interface PegasusObject {
 interface UnicornObject {
   DEBUG?: boolean,
 
-  PHONE_ELEMENT_ID?: string,
-  EMAIL_ELEMENT_ID?: string,
+  PHONE_ELEMENTS?: Array<string>,
+  EMAIL_ELEMENTS?: Array<string>,
 
   LOADING_BASE64_ICON?: string,
   VERIFIED_BASE64_ICON?: string,
   INVALID_BASE64_ICON?: string,
   UNKNOWN_BASE64_ICON?: string,
 
-  GLOBAL_INTUITIVE_SELECTOR?: string,
+  GLOBAL_INTUITIVE_ELEMENT?: string,
   GLOBAL_INTUITIVE_MAPPING?: Array<Object>
 }
 

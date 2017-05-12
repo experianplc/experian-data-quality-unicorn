@@ -4,7 +4,7 @@
     "module": "commonjs",
     "checkJs": true,
     "allowJs": true,
-    "outDir": "./lib",
-    "rootDir": "./src"
-  }
+    "outDir": "./lib"
+  },
+  "include": ["src/**/*"]
 }
