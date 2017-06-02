@@ -44,7 +44,10 @@ interface UnicornObject {
   UNKNOWN_BASE64_ICON?: string,
 
   GLOBAL_INTUITIVE_ELEMENT?: string,
-  GLOBAL_INTUITIVE_MAPPING?: Array<Object>
+  GLOBAL_INTUITIVE_MAPPING?: Array<Object>,
+
+  EMAIL_TIMEOUT: number,
+  PHONE_TIMEOUT: number
 }
 
 interface Element {

@@ -17,7 +17,7 @@
    *
    *  @type {Object}
    */
-  let EDQ_CONFIG = window.EdqConfig || {};
+  let EDQ_CONFIG = <UnicornObject> window.EdqConfig || <UnicornObject> {};
 
   const EMAIL_ELEMENTS = EDQ_CONFIG.EMAIL_ELEMENTS;
 
@@ -126,7 +126,12 @@
       let element = elements[i];
       let emailElement = element;
 
-      emailElement.addEventListener('change', ((event) => {
+      let oldOnChangeFn = element.onchange;
+      if (oldOnChangeFn) {
+        oldOnChangeFn = oldOnChangeFn.bind(this);
+      }
+
+      emailElement.onchange = ((event) => {
         var elementValue = event.target.value;
         if (!elementValue) {
           removeSuggestion();
@@ -136,10 +141,17 @@
 
         changeIcon(emailElement, LOADING_BASE64_ICON);
 
-        EDQ.email.emailValidate({
+        let xhr = EDQ.email.emailValidate({
           emailAddress: elementValue,
 
           callback(data, error) {
+            if (EDQ_CONFIG.DEBUG) {
+              console.log('Data:');
+              console.log(data);
+              console.log('Error:');
+              console.log(error);
+            }
+
             if (data && data.Certainty === 'verified') {
               removeSuggestion();
               changeIcon(emailElement, VERIFIED_BASE64_ICON);
@@ -154,11 +166,19 @@
 
             } else if (error) {
               removeSuggestion();
-              changeIcon(emailElement, INVALID_BASE64_ICON);
+              changeIcon(emailElement, '');
             }
+
+            try {
+              oldOnChangeFn(event);
+            } catch(e) {
+            }
+
           }
         });
-      }));
+
+        xhr.timeout = EDQ_CONFIG.EMAIL_TIMEOUT || 2000;
+      });
 
     };
   });

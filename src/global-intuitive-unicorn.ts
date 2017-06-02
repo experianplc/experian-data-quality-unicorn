@@ -235,7 +235,7 @@ var autoComplete = (function(){
    *
    *  @type {Object}
    */
-  let EDQ_CONFIG = window.EdqConfig || {};
+  let EDQ_CONFIG = <UnicornObject> window.EdqConfig || <UnicornObject> {};
 
   let globalIntuitiveElement = EDQ_CONFIG.GLOBAL_INTUITIVE_ELEMENT;
   let mapping = EDQ_CONFIG.GLOBAL_INTUITIVE_MAPPING;

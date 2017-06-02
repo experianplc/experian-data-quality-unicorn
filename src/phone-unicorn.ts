@@ -16,7 +16,7 @@
    *
    *  @type {Object}
    */
-  let EDQ_CONFIG = window.EdqConfig || {};
+  let EDQ_CONFIG = <UnicornObject> window.EdqConfig || <UnicornObject> {};
 
   const PHONE_ELEMENTS = EDQ_CONFIG.PHONE_ELEMENTS;
 
@@ -59,7 +59,7 @@
 
   const debug = EDQ_CONFIG.DEBUG;
 
-  if (debug) {
+  if (EDQ_CONFIG.DEBUG) {
     console.log('Phone unicorn started');
   }
 
@@ -67,7 +67,9 @@
     for (let i = 0; i < elements.length; i++) {
       let element = elements[i];
       let oldOnChangeFn = element.onchange;
-      oldOnChangeFn = oldOnChangeFn.bind(this);
+      if (oldOnChangeFn) {
+        oldOnChangeFn = oldOnChangeFn.bind(this);
+      }
 
       element.onchange = ((event) => {
         var elementValue = (<HTMLInputElement>event.currentTarget).value;
@@ -107,11 +109,14 @@
           return (fn == EDQ.phone.globalPhoneValidate) ? globalPhoneString(string) : reversePhoneString(string);
         });
 
-        fn({
+        let xhr = fn({
           phoneNumber: processPhone(elementValue),
           callback: function(data, error) {
-            if (debug) {
+            if (EDQ_CONFIG.DEBUG) {
+              console.log('Data:');
               console.log(data);
+              console.log('Error:');
+              console.log(error);
             }
 
             if (data && data.Certainty === 'Verified') {
@@ -119,18 +124,17 @@
             } else if (data && data.Certainty !== 'Verified') {
               changeIcon(element, INVALID_BASE64_ICON);
             } else if (error) {
-              changeIcon(element, INVALID_BASE64_ICON);
+              changeIcon(element, '');
             }
 
             try {
-              // TODO: Certain events may not behave properly. This may or may not be worth the effort
-              // to ensure, depending on the business value.
               oldOnChangeFn(event);
             } catch(e) {
-              /* Do nothing */
             }
           }
         });
+
+        xhr.timeout = EDQ_CONFIG.PHONE_TIMEOUT || 500;
       });
     };
   });
