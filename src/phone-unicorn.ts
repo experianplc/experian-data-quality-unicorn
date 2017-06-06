@@ -68,20 +68,22 @@
 
   const activatePhoneValidation = ((elements, fn = EDQ.phone.globalPhoneValidate) => {
     for (let i = 0; i < elements.length; i++) {
-      let element = elements[i];
-      let oldOnChangeFn = element.onchange;
+      let phoneElement = elements[i];
+      let oldOnChangeFn = phoneElement.onchange;
       if (oldOnChangeFn) {
         oldOnChangeFn = oldOnChangeFn.bind(this);
       }
 
-      element.onchange = ((event) => {
-        var elementValue = (<HTMLInputElement>event.currentTarget).value;
+      phoneElement.onchange = ((event) => {
+        phoneElement.removeAttribute('edq-metadata');
+
+        let elementValue = (<HTMLInputElement>event.currentTarget).value;
         if (!elementValue) {
-          changeIcon(element, '');
+          changeIcon(phoneElement, '');
           return;
         }
 
-        changeIcon(element, LOADING_BASE64_ICON);
+        changeIcon(phoneElement, LOADING_BASE64_ICON);
 
         let removeSpecial = function(string) {
           let newString = string.replace(/[`~!@#$%^&*()_|\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
@@ -115,6 +117,8 @@
         let xhr = fn({
           phoneNumber: processPhone(elementValue),
           callback: function(data, error) {
+            phoneElement.setAttribute('edq-metadata', JSON.stringify(data));
+
             if (EDQ_CONFIG.DEBUG) {
               console.log('Data:');
               console.log(data);
@@ -123,11 +127,11 @@
             }
 
             if (data && data.Certainty === 'Verified') {
-              changeIcon(element, VERIFIED_BASE64_ICON);
+              changeIcon(phoneElement, VERIFIED_BASE64_ICON);
             } else if (data && data.Certainty !== 'Verified') {
-              changeIcon(element, INVALID_BASE64_ICON);
+              changeIcon(phoneElement, INVALID_BASE64_ICON);
             } else if (error) {
-              changeIcon(element, '');
+              changeIcon(phoneElement, '');
             }
 
             try {
@@ -137,12 +141,12 @@
           }
         });
 
-        xhr.timeout = EDQ_CONFIG.PHONE_TIMEOUT || 500;
+        xhr.timeout = EDQ_CONFIG.PHONE_TIMEOUT || 2500;
       });
     };
   });
 
-  activatePhoneValidation(PHONE_ELEMENTS, EDQ.phone.reversePhoneAppend);
+  activatePhoneValidation(PHONE_ELEMENTS, EDQ.phone.globalPhoneValidate);
 
   /**
    *

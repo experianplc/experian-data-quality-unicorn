@@ -135,6 +135,8 @@
       }
 
       emailElement.onchange = ((event) => {
+        emailElement.removeAttribute('edq-metadata');
+
         var elementValue = event.target.value;
         if (!elementValue) {
           removeSuggestion();
@@ -155,6 +157,8 @@
               console.log(error);
             }
 
+            emailElement.setAttribute('edq-metadata', JSON.stringify(data));
+
             if (data && data.Certainty === 'verified') {
               removeSuggestion();
               changeIcon(emailElement, VERIFIED_BASE64_ICON);
@@ -169,6 +173,7 @@
 
             } else if (error) {
               removeSuggestion();
+              // Remove the stored attributes
               changeIcon(emailElement, '');
             }
 
@@ -180,7 +185,7 @@
           }
         });
 
-        xhr.timeout = EDQ_CONFIG.EMAIL_TIMEOUT || 2000;
+        xhr.timeout = EDQ_CONFIG.EMAIL_TIMEOUT || 2500;
       });
 
     };
