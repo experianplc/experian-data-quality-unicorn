@@ -331,8 +331,8 @@ var autoComplete = (function(){
 
     xhr = EDQ.address.globalIntuitive.search({
       query: term,
-      country: 'usa',
-      take: 7,
+      country: EDQ_CONFIG.GLOBAL_INTUITIVE_ISO3_COUNTRY || 'USA',
+      take: EDQ_CONFIG.GLOBAL_INTUITIVE_TAKE || 7,
       callback: function(data, error) {
         try {
           response(data.results);

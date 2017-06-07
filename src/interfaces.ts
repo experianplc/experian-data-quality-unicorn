@@ -45,6 +45,8 @@ interface UnicornObject {
 
   GLOBAL_INTUITIVE_ELEMENT?: string,
   GLOBAL_INTUITIVE_MAPPING?: Array<Object>,
+  GLOBAL_INTUITIVE_TAKE?: number,
+  GLOBAL_INTUITIVE_ISO3_COUNTRY: 'USA',
 
   EMAIL_TIMEOUT: number,
   PHONE_TIMEOUT: number
