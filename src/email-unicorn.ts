@@ -75,7 +75,7 @@
         element.textContent = `Did you mean: ${data.Corrections[0]}?`;;
 
         element.addEventListener('click', ((event) => {
-          emailElement.value = event.target.textContent.match(/\w+@\w+\.\w+/)[0];
+          emailElement.value = event.target.textContent.match(/: (.*)/)[1];
           removeSuggestion();
           changeIcon(emailElement, VERIFIED_BASE64_ICON);
         }));
