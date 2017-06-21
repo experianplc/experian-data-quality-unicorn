@@ -461,10 +461,17 @@ exports.publish = function(taffyData, opts, tutorials) {
                   executable = false;
                 }
 
+                var id;
+                if (code.match(/@id=/)) {
+                  id = code.match(/@id=(.*)/)[1];
+                  code = code.replace(/@id=(.*)/, '');
+                }
+
                 return {
                     caption: caption || '',
                     code: code,
-                    executable: executable
+                    executable: executable,
+                    id: id
                 };
             });
         }

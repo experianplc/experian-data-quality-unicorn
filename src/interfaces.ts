@@ -49,7 +49,9 @@ interface UnicornObject {
   GLOBAL_INTUITIVE_ISO3_COUNTRY: 'USA',
 
   EMAIL_TIMEOUT: number,
-  PHONE_TIMEOUT: number
+  PHONE_TIMEOUT: number,
+
+  USE_REVERSE_PHONE_APPEND: boolean
 }
 
 interface Element {

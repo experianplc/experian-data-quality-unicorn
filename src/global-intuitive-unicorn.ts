@@ -342,8 +342,18 @@ var autoComplete = (function(){
     });
   });
 
+
+  /**
+   * @module EDQ.address
+   */
+
   /**
    * Activates global intuitive search
+   *
+   * @example @id=activate-global-intuitive-validation
+   *
+   * @name activateValidation
+   * @function
    *
    * @param {Element} element
    *

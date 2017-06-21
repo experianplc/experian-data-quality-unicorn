@@ -1,7 +1,3 @@
-/**
- * @module EDQ
- */
-
 (function() {
   /* Configuration */
 
@@ -194,7 +190,16 @@
   activateEmailValidation(EMAIL_ELEMENTS);
 
   /**
+   * @module EDQ.email
+   */
+
+  /**
    * Activates email validation functionality
+   * 
+   * @example @id=activate-email-validation
+   *
+   * @name activateEmailValidation
+   * @function
    *
    * @param {Element} element
    *

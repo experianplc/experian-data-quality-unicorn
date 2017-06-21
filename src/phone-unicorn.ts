@@ -1,7 +1,3 @@
-/**
- * @module EDQ
- */
-
 (function() {
   /* Configuration */
 
@@ -44,6 +40,8 @@
       throw 'UNKNOWN_BASE64_ICON not specified, or blank. Please check EdqConfig';
   }
 
+  const USE_REVERSE_PHONE_APPEND = EDQ_CONFIG.USE_REVERSE_PHONE_APPEND;
+
   /* ********************************* */
 
   const changeIcon = function(element, base64DataUri) {
@@ -66,7 +64,12 @@
     console.log('Phone unicorn started');
   }
 
-  const activatePhoneValidation = ((elements, fn = EDQ.phone.globalPhoneValidate) => {
+  let phoneFn = EDQ.phone.globalPhoneValidate;
+  if (USE_REVERSE_PHONE_APPEND) {
+    phoneFn = EDQ.phone.reversePhoneAppend;
+  }
+
+  const activatePhoneValidation = ((elements, fn = phoneFn) => {
     for (let i = 0; i < elements.length; i++) {
       let phoneElement = elements[i];
       let oldOnChangeFn = phoneElement.onchange;
@@ -149,8 +152,17 @@
   activatePhoneValidation(PHONE_ELEMENTS, EDQ.phone.globalPhoneValidate);
 
   /**
+   * @module EDQ.phone
+   */
+
+  /**
    *
    * Activates global phone validation functionality
+   *
+   * @example @id=activate-global-phone-validation
+   *
+   * @name activateGlobalPhoneValidation
+   * @function
    *
    * @param {Element} element
    *
@@ -163,6 +175,11 @@
   /**
    *
    * Activates reverse phone append validation functionality
+   *
+   * @example @id=activate-reverse-phone-append-validation
+   *
+   * @name activateReversePhoneAppendValidation
+   * @function
    *
    * @param {Element} element
    *

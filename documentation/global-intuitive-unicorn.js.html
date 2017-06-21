@@ -1,4 +1,48 @@
-/*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>global-intuitive-unicorn.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <script src="jsblock/lib/jsblock.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jotted/latest/jotted.min.css">
+    <script src="https://cdn.jsdelivr.net/jotted/latest/jotted.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <link type="text/css" rel="stylesheet" href="jsblock/lib/jsblock.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="EDQ.module_address.html">address</a><ul class='methods'><li data-type='method'><a href="EDQ.module_address.html#~activateValidation">activateValidation</a></li></ul></li><li><a href="EDQ.module_email.html">email</a><ul class='methods'><li data-type='method'><a href="EDQ.module_email.html#~activateEmailValidation">activateEmailValidation</a></li></ul></li><li><a href="EDQ.module_phone.html">phone</a><ul class='methods'><li data-type='method'><a href="EDQ.module_phone.html#~activateGlobalPhoneValidation">activateGlobalPhoneValidation</a></li><li data-type='method'><a href="EDQ.module_phone.html#~activateReversePhoneAppendValidation">activateReversePhoneAppendValidation</a></li></ul></li><li><a href="module-EDQ.html">EDQ</a></li></ul><h3>Global</h3><ul><li><a href="global.html#PRO_WEB_AUTH_TOKEN">PRO_WEB_AUTH_TOKEN</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">global-intuitive-unicorn.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
     JavaScript autoComplete v1.0.4
     Copyright (c) 2014 Simon Steinberger / Pixabay
     GitHub: https://github.com/Pixabay/JavaScript-autoComplete
@@ -27,7 +71,7 @@ var autoComplete = (function () {
         function live(elClass, event, cb, context) {
             addEvent(context || document, event, function (e) {
                 var found, el = e.target || e.srcElement;
-                while (el && !(found = hasClass(el, elClass)))
+                while (el &amp;&amp; !(found = hasClass(el, elClass)))
                     el = el.parentElement;
                 if (found)
                     cb.call(el, e);
@@ -44,9 +88,9 @@ var autoComplete = (function () {
             menuClass: '',
             renderItem: function (item, search) {
                 // escape special characters
-                search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&amp;');
                 var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
-                return '<div class="edq-global-intuitive-address-suggestion" data-format="' + item + '">' + item.replace(re, "<b>$1</b>") + '</div>';
+                return '&lt;div class="edq-global-intuitive-address-suggestion" data-format="' + item + '">' + item.replace(re, "&lt;b>$1&lt;/b>") + '&lt;/div>';
             },
             onSelect: function (e, term, item) { }
         };
@@ -56,7 +100,7 @@ var autoComplete = (function () {
         }
         // init
         var elems = typeof o.selector == 'object' ? [o.selector] : document.querySelectorAll(o.selector);
-        for (var i = 0; i < elems.length; i++) {
+        for (var i = 0; i &lt; elems.length; i++) {
             var that = elems[i];
             // create suggestions container "sc"
             that.sc = document.createElement('div');
@@ -84,7 +128,7 @@ var autoComplete = (function () {
                             var scrTop = that.sc.scrollTop, selTop = next.getBoundingClientRect().top - that.sc.getBoundingClientRect().top;
                             if (selTop + that.sc.suggestionHeight - that.sc.maxHeight > 0)
                                 that.sc.scrollTop = selTop + that.sc.suggestionHeight + scrTop - that.sc.maxHeight;
-                            else if (selTop < 0)
+                            else if (selTop &lt; 0)
                                 that.sc.scrollTop = selTop + scrTop;
                         }
                 }
@@ -129,9 +173,9 @@ var autoComplete = (function () {
             var suggest = function (data) {
                 var val = that.value;
                 that.cache[val] = data;
-                if (data.length && val.length >= o.minChars) {
+                if (data.length &amp;&amp; val.length >= o.minChars) {
                     var s = '';
-                    for (var i = 0; i < data.length; i++)
+                    for (var i = 0; i &lt; data.length; i++)
                         s += o.renderItem(data[i], val);
                     that.sc.innerHTML = s;
                     that.updateSC(0);
@@ -142,7 +186,7 @@ var autoComplete = (function () {
             that.keydownHandler = function (e) {
                 var key = window.event ? e.keyCode : e.which;
                 // down (40), up (38)
-                if ((key == 40 || key == 38) && that.sc.innerHTML) {
+                if ((key == 40 || key == 38) &amp;&amp; that.sc.innerHTML) {
                     var next, sel = that.sc.querySelector('.edq-global-intuitive-address-suggestion.selected');
                     if (!sel) {
                         next = (key == 40) ? that.sc.querySelector('.edq-global-intuitive-address-suggestion') : that.sc.childNodes[that.sc.childNodes.length - 1]; // first : last
@@ -171,7 +215,7 @@ var autoComplete = (function () {
                 }
                 else if (key == 13 || key == 9) {
                     var sel = that.sc.querySelector('.edq-global-intuitive-address-suggestion.selected');
-                    if (sel && that.sc.style.display != 'none') {
+                    if (sel &amp;&amp; that.sc.style.display != 'none') {
                         o.onSelect(e, sel.getAttribute('data-format'), sel);
                         setTimeout(function () { that.sc.style.display = 'none'; }, 20);
                     }
@@ -180,7 +224,7 @@ var autoComplete = (function () {
             addEvent(that, 'keydown', that.keydownHandler);
             that.keyupHandler = function (e) {
                 var key = window.event ? e.keyCode : e.which;
-                if (!key || (key < 35 || key > 40) && key != 13 && key != 27) {
+                if (!key || (key &lt; 35 || key > 40) &amp;&amp; key != 13 &amp;&amp; key != 27) {
                     var val = that.value;
                     if (val.length >= o.minChars) {
                         if (val != that.lastVal) {
@@ -192,9 +236,9 @@ var autoComplete = (function () {
                                     return;
                                 }
                                 // no requests if previous suggestions were empty
-                                for (var i = 1; i < val.length - o.minChars; i++) {
+                                for (var i = 1; i &lt; val.length - o.minChars; i++) {
                                     var part = val.slice(0, val.length - i);
-                                    if (part in that.cache && !that.cache[part].length) {
+                                    if (part in that.cache &amp;&amp; !that.cache[part].length) {
                                         suggest([]);
                                         return;
                                     }
@@ -219,7 +263,7 @@ var autoComplete = (function () {
         }
         // public destroy method
         this.destroy = function () {
-            for (var i = 0; i < elems.length; i++) {
+            for (var i = 0; i &lt; elems.length; i++) {
                 var that = elems[i];
                 removeEvent(window, 'resize', that.updateSC);
                 removeEvent(that, 'blur', that.blurHandler);
@@ -327,10 +371,10 @@ var autoComplete = (function () {
         var matched = item.matched;
         var suggestion = item.suggestion;
         matched.forEach(function (match) {
-            var matchedItem = "<strong>" + suggestion.substring(match[0], match[1]) + "</strong>";
+            var matchedItem = "&lt;strong>" + suggestion.substring(match[0], match[1]) + "&lt;/strong>";
             suggestion = "" + suggestion.substring(0, match[0]) + matchedItem + suggestion.substring(match[1]);
         });
-        return "<div style=\"hover:cursor\" data-suggestion='" + item.suggestion + "' data-format='" + item.format + "' class=\"edq-global-intuitive-address-suggestion\">" + suggestion + "</div>";
+        return "&lt;div style=\"hover:cursor\" data-suggestion='" + item.suggestion + "' data-format='" + item.format + "' class=\"edq-global-intuitive-address-suggestion\">" + suggestion + "&lt;/div>";
     });
     var source = (function (term, response) {
         try {
@@ -376,3 +420,27 @@ var autoComplete = (function () {
     });
     EDQ.address.globalIntuitive.activateValidation(globalIntuitiveElement);
 }).call(this);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Wed Jun 21 2017 07:18:53 GMT-0700 (PDT) using
+    the <a href="https://github.com/tabeth/jsdocplay">jsdocplay</a> theme.
+</footer>
+
+<script src="scripts/examples/activate-global-intuitive-validation.js"></script>
+<script src="scripts/examples/activate-global-phone-validation.js"></script>
+<script src="scripts/examples/activate-email-validation.js"></script>
+<script src="scripts/examples/activate-reverse-phone-append-validation.js"></script>
+<script src="scripts/linenumber.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>
