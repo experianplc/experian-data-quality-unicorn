@@ -149,7 +149,7 @@
     };
   });
 
-  activatePhoneValidation(PHONE_ELEMENTS, EDQ.phone.globalPhoneValidate);
+  activatePhoneValidation(PHONE_ELEMENTS);
 
   /**
    * @module EDQ.phone
