@@ -20,7 +20,7 @@ try {
         "type": "js",
         "content": `
 
-        <!-- An EdqConfig file is imperative for use with EDQ Pegasus and Unicorn -->
+        // An EdqConfig file is imperative for use with EDQ Pegasus and Unicorn
         window.EdqConfig = {
           EMAIL_VALIDATE_AUTH_TOKEN: '1793360f-3d97-451a-81b8-d7e765c48894',
           EMAIL_ELEMENTS: [document.getElementById('email')]

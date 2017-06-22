@@ -23,7 +23,7 @@ try {
         "type": "js",
         "content": `
 
-        <!-- An EdqConfig file is imperative for use with EDQ Pegasus and Unicorn -->
+        // An EdqConfig file is imperative for use with EDQ Pegasus and Unicorn
         window.EdqConfig = {
           DEBUG: true,
 
