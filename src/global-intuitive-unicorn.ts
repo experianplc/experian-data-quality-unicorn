@@ -241,6 +241,11 @@ var autoComplete = (function(){
   let mapping = EDQ_CONFIG.GLOBAL_INTUITIVE_MAPPING;
   let debug = EDQ_CONFIG.DEBUG;
 
+  if (EDQ_CONFIG.GLOBAL_INTUITIVE_PLACEHOLDER) {
+    document.getElementById(globalIntuitiveElement).setAttribute('placeholder',
+      EDQ_CONFIG.GLOBAL_INTUITIVE_PLACEHOLDER);
+  }
+
   if (debug) {
     console.log('Global Intuitive Unicorn started');
   }
