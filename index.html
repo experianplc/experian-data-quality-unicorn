@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <!-- <link rel="stylesheet" href="https://unpkg.com/tachyons@4.7.0/css/tachyons.min.css"/> -->
+  <link rel="stylesheet" href="lib/pro-web.css"/>
+</head>
+
+<body>
+  <div id="form">
+    <input id="address-line-one" value="1889 broadway" placeholder="address line one">
+    <input id="address-line-two" value=" " placeholder="address line two">
+    <input id="city" value="San Francisco" placeholder="city">
+    <input id="state" value="OR">
+    <input id="zip" value="94109" placeholder="zip">
+
+    <button onclick="alert('OVERRIDE ME')" id="form-submit">
+      Submit
+    </button>
+  </div>
+
+  <script>
+    window.EdqConfig = {
+      PRO_WEB_TIMEOUT: 2500,
+      PRO_WEB_SERVICE_URL: 'http://bosedqproxy.qas.com/pro-web',
+      SOAP_ACTION_URL: 'http://www.qas.com/web-2013-12',
+      PRO_WEB_AUTH_TOKEN: '46832a16-80c0-43d8-af8e-05b3dde5aaaf',
+      PRO_WEB_SUBMIT_ELEMENT: document.getElementById('form-submit'),
+      PRO_WEB_LAYOUT: 'Ellucian',
+      PRO_WEB_COUNTRY: 'USA',
+      PRO_WEB_MAPPING: [
+        {
+          field: document.getElementById('address-line-one'),
+          elements: ['Formatted Address 2'],
+          separator: '',
+          modalFieldSelector: '#interaction-address--original-address-line-one',
+        },
+
+        {
+          field: document.getElementById('address-line-two'),
+          elements: ['AddressLine2'],
+          separator: '',
+          modalFieldSelector: '#interaction-address--original-address-line-two',
+        },
+
+        {
+          field: document.getElementById('city'),
+          elements: ['City name'],
+          separator: '',
+          modalFieldSelector: '#interaction-address--original-locality',
+        },
+
+        {
+          field: document.getElementById('state'),
+          elements: ['State code'],
+          separator: '',
+          modalFieldSelector: '#interaction-address--original-province',
+        },
+
+        {
+          field: document.getElementById('zip'),
+          elements: ['ZIP Code', '+4 code'],
+          separator: ' ',
+          modalFieldSelector: '#interaction-address--original-postal-code',
+        },
+      ]
+    };
+  </script>
+
+  <script src="http://bossalesdemostaging.qas.com/assets/edq.js"></script>
+  <script src="lib/verification-unicorn.js"></script>
+</body>
+</html>
