@@ -12,6 +12,10 @@ interface Object {
   separator?: string,
 }
 
+interface Node {
+  onclick?: any
+}
+
 interface PegasusObject {
   DEBUG?: boolean,
 

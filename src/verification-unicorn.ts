@@ -379,7 +379,7 @@ var autoComplete = (function () {
       return new oldEvent.constructor(oldEvent.type, oldEvent);
     }
 
-    var newEvent = document.createEvent('MouseEvents');
+    var newEvent = document.createEvent('Event');
     newEvent.initEvent(oldEvent.type, true, false);
     return newEvent;
   }
@@ -412,7 +412,7 @@ var autoComplete = (function () {
   function useOriginalAddress(event) {
     closeModal();
     removeModalElements()
-    originalElement.dispatchEvent(event);
+    originalElement.onclick(event);
   }
 
   /** Returns an object with AddressLines as keys and AddressLine labels as its values
@@ -630,7 +630,7 @@ var autoComplete = (function () {
 
       callback: function(data, error) {
         if (error) {
-          originalElement.dispatchEvent(newEvent);
+          originalElement.onclick(newEvent);
           return;
         }
 
@@ -647,7 +647,7 @@ var autoComplete = (function () {
             modalElement.querySelector('#interaction--use-updated').onclick = function() {
               updateValuesFromMapping(EDQ_CONFIG.PRO_WEB_MAPPING, createRawAddressMap(addressLines));
               closeModal();
-              originalElement.dispatchEvent(newEvent);
+              originalElement.onclick(newEvent);
             }
 
             displayOriginalAddress();
@@ -674,7 +674,7 @@ var autoComplete = (function () {
           case 'Verified':
             addressLines = data.Envelope.Body.QASearchResult.QAAddress.AddressLine;
             updateValuesFromMapping(EDQ_CONFIG.PRO_WEB_MAPPING, createRawAddressMap(addressLines));
-            originalElement.dispatchEvent(newEvent);
+            originalElement.onclick(newEvent);
             break;
 
           case 'Multiple':
@@ -702,7 +702,7 @@ var autoComplete = (function () {
 
                     closeModal();
                     removeModalElements()
-                    originalElement.dispatchEvent(newEvent);
+                    originalElement.onclick(newEvent);
                   }
                 });
               },
