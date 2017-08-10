@@ -404,6 +404,31 @@ var autoComplete = (function () {
     };
   }
 
+  /**
+   * Completes the verification process, and uses the callback
+   *
+   * @param {Element} element
+   * @param {Event} event
+   *
+   * @returns {undefined}
+   */
+  function finalCallback(element, event) {
+    let callback = EDQ_CONFIG.PRO_WEB_CALLBACK;
+    if (callback) {
+      if (typeof(callback) === "string") {
+        eval(callback);
+      } else if (typeof(callback) === "function") {
+        callback();
+      } else {
+        throw "PRO_WEB_CALLBACK must be either text resolving to javascript or a function";
+      }
+
+    } else {
+      // The default case (for a click)
+      element.onclick(event)
+    }
+  }
+
   /** Uses the original address
    *
    * @param {Event} event
@@ -411,8 +436,8 @@ var autoComplete = (function () {
    */
   function useOriginalAddress(event) {
     closeModal();
-    removeModalElements()
-    originalElement.onclick(event);
+    removeModalElements();
+    finalCallback(originalElement, event);
   }
 
   /** Returns an object with AddressLines as keys and AddressLine labels as its values
@@ -630,7 +655,7 @@ var autoComplete = (function () {
 
       callback: function(data, error) {
         if (error) {
-          originalElement.onclick(newEvent);
+          finalCallback(originalElement, newEvent);
           return;
         }
 
@@ -647,7 +672,7 @@ var autoComplete = (function () {
             modalElement.querySelector('#interaction--use-updated').onclick = function() {
               updateValuesFromMapping(EDQ_CONFIG.PRO_WEB_MAPPING, createRawAddressMap(addressLines));
               closeModal();
-              originalElement.onclick(newEvent);
+              finalCallback(originalElement, newEvent);
             }
 
             displayOriginalAddress();
@@ -674,7 +699,7 @@ var autoComplete = (function () {
           case 'Verified':
             addressLines = data.Envelope.Body.QASearchResult.QAAddress.AddressLine;
             updateValuesFromMapping(EDQ_CONFIG.PRO_WEB_MAPPING, createRawAddressMap(addressLines));
-            originalElement.onclick(newEvent);
+            finalCallback(originalElement, newEvent);
             break;
 
           case 'Multiple':
@@ -701,8 +726,8 @@ var autoComplete = (function () {
                     );
 
                     closeModal();
-                    removeModalElements()
-                    originalElement.onclick(newEvent);
+                    removeModalElements();
+                    finalCallback(originalElement, newEvent);
                   }
                 });
               },

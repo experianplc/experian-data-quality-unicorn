@@ -53,6 +53,7 @@ interface UnicornObject {
 
   PRO_WEB_MAPPING: Array<any>,
   PRO_WEB_COUNTRY: string,
+  PRO_WEB_CALLBACK: any,
   PRO_WEB_LAYOUT: string,
   PRO_WEB_SUBMIT_ELEMENT: Element,
   PRO_WEB_TIMEOUT: string,
