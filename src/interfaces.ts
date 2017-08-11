@@ -55,10 +55,15 @@ interface UnicornObject {
   PRO_WEB_COUNTRY: string,
   PRO_WEB_CALLBACK: any,
   PRO_WEB_LAYOUT: string,
-  PRO_WEB_SUBMIT_ELEMENT: Element,
+  PRO_WEB_SUBMIT_TRIGGERS: Array<TriggerPair>,
   PRO_WEB_TIMEOUT: string,
   PRO_WEB_SERVICE_URL: string,
   SOAP_ACTION_URL: string
+}
+
+interface TriggerPair {
+  type: string,
+  element: Element
 }
 
 interface Element {

@@ -326,8 +326,6 @@ var autoComplete = (function () {
         </div>`
   }
 
-  const originalElement = EDQ_CONFIG.PRO_WEB_SUBMIT_ELEMENT.cloneNode();
-
   /** Closes the modal by removing it from the DOM
    *
    * @returns {undefined}
@@ -350,10 +348,11 @@ var autoComplete = (function () {
   /** Creates the modal and adds it to the DOM
    *
    * @param {String} mode
+   * @param {Event} newEvent
    *
    * @returns {Element}
    */
-  function openModal(mode) {
+  function openModal(mode, newEvent) {
     if (document.getElementById('edq-overlay-container')) {
       return document.getElementById('edq-overlay-container');
     }
@@ -363,7 +362,7 @@ var autoComplete = (function () {
     modalElement.innerHTML = modalHtml(mode);
     document.body.appendChild(modalElement);
 
-    addModalEvents(modalElement);
+    addModalEvents(modalElement, newEvent);
     return modalElement;
   }
 
@@ -387,12 +386,13 @@ var autoComplete = (function () {
   /** Adds event listeners to the modal
    *
    * @param {Element} modalElement
+   * @param {Event} newEvent
    *
    * @returns {undefined}
    */
-  function addModalEvents(modalElement) {
+  function addModalEvents(modalElement, newEvent) {
     modalElement.querySelector('#interaction--use-original').onclick = function(event) {
-      useOriginalAddress(createNewEvent(event))
+      useOriginalAddress(newEvent);
     }
 
     modalElement.querySelector('#edq-close-modal').onclick= function() {
@@ -412,20 +412,21 @@ var autoComplete = (function () {
    *
    * @returns {undefined}
    */
-  function finalCallback(element, event) {
+  function finalCallback(newEvent) {
+    let originalTarget = newEvent['originalTarget'];
     let callback = EDQ_CONFIG.PRO_WEB_CALLBACK;
     if (callback) {
       if (typeof(callback) === "string") {
         eval(callback);
       } else if (typeof(callback) === "function") {
-        callback();
+        callback(newEvent.originalTarget, newEvent);
       } else {
         throw "PRO_WEB_CALLBACK must be either text resolving to javascript or a function";
       }
 
     } else {
-      // The default case (for a click)
-      element.onclick(event)
+      // Reverting the element changes appears to make things a bit easier.
+      originalTarget[`on${newEvent.type}`] = newEvent['originalEvent'];
     }
   }
 
@@ -437,7 +438,7 @@ var autoComplete = (function () {
   function useOriginalAddress(event) {
     closeModal();
     removeModalElements();
-    finalCallback(originalElement, event);
+    finalCallback(event);
   }
 
   /** Returns an object with AddressLines as keys and AddressLine labels as its values
@@ -655,7 +656,7 @@ var autoComplete = (function () {
 
       callback: function(data, error) {
         if (error) {
-          finalCallback(originalElement, newEvent);
+          finalCallback(newEvent);
           return;
         }
 
@@ -667,12 +668,12 @@ var autoComplete = (function () {
 
           case 'InteractionRequired':
             addressLines = data.Envelope.Body.QASearchResult.QAAddress.AddressLine;
-            modalElement = openModal(verifyLevel);
+            modalElement = openModal(verifyLevel, newEvent);
 
             modalElement.querySelector('#interaction--use-updated').onclick = function() {
               updateValuesFromMapping(EDQ_CONFIG.PRO_WEB_MAPPING, createRawAddressMap(addressLines));
               closeModal();
-              finalCallback(originalElement, newEvent);
+              finalCallback(newEvent);
             }
 
             displayOriginalAddress();
@@ -699,13 +700,13 @@ var autoComplete = (function () {
           case 'Verified':
             addressLines = data.Envelope.Body.QASearchResult.QAAddress.AddressLine;
             updateValuesFromMapping(EDQ_CONFIG.PRO_WEB_MAPPING, createRawAddressMap(addressLines));
-            finalCallback(originalElement, newEvent);
+            finalCallback(newEvent);
             break;
 
           case 'Multiple':
           case 'StreetPartial':
           case 'PremisesPartial':
-            modalElement = openModal(verifyLevel);
+            modalElement = openModal(verifyLevel, newEvent);
             modalElement.querySelector('#interaction-address--prompt').innerText
               = data.Envelope.Body.QASearchResult.QAPicklist.Prompt;
             displayOriginalAddress()
@@ -727,7 +728,7 @@ var autoComplete = (function () {
 
                     closeModal();
                     removeModalElements();
-                    finalCallback(originalElement, newEvent);
+                    finalCallback(newEvent);
                   }
                 });
               },
@@ -792,7 +793,7 @@ var autoComplete = (function () {
             break;
 
           default:
-            openModal(verifyLevel);
+            openModal(verifyLevel, newEvent);
             displayOriginalAddress();
         }
 
@@ -807,8 +808,18 @@ var autoComplete = (function () {
 
   };
 
-  EDQ_CONFIG.PRO_WEB_SUBMIT_ELEMENT.onclick = function(event) {
-    submitForm(createNewEvent(event));
-  };
+  // Make it so each submission element and trigger are reset
+  EDQ_CONFIG.PRO_WEB_SUBMIT_TRIGGERS.forEach(function(pair) {
+    const eventType = pair.type;
+    const triggerElement = pair.element;
+    const originalTriggerEvent = triggerElement[`on${eventType}`];
+
+    triggerElement[`on${eventType}`] = function(event) {
+      let newEvent = createNewEvent(event);
+      newEvent['originalTarget'] = triggerElement.cloneNode();
+      newEvent['originalEvent'] = originalTriggerEvent;
+      submitForm(newEvent);
+    }
+  });
 
 }).call(this);
