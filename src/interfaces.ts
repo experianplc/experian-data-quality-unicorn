@@ -58,7 +58,9 @@ interface UnicornObject {
   PRO_WEB_SUBMIT_TRIGGERS: Array<TriggerPair>,
   PRO_WEB_TIMEOUT: string,
   PRO_WEB_SERVICE_URL: string,
-  SOAP_ACTION_URL: string
+  SOAP_ACTION_URL: string,
+
+  PRO_WEB_TYPEDOWN_TRIGGER: Element
 }
 
 interface TriggerPair {

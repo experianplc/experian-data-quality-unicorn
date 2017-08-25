@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.7.0/css/tachyons.min.css"/>
+    <!-- <link rel="stylesheet" href="lib/pro-web.css"/> -->
+  </head>
+  <body>
+    <div class="edq-overlay" id="edq-overlay">
+      <div class="w-75 center v-top v-mid-ns mt4-m mt6-l">
+        <div class="bg-black-10">
+          <!-- New/Back, Mode, and Datamap -->
+          <div class="pl3 pt3">
+            <span>
+              <button class="pointer pl1">New</button>
+              <button class="pointer pr1">Back</button>
+            </span>
+
+            |
+
+            <input type="radio" name="verification-mode" value="typedown">Typedown</input>
+            <input type="radio" name="verification-mode" value="single-line">Single Line</input>
+
+            | Datamap:
+            <select>
+              <option>United States of America</option>
+              <option>Canada</option>
+            </select>
+
+            <span id="edq-close-modal"
+              class="bg-black b white pointer fr ba f5 ph1 mr3">
+              x
+            </span>
+          </div>
+
+          <div class="pa2 bb b--black-10"></div>
+
+          <!-- Prompt and selection field -->
+          <div class="pl3 mt3 pb3">
+            <div id="b f1">Enter ZIP code, city name, county name, or state code</div>
+            <input id="prompt-input">
+            <button class="pointer">Select</button>
+          </div>
+        </div>
+
+        <!-- Current steps -->
+        <div class="h5 ba">
+          <div id="typedown-result" class="bb">
+            <div id="completed-steps" class="ml4 pointer dim">
+              Completed, Step
+            </div>
+          </div>
+
+          <div id="typedown-result" class="ml4">
+            Continue typing (too many matches)
+          </div>
+        </div>
+
+        <!-- Number of matches -->
+        <div class="cf bg-black-10 h-100">
+          <span class="fr mr5">| Matches: 1</span>
+        </div>
+      </div>
+</body>
+</html>
