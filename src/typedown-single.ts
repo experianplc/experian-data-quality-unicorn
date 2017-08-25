@@ -170,26 +170,35 @@
 
 
   let searchMethod = verifier.doSearch;
-  let methodParams = null;
 
   function getMethodParams(event=null, moniker=null) {
+    let layout = EDQ_CONFIG.PRO_WEB_LAYOUT;
+
+    // doRefine
     if (event && moniker) {
       return {
         country: 'USA',
         refineOptions: {},
-        layout: EDQ_CONFIG.PRO_WEB_LAYOUT,
+        layout,
         moniker,
         refinement: event.target.value,
         formattedAddressInPicklist: false
       }
+      // doSearch
     } else if (event && !moniker) {
       return {
         country: EDQ_CONFIG.PRO_WEB_COUNTRY, /* ISO-3 Country, e.g. USA */
         addressQuery: event.target.value,
         engineOptions: {},
         engineType: 'Typedown',
-        layout: EDQ_CONFIG.PRO_WEB_LAYOUT,
+        layout,
         formattedAddressInPicklist: false,
+      }
+      // doGetAddress
+    } else if (!event && moniker) {
+      return {
+        moniker,
+        layout
       }
     }
   }
@@ -211,41 +220,56 @@
     };
 
     let xhr;
+    let picklistMoniker = null;
     modalElement.querySelector('#prompt-input').onkeyup = function(event) {
 
+      // The purpose of this is to cancel any requests that are currently in progress.
       try {
         xhr.abort();
       } catch(e) {
-        // Pass
+        // pass
       }
 
       // <any> Says that the Object can by any type.
-      xhr = searchMethod((<any>Object).assign(methodParams || getMethodParams(event), {
+      // We want to combine our template parameters with the custom callback.
+      xhr = searchMethod((<any>Object).assign(getMethodParams(event, picklistMoniker), {
         callback: function(data, error) {
           if (error) {
             return;
           }
 
 
-          document.getElementById('typedown-result').innerHTML = generatePicklistElement(data).outerHTML;
-          document.getElementById('typedown-result').addEventListener('click', function(newEvent) {
+          let picklists;
+          // TODO: Handle the case where there's an error for whatever reason.
+          try {
+            picklists = data.Envelope.Body.QASearchResult.QAPicklist.PicklistEntry
+          } catch(e) {
 
+            // This handles the case where it's in "refine" mode.
+            // TODO: A try/catch may not be the best way to handle this. Fix this later
+            picklists = data.Envelope.Body.Picklist.QAPicklist.PicklistEntry;
+          }
+
+          document.getElementById('typedown-result').innerHTML = generatePicklistElement(picklists).outerHTML;
+          document.getElementById('typedown-result').addEventListener('click', function(newEvent) {
             // An event isn't necessarily an element so we cast it here.
             let eventTarget = (<Element>newEvent.target);
 
             if (eventTarget.classList.contains('picklist-item')) {
               let picklistMetaData = JSON.parse(eventTarget.getAttribute('picklist-metadata'));
-              console.log(picklistMetaData);
 
-              if (picklistMetaData._CanStep) {
+              if (picklistMetaData._CanStep === "true") {
                 searchMethod = verifier.doRefine;
-                methodParams = getMethodParams(event, picklistMetaData.Moniker);
+                picklistMoniker = picklistMetaData.Moniker;
 
-              } else {
-                // Change the searchMethod to getAddress
-                // Update the prompt
+              } else if (picklistMetaData._FullAddress === "true") {
                 searchMethod = verifier.doGetAddress;
+                picklistMoniker = picklistMetaData.Moniker;
+
               }
+              
+              event.target.value = null;
+              event.target.onkeyup(event);
             }
           });
         }
@@ -258,13 +282,11 @@
 
 
   /*
-   * @param {Object} data
+   * @param {Array|Object} picklists
    *
    * @returns {Element}
    */
-  function generatePicklistElement(data) {
-    // TODO: Handle the case where there's an error for whatever reason.
-    let picklists = data.Envelope.Body.QASearchResult.QAPicklist.PicklistEntry
+  function generatePicklistElement(picklists) {
     if (picklists.constructor == Object) {
       picklists = [picklists];
     }
