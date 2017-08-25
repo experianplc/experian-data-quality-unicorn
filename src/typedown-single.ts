@@ -170,12 +170,28 @@
 
 
   let searchMethod = verifier.doSearch;
-  let methodParams = {
-    country: EDQ_CONFIG.PRO_WEB_COUNTRY, /* ISO-3 Country, e.g. USA */
-    engineOptions: {},
-    engineType: 'Typedown',
-    layout: EDQ_CONFIG.PRO_WEB_LAYOUT,
-    formattedAddressInPicklist: false,
+  let methodParams = null;
+
+  function getMethodParams(event=null, moniker=null) {
+    if (event && moniker) {
+      return {
+        country: 'USA',
+        refineOptions: {},
+        layout: EDQ_CONFIG.PRO_WEB_LAYOUT,
+        moniker,
+        refinement: event.target.value,
+        formattedAddressInPicklist: false
+      }
+    } else if (event && !moniker) {
+      return {
+        country: EDQ_CONFIG.PRO_WEB_COUNTRY, /* ISO-3 Country, e.g. USA */
+        addressQuery: event.target.value,
+        engineOptions: {},
+        engineType: 'Typedown',
+        layout: EDQ_CONFIG.PRO_WEB_LAYOUT,
+        formattedAddressInPicklist: false,
+      }
+    }
   }
 
   /** Adds event listeners to the modal
@@ -195,7 +211,7 @@
     };
 
     let xhr;
-    modalElement.querySelector('#prompt-input').onkeypress = function(event) {
+    modalElement.querySelector('#prompt-input').onkeyup = function(event) {
 
       try {
         xhr.abort();
@@ -204,8 +220,7 @@
       }
 
       // <any> Says that the Object can by any type.
-      xhr = searchMethod((<any>Object).assign(methodParams, {
-        addressQuery: event.target.value,
+      xhr = searchMethod((<any>Object).assign(methodParams || getMethodParams(event), {
         callback: function(data, error) {
           if (error) {
             return;
@@ -220,10 +235,12 @@
 
             if (eventTarget.classList.contains('picklist-item')) {
               let picklistMetaData = JSON.parse(eventTarget.getAttribute('picklist-metadata'));
+              console.log(picklistMetaData);
+
               if (picklistMetaData._CanStep) {
-                // Change the searchMethod to be refine.
-                // Update the prompt
                 searchMethod = verifier.doRefine;
+                methodParams = getMethodParams(event, picklistMetaData.Moniker);
+
               } else {
                 // Change the searchMethod to getAddress
                 // Update the prompt
