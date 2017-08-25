@@ -94,7 +94,7 @@
 
           <!-- Prompt and selection field -->
           <div class="pl3 mt3 pb3">
-            <div id="b f1">Enter ZIP code, city name, county name, or state code</div>
+            <div id="prompt-text" class="b">Enter ZIP code, city name, county name or state code</div>
             <input id="prompt-input">
             <button class="pointer">Select</button>
           </div>
@@ -203,6 +203,18 @@
     }
   }
 
+  /*
+   * Handles the actions, including DOM updates after picklist selection
+   *
+   * @param {Event} event
+   *
+   * @returns {undefined}
+   */
+  function afterPicklistSelect(event) {
+    event.target.onkeyup(event);
+    event.target.value = null;
+  }
+
   /** Adds event listeners to the modal
    *
    * @param {Element} modalElement
@@ -238,6 +250,12 @@
             return;
           }
 
+          // TODO: This is hacky, there should be a more comprehensive solution in place here.
+          try {
+            document.getElementById('prompt-text').innerHTML = data.Envelope.Body.QASearchResult.QAPicklist.Prompt;
+          } catch(e) {
+            document.getElementById('prompt-text').innerHTML = data.Envelope.Body.Picklist.QAPicklist.Prompt;
+          }
 
           let picklists;
           // TODO: Handle the case where there's an error for whatever reason.
@@ -267,9 +285,8 @@
                 picklistMoniker = picklistMetaData.Moniker;
 
               }
-              
-              event.target.value = null;
-              event.target.onkeyup(event);
+
+              afterPicklistSelect(event);
             }
           });
         }
