@@ -109,7 +109,7 @@
 
         <!-- Number of matches -->
         <div class="cf bg-black-10 h-100">
-          <span class="fr mr5">| Matches: 1</span>
+          <span class="fr mr5">| Matches: <span id="picklist-matches-count">1</span></span>
         </div>
       </div>`;
   }
@@ -171,6 +171,14 @@
 
   let searchMethod = verifier.doSearch;
 
+  /*
+   * Generates method parameters for the Typedown searches
+   *
+   * @param {Event} event
+   * @param {String} moniker
+   *
+   * @returns Object - method parameters
+   */
   function getMethodParams(event=null, moniker=null) {
     let layout = EDQ_CONFIG.PRO_WEB_LAYOUT;
 
@@ -215,6 +223,37 @@
     event.target.value = null;
   }
 
+  /*
+   * Updates the UI necessarily
+   *
+   * @param {Object} data
+   *
+   * @returns {undefined}
+   */
+  function picklistUiUpdate(data) {
+    // TODO: This is hacky, there should be a more comprehensive solution in place here.
+    try {
+      document.getElementById('prompt-text').innerHTML = data.Envelope.Body.QASearchResult.QAPicklist.Prompt;
+    } catch(e) {
+      document.getElementById('prompt-text').innerHTML = data.Envelope.Body.Picklist.QAPicklist.Prompt;
+    }
+
+    let picklists;
+    // TODO: Handle the case where there's an error for whatever reason.
+    try {
+      picklists = data.Envelope.Body.QASearchResult.QAPicklist.PicklistEntry
+    } catch(e) {
+
+      // This handles the case where it's in "refine" mode.
+      // TODO: A try/catch may not be the best way to handle this. Fix this later
+      picklists = data.Envelope.Body.Picklist.QAPicklist.PicklistEntry;
+    }
+
+    const picklistElement = generatePicklistElement(picklists);
+    document.getElementById('typedown-result').innerHTML = picklistElement.outerHTML;
+    document.getElementById('picklist-matches-count').innerHTML = String(picklistElement.children.length);
+  }
+
   /** Adds event listeners to the modal
    *
    * @param {Element} modalElement
@@ -250,25 +289,8 @@
             return;
           }
 
-          // TODO: This is hacky, there should be a more comprehensive solution in place here.
-          try {
-            document.getElementById('prompt-text').innerHTML = data.Envelope.Body.QASearchResult.QAPicklist.Prompt;
-          } catch(e) {
-            document.getElementById('prompt-text').innerHTML = data.Envelope.Body.Picklist.QAPicklist.Prompt;
-          }
+          picklistUiUpdate(data);
 
-          let picklists;
-          // TODO: Handle the case where there's an error for whatever reason.
-          try {
-            picklists = data.Envelope.Body.QASearchResult.QAPicklist.PicklistEntry
-          } catch(e) {
-
-            // This handles the case where it's in "refine" mode.
-            // TODO: A try/catch may not be the best way to handle this. Fix this later
-            picklists = data.Envelope.Body.Picklist.QAPicklist.PicklistEntry;
-          }
-
-          document.getElementById('typedown-result').innerHTML = generatePicklistElement(picklists).outerHTML;
           document.getElementById('typedown-result').addEventListener('click', function(newEvent) {
             // An event isn't necessarily an element so we cast it here.
             let eventTarget = (<Element>newEvent.target);
