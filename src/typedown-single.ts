@@ -246,12 +246,7 @@
    * @returns {undefined}
    */
   function finalAddressUiUpdate(data) {
-    const addressLines = data.Envelope.Body.Address.QAAddress.AddressLine;
-    let addressLinesObject = {};
-
-    addressLines.forEach((addressLine) => {
-      addressLinesObject[addressLine.Label] = addressLine.Line
-    });
+    const addressLinesObject = createRawAddressMap(data.Envelope.Body.Address.QAAddress.AddressLine);
 
     document.getElementById('prompt-select').innerHTML = 'Accept';
     document.getElementById('prompt-input').setAttribute('disabled', 'disabled');
@@ -363,12 +358,18 @@
                 afterPicklistSelect(event);
               }
             });
+
           } else {
             document.getElementById('typedown-final-address').classList.remove('dn');
             document.getElementById('typedown-result').classList.add('dn');
 
             finalAddressUiUpdate(data);
             document.getElementById('prompt-select').addEventListener('click', function(e) {
+              updateValuesFromMapping(
+                EDQ_CONFIG.PRO_WEB_MAPPING,
+                createRawAddressMap(data.Envelope.Body.Address.QAAddress.AddressLine)
+              );
+
               removeModal();
             });
           }
