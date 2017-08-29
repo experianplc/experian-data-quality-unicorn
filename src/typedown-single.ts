@@ -257,6 +257,17 @@
     document.getElementById('typedown-final--state').value = addressLinesObject['StateProvince'];
     document.getElementById('typedown-final--postal-code').value = addressLinesObject['PostalCode'];
     document.getElementById('typedown-final--country-code').value = addressLinesObject['Three character ISO country code'];
+
+    document.getElementById('typedown-final-address').classList.remove('dn');
+    document.getElementById('typedown-result').classList.add('dn');
+    document.getElementById('prompt-select').addEventListener('click', function(e) {
+      updateValuesFromMapping(
+        EDQ_CONFIG.PRO_WEB_MAPPING,
+        createRawAddressMap(data.Envelope.Body.Address.QAAddress.AddressLine)
+      );
+
+      removeModal();
+    });
   }
 
   function removeModal() {
@@ -337,6 +348,7 @@
             return;
           }
 
+          // There are picklists
           if (picklistUiUpdate(data)) {
             document.getElementById('typedown-result').addEventListener('click', function(newEvent) {
               // An event isn't necessarily an element so we cast it here.
@@ -359,19 +371,13 @@
               }
             });
 
+          // There are no more picklists -- at final stage of selection process.
           } else {
-            document.getElementById('typedown-final-address').classList.remove('dn');
-            document.getElementById('typedown-result').classList.add('dn');
-
             finalAddressUiUpdate(data);
-            document.getElementById('prompt-select').addEventListener('click', function(e) {
-              updateValuesFromMapping(
-                EDQ_CONFIG.PRO_WEB_MAPPING,
-                createRawAddressMap(data.Envelope.Body.Address.QAAddress.AddressLine)
-              );
 
-              removeModal();
-            });
+            // Reset searchMethod and other information back to their original:
+            searchMethod = verifier.doSearch;
+            picklistMoniker = null;
           }
         }
       }));
@@ -465,19 +471,6 @@
         }).join(fieldElement.separator);
     });
 
-  }
-
-  /** Displays the original address
-   *
-   * @returns {undefined}
-   */
-  function displayOriginalAddress() {
-    EDQ_CONFIG.PRO_WEB_MAPPING.forEach((mapper) => {
-      try {
-        document.querySelector(mapper.modalFieldSelector).innerText = mapper.field.value;
-      } catch(e) {
-      }
-    });
   }
 
   /** Build a map pairing each option innerText with the index for quick switching
