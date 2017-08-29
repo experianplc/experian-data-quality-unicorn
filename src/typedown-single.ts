@@ -69,8 +69,8 @@
           <!-- New/Back, Mode, and Datamap -->
           <div class="pl3 pt3">
             <span>
-              <button class="pointer pl1">New</button>
-              <button class="pointer pr1">Back</button>
+              <button id="edq-modal-new" class="pointer pl1">New</button>
+              <button id="edq-modal-back" class="pointer pr1">Back</button>
             </span>
 
             |
@@ -102,6 +102,9 @@
 
         <!-- Current steps -->
         <div class="h5 ba">
+          <div id="typedown-previous-steps">
+          </div>
+
           <div id="typedown-final-address" class="ml4 dn">
             <div>
               <span class="dib w-10">Address Line One</span>
@@ -127,7 +130,6 @@
               <span class="dib w-10">Country Code</span>
               <input class="dib w-80" id="typedown-final--country-code">
             </div>
-
           </div>
 
           <div id="typedown-result" class="ml4">
@@ -231,13 +233,29 @@
   /*
    * Handles the actions, including DOM updates after picklist selection
    *
-   * @param {Event} event
+   * @param {KeyboardEvent} event
+   * @param {PicklistObject} picklistMetaData
    *
    * @returns {undefined}
    */
-  function afterPicklistSelect(event) {
-    event.target.onkeyup(event);
-    event.target.value = null;
+  function afterPicklistSelect(event : KeyboardEvent,  picklistMetaData : PicklistObject) {
+
+    console.log(picklistMetaData);
+
+    // An EventTarget doesn't necessarily have the property value, so TypeScript is throwing an
+    // error here. Casting this to an HTMLInputElement will solve the problem in this case.
+    const htmlEventTarget = <HTMLInputElement>event.target
+    htmlEventTarget.onkeyup(event);
+    htmlEventTarget.value = null;
+
+    // TODO: give it padding slightly more of the previous suggestion or a default
+    let previousSuggestion = document.createElement('div');
+    previousSuggestion.innerHTML = picklistMetaData.Picklist;
+    previousSuggestion.onclick = function(e) {
+      // make it clickable to go back to that step (work in progress)
+    }
+
+    document.getElementById('typedown-previous-steps').appendChild(previousSuggestion);
   }
 
   /* 
@@ -313,7 +331,6 @@
     const picklistElement = generatePicklistElement(picklists);
     document.getElementById('typedown-result').innerHTML = picklistElement.outerHTML;
     document.getElementById('picklist-matches-count').innerHTML = String(picklistElement.children.length);
-
     return true;
   }
 
@@ -328,6 +345,28 @@
     modalElement.querySelector('#edq-close-modal').onclick= function() {
       removeModal();
     };
+
+    modalElement.querySelector('#edq-modal-new').onclick = function() {
+      document.getElementById('typedown-previous-steps').innerHTML = null;
+      document.getElementById('typedown-final-address').classList.add('dn');
+      document.getElementById('typedown-result').innerHTML = 'Continue typing (too many matches)';
+      document.getElementById('typedown-result').classList.remove('dn');
+
+      modalElement.querySelector('#prompt-text').innerHTML = 'Enter ZIP code, city name, county name or state code';
+      modalElement.querySelector('#prompt-select').innerHTML = 'Select';
+      modalElement.querySelector('#prompt-input').value = null;
+
+      if (searchMethod) {
+        searchMethod = verifier.doSearch;
+      }
+
+      if (picklistMoniker) {
+        picklistMoniker = null;
+      }
+    }
+
+    modalElement.querySelector('#edq-modal-back').onclick = function() {
+    }
 
     let xhr;
     let picklistMoniker = null;
@@ -350,14 +389,18 @@
 
           // There are picklists
           if (picklistUiUpdate(data)) {
-            document.getElementById('typedown-result').addEventListener('click', function(newEvent) {
+            document.getElementById('typedown-result').onclick = function(newEvent) {
               // An event isn't necessarily an element so we cast it here.
               let eventTarget = (<Element>newEvent.target);
 
               if (eventTarget.classList.contains('picklist-item')) {
                 let picklistMetaData = JSON.parse(eventTarget.getAttribute('picklist-metadata'));
 
-                if (picklistMetaData._CanStep === "true") {
+                
+                if (!picklistMetaData.PartialAddress) {
+                  return;
+
+                } else if (picklistMetaData._CanStep === "true") {
                   searchMethod = verifier.doRefine;
                   picklistMoniker = picklistMetaData.Moniker;
 
@@ -367,9 +410,10 @@
 
                 }
 
-                afterPicklistSelect(event);
+                afterPicklistSelect(event, picklistMetaData);
+                return;
               }
-            });
+            };
 
           // There are no more picklists -- at final stage of selection process.
           } else {
