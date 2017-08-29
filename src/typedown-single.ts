@@ -62,7 +62,7 @@
   }
 
   /* The template for the modal */
-  const modalHtml = function() {
+  function modalHtml() {
     return `<div class="edq-overlay" id="edq-overlay">
       <div class="w-75 center v-top v-mid-ns mt4-m mt6-l">
         <div class="bg-black-10">
@@ -85,7 +85,7 @@
             </select>
 
             <span id="edq-close-modal"
-              class="bg-black b white pointer fr ba f5 ph1 mr3">
+                  class="bg-black b white pointer fr ba f5 ph1 mr3">
               x
             </span>
           </div>
@@ -96,12 +96,40 @@
           <div class="pl3 mt3 pb3">
             <div id="prompt-text" class="b">Enter ZIP code, city name, county name or state code</div>
             <input id="prompt-input">
-            <button class="pointer">Select</button>
+            <button id="prompt-select" class="pointer">Select</button>
           </div>
         </div>
 
         <!-- Current steps -->
         <div class="h5 ba">
+          <div id="typedown-final-address" class="ml4 dn">
+            <div>
+              <span class="dib w-10">Address Line One</span>
+              <span class="dib w-80"><input class="w-100" id="typedown-final--address-line-one"></span>
+            </div>
+            <div>
+              <span class="dib w-10">Address Line Two</span>
+              <input class="dib w-80" id="typedown-final--address-line-two">
+            </div>
+            <div>
+              <span class="dib w-10">City</span>
+              <input class="dib w-80" id="typedown-final--city">
+            </div>
+            <div>
+              <span class="dib w-10">State</span>
+              <input class="dib w-80" id="typedown-final--state">
+            </div>
+            <div>
+              <span class="dib w-10">Postal Code</span>
+              <input class="dib w-80" id="typedown-final--postal-code">
+            </div>
+            <div>
+              <span class="dib w-10">Country Code</span>
+              <input class="dib w-80" id="typedown-final--country-code">
+            </div>
+
+          </div>
+
           <div id="typedown-result" class="ml4">
             Continue typing (too many matches)
           </div>
@@ -112,7 +140,7 @@
           <span class="fr mr5">| Matches: <span id="picklist-matches-count">1</span></span>
         </div>
       </div>`;
-  }
+  };
 
   /** Closes the modal by removing it from the DOM
    *
@@ -120,17 +148,6 @@
    */
   function closeModal() {
     document.getElementById('edq-overlay-container').remove();
-  }
-
-  /** Removes any extras that the modal created, notably the autocomplete suggestion box
-   *
-   * @returns {undefined}
-   */
-  function removeModalElements() {
-    const suggestionBox = document.querySelector('#edq-verification-suggestion-box');
-    if (suggestionBox) {
-      suggestionBox.remove();
-    }
   }
 
   /** Creates the modal and adds it to the DOM
@@ -223,19 +240,57 @@
     event.target.value = null;
   }
 
+  /* 
+   * Updates the UI to fill in the fields
+   *
+   * @returns {undefined}
+   */
+  function finalAddressUiUpdate(data) {
+    const addressLines = data.Envelope.Body.Address.QAAddress.AddressLine;
+    let addressLinesObject = {};
+
+    addressLines.forEach((addressLine) => {
+      addressLinesObject[addressLine.Label] = addressLine.Line
+    });
+
+    document.getElementById('prompt-select').innerHTML = 'Accept';
+    document.getElementById('prompt-input').setAttribute('disabled', 'disabled');
+
+    document.getElementById('typedown-final--address-line-one').value = addressLinesObject['AddressLine1'];
+    document.getElementById('typedown-final--address-line-two').value = addressLinesObject['AddressLine2'];
+    document.getElementById('typedown-final--city').value = addressLinesObject['CityLocality'];
+    document.getElementById('typedown-final--state').value = addressLinesObject['StateProvince'];
+    document.getElementById('typedown-final--postal-code').value = addressLinesObject['PostalCode'];
+    document.getElementById('typedown-final--country-code').value = addressLinesObject['Three character ISO country code'];
+  }
+
+  function removeModal() {
+    document.getElementById('edq-overlay-container').remove();
+  }
+
   /*
    * Updates the UI necessarily
    *
    * @param {Object} data
    *
-   * @returns {undefined}
+   * @returns {Boolean}
    */
   function picklistUiUpdate(data) {
     // TODO: This is hacky, there should be a more comprehensive solution in place here.
     try {
       document.getElementById('prompt-text').innerHTML = data.Envelope.Body.QASearchResult.QAPicklist.Prompt;
     } catch(e) {
-      document.getElementById('prompt-text').innerHTML = data.Envelope.Body.Picklist.QAPicklist.Prompt;
+      try {
+        document.getElementById('prompt-text').innerHTML = data.Envelope.Body.Picklist.QAPicklist.Prompt;
+      }
+      catch(e) {
+        try {
+          document.getElementById('prompt-text').innerHTML = 'Please confirm the address';
+          return false;
+        } catch(e) {
+          throw `There seems to be an error: ${e}`;
+        }
+      }
     }
 
     let picklists;
@@ -252,6 +307,8 @@
     const picklistElement = generatePicklistElement(picklists);
     document.getElementById('typedown-result').innerHTML = picklistElement.outerHTML;
     document.getElementById('picklist-matches-count').innerHTML = String(picklistElement.children.length);
+
+    return true;
   }
 
   /** Adds event listeners to the modal
@@ -263,11 +320,7 @@
    */
   function addModalEvents(modalElement, newEvent) {
     modalElement.querySelector('#edq-close-modal').onclick= function() {
-      modalElement.remove();
-      const suggestionBox = document.querySelector('#edq-verification-suggestion-box');
-      if (suggestionBox) {
-        suggestionBox.remove();
-      }
+      removeModal();
     };
 
     let xhr;
@@ -289,28 +342,36 @@
             return;
           }
 
-          picklistUiUpdate(data);
+          if (picklistUiUpdate(data)) {
+            document.getElementById('typedown-result').addEventListener('click', function(newEvent) {
+              // An event isn't necessarily an element so we cast it here.
+              let eventTarget = (<Element>newEvent.target);
 
-          document.getElementById('typedown-result').addEventListener('click', function(newEvent) {
-            // An event isn't necessarily an element so we cast it here.
-            let eventTarget = (<Element>newEvent.target);
+              if (eventTarget.classList.contains('picklist-item')) {
+                let picklistMetaData = JSON.parse(eventTarget.getAttribute('picklist-metadata'));
 
-            if (eventTarget.classList.contains('picklist-item')) {
-              let picklistMetaData = JSON.parse(eventTarget.getAttribute('picklist-metadata'));
+                if (picklistMetaData._CanStep === "true") {
+                  searchMethod = verifier.doRefine;
+                  picklistMoniker = picklistMetaData.Moniker;
 
-              if (picklistMetaData._CanStep === "true") {
-                searchMethod = verifier.doRefine;
-                picklistMoniker = picklistMetaData.Moniker;
+                } else if (picklistMetaData._FullAddress === "true") {
+                  searchMethod = verifier.doGetAddress;
+                  picklistMoniker = picklistMetaData.Moniker;
 
-              } else if (picklistMetaData._FullAddress === "true") {
-                searchMethod = verifier.doGetAddress;
-                picklistMoniker = picklistMetaData.Moniker;
+                }
 
+                afterPicklistSelect(event);
               }
+            });
+          } else {
+            document.getElementById('typedown-final-address').classList.remove('dn');
+            document.getElementById('typedown-result').classList.add('dn');
 
-              afterPicklistSelect(event);
-            }
-          });
+            finalAddressUiUpdate(data);
+            document.getElementById('prompt-select').addEventListener('click', function(e) {
+              removeModal();
+            });
+          }
         }
       }));
 
@@ -366,17 +427,6 @@
       // Reverting the element changes appears to make things a bit easier.
       originalTarget[`on${newEvent.type}`] = newEvent['originalEvent'];
     }
-  }
-
-  /** Uses the original address
-   *
-   * @param {Event} event
-   * @returns {undefined}
-   */
-  function useOriginalAddress(event) {
-    closeModal();
-    removeModalElements();
-    finalCallback(event);
   }
 
   /** Returns an object with AddressLines as keys and AddressLine labels as its values
