@@ -447,7 +447,7 @@
       let element = document.createElement('div');
       element.setAttribute('picklist-metadata', JSON.stringify(picklist));
       element.innerText = picklist.Picklist;
-      element.className = 'pointer dim picklist-item';
+      element.className = 'pointer shadow-hover picklist-item';
       resultElement.appendChild(element);
     });
 
