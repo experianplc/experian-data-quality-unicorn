@@ -23,8 +23,10 @@
       document.getElementById('prompt-text').innerHTML = args['prompt text'] ;
       document.getElementById('prompt-input').value = args['input value'];
       document.getElementById('typedown-result').innerHTML = args['suggestions'];
-      document.getElementById('typedown-previous-steps').innerHTML = args['previous suggestions'];
-       
+
+      let typedownPreviousSteps = document.getElementById('typedown-previous-steps');
+      typedownPreviousSteps.innerHTML = args['previous suggestions'];
+
       searchMethod = args['search method'];
       picklistMoniker = args['moniker'];
       let metadata = args['metadata'];
@@ -34,7 +36,15 @@
         if (!finalAddressElement.classList.contains('dn')) {
           document.getElementById('typedown-final-address').classList.add('dn');
           document.getElementById('typedown-result').classList.remove('dn');
+          document.getElementById('typedown-previous-steps').classList.remove('dn');
           document.getElementById('prompt-input').removeAttribute('disabled');
+        }
+      }
+
+      if (document.getElementById('typedown-previous-steps').children.length > 0) {
+        for (let i = 0; i < document.getElementById('typedown-previous-steps').children.length; i++ ) {
+          let child = document.getElementById('typedown-previous-steps').children[i];
+          child.onclick = _picklistSuggestionOnClick;
         }
       }
     }
@@ -58,9 +68,14 @@
     /*
      * @returns {UserState}
      */
-    pop: function() {
+    revertPop: function() {
       let temp = this.stack.pop();
       temp.revertState();
+      return temp;
+    },
+
+    pop: function() {
+      let temp = this.stack.pop();
       return temp;
     }
   };
@@ -126,6 +141,10 @@
           <div id="typedown-previous-steps">
           </div>
 
+          <div id="typedown-result" class="ml4">
+            Continue typing (too many matches)
+          </div>
+
           <div id="typedown-final-address" class="ml4 dn">
             <div>
               <span class="dib w-10">Address Line One</span>
@@ -151,10 +170,6 @@
               <span class="dib w-10">Country Code</span>
               <input class="dib w-80" id="typedown-final--country-code">
             </div>
-          </div>
-
-          <div id="typedown-result" class="ml4">
-            Continue typing (too many matches)
           </div>
         </div>
 
@@ -253,11 +268,6 @@
   /*
    * Handles the actions, including DOM updates after picklist selection
    *
-   * @param {KeyboardEvent} event
-   * @param {PicklistObject} picklistMetaData
-   * @param {Function} oldSearchMethod
-   *
-   * @returns {undefined}
    */
   function afterPicklistSelect(event : KeyboardEvent,
     picklistMetaData : PicklistObject,
@@ -271,14 +281,7 @@
     htmlEventTarget.value = null;
 
     let previousTypedownSteps = document.getElementById('typedown-previous-steps');
-
-    let previousSuggestion = document.createElement('div');
-    let initialPaddingOffset = 1; // rem
-    previousSuggestion.style.paddingLeft = `${previousTypedownSteps.children.length + initialPaddingOffset}rem`;
-    previousSuggestion.innerHTML = picklistMetaData.Picklist;
-    previousSuggestion.onclick = function(e) {
-      // make it clickable to go back to that step (work in progress)
-    }
+    let previousSuggestion = generatePicklistSuggestion(picklistMetaData);
 
     let newState = new UserState({
       args: {
@@ -299,7 +302,36 @@
     userStates.push(newState);
   }
 
-  /* 
+  /*
+   * Generates a picklist suggestion element to be appended to the history
+   */
+  function generatePicklistSuggestion(picklistMetaData : PicklistObject): Element {
+    let previousSuggestion = document.createElement('div');
+    let initialPaddingOffset = 1; // rem
+    previousSuggestion.style.paddingLeft = `${document.getElementById('typedown-previous-steps').children.length + initialPaddingOffset}rem`;
+    previousSuggestion.innerHTML = picklistMetaData.Picklist;
+    previousSuggestion.className = 'pointer shadow-hover picklist-item';
+    previousSuggestion.setAttribute('picklist-metadata', JSON.stringify(picklistMetaData));
+    previousSuggestion.onclick = _picklistSuggestionOnClick;
+    return previousSuggestion;
+  }
+
+  function _picklistSuggestionOnClick(event : MouseEvent) {
+    let metadata = JSON.parse((<Element>event.target).getAttribute('picklist-metadata'));
+
+    for (let index = 0; index < userStates.stack.length; index++) {
+      let item = userStates.stack[index];
+
+      if (item.args.metadata.Moniker === metadata.Moniker) {
+        userStates.stack = userStates.stack.slice(0, index);
+      }
+
+      item.revertState();
+      break;
+    }
+  }
+
+  /*
    * Updates the UI to fill in the fields
    *
    * @returns {undefined}
@@ -310,6 +342,10 @@
     document.getElementById('prompt-select').innerHTML = 'Accept';
     document.getElementById('prompt-input').setAttribute('disabled', 'disabled');
 
+
+
+    // Show Final Address
+    document.getElementById('typedown-final-address').classList.remove('dn');
     document.getElementById('typedown-final--address-line-one').value = addressLinesObject['AddressLine1'];
     document.getElementById('typedown-final--address-line-two').value = addressLinesObject['AddressLine2'];
     document.getElementById('typedown-final--city').value = addressLinesObject['CityLocality'];
@@ -317,8 +353,10 @@
     document.getElementById('typedown-final--postal-code').value = addressLinesObject['PostalCode'];
     document.getElementById('typedown-final--country-code').value = addressLinesObject['Three character ISO country code'];
 
-    document.getElementById('typedown-final-address').classList.remove('dn');
+    // Hide Result and Previous Suggestions
     document.getElementById('typedown-result').classList.add('dn');
+    document.getElementById('typedown-previous-steps').classList.add('dn');
+
     document.getElementById('prompt-select').addEventListener('click', function(e) {
       updateValuesFromMapping(
         EDQ_CONFIG.PRO_WEB_MAPPING,
@@ -415,7 +453,7 @@
     }
 
     modalElement.querySelector('#edq-modal-back').onclick = function() {
-      userStates.pop();
+      userStates.revertPop();
     }
 
     let xhr;
@@ -475,9 +513,6 @@
           }
         }
       }));
-
-      // Every time you change anything run the queries
-      // After new queries are generateed create new suggestions.
     };
   }
 
