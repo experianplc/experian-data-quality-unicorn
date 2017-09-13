@@ -10,7 +10,7 @@
    * @param {Object} args - arguments to be used after initial search, e.g. a moniker.
    * @param {Object} self - reference to the original self.
    */
-  function UserState(ui, fn, args, self) {
+  function UserState({ui = null, fn = null, args, self = null}) {
     this.ui = ui;
     this.fn = fn;
     this.args = args;
@@ -19,6 +19,24 @@
 
   UserState.prototype = {
     revertState: function() {
+      let args = this.args;
+      document.getElementById('prompt-text').innerHTML = args['prompt text'] ;
+      document.getElementById('prompt-input').value = args['input value'];
+      document.getElementById('typedown-result').innerHTML = args['suggestions'];
+      document.getElementById('typedown-previous-steps').innerHTML = args['previous suggestions'];
+       
+      searchMethod = args['search method'];
+      picklistMoniker = args['moniker'];
+      let metadata = args['metadata'];
+
+      if (metadata._FullAddress === 'true') {
+        let finalAddressElement = document.getElementById('typedown-final-address');
+        if (!finalAddressElement.classList.contains('dn')) {
+          document.getElementById('typedown-final-address').classList.add('dn');
+          document.getElementById('typedown-result').classList.remove('dn');
+          document.getElementById('prompt-input').removeAttribute('disabled');
+        }
+      }
     }
   };
 
@@ -48,6 +66,7 @@
   };
 
 
+  // Scoped variables
   const EDQ_CONFIG = <UnicornObject> window.EdqConfig || <UnicornObject> {};
   let EDQ;
   if (window.EDQ) {
@@ -60,6 +79,8 @@
   if (EDQ_CONFIG.PRO_WEB_SERVICE_URL) {
     verifier = EDQ.address.proWeb;
   }
+
+  let userStates = new UserStates();
 
   /* The template for the modal */
   function modalHtml() {
@@ -188,7 +209,6 @@
   }
 
 
-  let searchMethod = verifier.doSearch;
 
   /*
    * Generates method parameters for the Typedown searches
@@ -235,12 +255,14 @@
    *
    * @param {KeyboardEvent} event
    * @param {PicklistObject} picklistMetaData
+   * @param {Function} oldSearchMethod
    *
    * @returns {undefined}
    */
-  function afterPicklistSelect(event : KeyboardEvent,  picklistMetaData : PicklistObject) {
-
-    console.log(picklistMetaData);
+  function afterPicklistSelect(event : KeyboardEvent,
+    picklistMetaData : PicklistObject,
+    oldSearchMethod : Function,
+    oldPicklistMoniker: string) {
 
     // An EventTarget doesn't necessarily have the property value, so TypeScript is throwing an
     // error here. Casting this to an HTMLInputElement will solve the problem in this case.
@@ -248,14 +270,33 @@
     htmlEventTarget.onkeyup(event);
     htmlEventTarget.value = null;
 
-    // TODO: give it padding slightly more of the previous suggestion or a default
+    let previousTypedownSteps = document.getElementById('typedown-previous-steps');
+
     let previousSuggestion = document.createElement('div');
+    let initialPaddingOffset = 1; // rem
+    previousSuggestion.style.paddingLeft = `${previousTypedownSteps.children.length + initialPaddingOffset}rem`;
     previousSuggestion.innerHTML = picklistMetaData.Picklist;
     previousSuggestion.onclick = function(e) {
       // make it clickable to go back to that step (work in progress)
     }
 
+    let newState = new UserState({
+      args: {
+        'engine': '',
+        'country': '',
+        'prompt text': document.getElementById('prompt-text').innerHTML,
+        'input value': document.getElementById('prompt-input').value,
+        'suggestions': document.getElementById('typedown-result').innerHTML,
+        'previous suggestions': document.getElementById('typedown-previous-steps').innerHTML,
+        'search method': oldSearchMethod,
+        'event': event,
+        'moniker': oldPicklistMoniker,
+        'metadata': picklistMetaData
+      }
+    });
+
     document.getElementById('typedown-previous-steps').appendChild(previousSuggestion);
+    userStates.push(newState);
   }
 
   /* 
@@ -334,6 +375,12 @@
     return true;
   }
 
+  // This is an anti-pattern, but is conveninent for an application of this size. 
+  // Global Variables:
+  let picklistMoniker = null;
+  let searchMethod = verifier.doSearch;
+
+
   /** Adds event listeners to the modal
    *
    * @param {Element} modalElement
@@ -343,6 +390,7 @@
    */
   function addModalEvents(modalElement, newEvent) {
     modalElement.querySelector('#edq-close-modal').onclick= function() {
+      modalElement.querySelector('#edq-modal-new').onclick();
       removeModal();
     };
 
@@ -355,6 +403,7 @@
       modalElement.querySelector('#prompt-text').innerHTML = 'Enter ZIP code, city name, county name or state code';
       modalElement.querySelector('#prompt-select').innerHTML = 'Select';
       modalElement.querySelector('#prompt-input').value = null;
+      modalElement.querySelector('#prompt-input').removeAttribute('disabled');
 
       if (searchMethod) {
         searchMethod = verifier.doSearch;
@@ -366,10 +415,10 @@
     }
 
     modalElement.querySelector('#edq-modal-back').onclick = function() {
+      userStates.pop();
     }
 
     let xhr;
-    let picklistMoniker = null;
     modalElement.querySelector('#prompt-input').onkeyup = function(event) {
 
       // The purpose of this is to cancel any requests that are currently in progress.
@@ -394,9 +443,11 @@
               let eventTarget = (<Element>newEvent.target);
 
               if (eventTarget.classList.contains('picklist-item')) {
+                let oldSearchMethod = searchMethod;
+                let oldPicklistMoniker = picklistMoniker;
+
                 let picklistMetaData = JSON.parse(eventTarget.getAttribute('picklist-metadata'));
 
-                
                 if (!picklistMetaData.PartialAddress) {
                   return;
 
@@ -407,10 +458,9 @@
                 } else if (picklistMetaData._FullAddress === "true") {
                   searchMethod = verifier.doGetAddress;
                   picklistMoniker = picklistMetaData.Moniker;
-
                 }
 
-                afterPicklistSelect(event, picklistMetaData);
+                afterPicklistSelect(event, picklistMetaData, oldSearchMethod, oldPicklistMoniker);
                 return;
               }
             };
