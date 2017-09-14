@@ -357,14 +357,14 @@
     document.getElementById('typedown-result').classList.add('dn');
     document.getElementById('typedown-previous-steps').classList.add('dn');
 
-    document.getElementById('prompt-select').addEventListener('click', function(e) {
+    document.getElementById('prompt-select').onclick = function(e) {
       updateValuesFromMapping(
         EDQ_CONFIG.PRO_WEB_MAPPING,
         createRawAddressMap(data.Envelope.Body.Address.QAAddress.AddressLine)
       );
 
       removeModal();
-    });
+    };
   }
 
   function removeModal() {
@@ -427,9 +427,14 @@
    * @returns {undefined}
    */
   function addModalEvents(modalElement, newEvent) {
-    modalElement.querySelector('#edq-close-modal').onclick= function() {
+    modalElement.querySelector('#edq-close-modal').onclick = function() {
       modalElement.querySelector('#edq-modal-new').onclick();
       removeModal();
+    };
+
+    // Selection before 'final address' stage.
+    modalElement.querySelector('#prompt-select').onclick = function() {
+      modalElement.querySelector('#typedown-results').children[0].click();
     };
 
     modalElement.querySelector('#edq-modal-new').onclick = function() {
@@ -453,6 +458,10 @@
     }
 
     modalElement.querySelector('#edq-modal-back').onclick = function() {
+      if (userStates.stack.length === 0) {
+        return;
+      }
+
       userStates.revertPop();
     }
 
@@ -528,6 +537,8 @@
     }
 
     let resultElement = document.createElement('div');
+    resultElement.id = 'typedown-results';
+
     picklists.forEach((picklist) => {
       let element = document.createElement('div');
       element.setAttribute('picklist-metadata', JSON.stringify(picklist));
