@@ -31,6 +31,13 @@
       picklistMoniker = args['moniker'];
       let metadata = args['metadata'];
 
+      if (document.getElementById('typedown-previous-steps').children.length > 0) {
+        for (let i = 0; i < document.getElementById('typedown-previous-steps').children.length; i++ ) {
+          let child = document.getElementById('typedown-previous-steps').children[i];
+          child.onclick = _picklistSuggestionOnClick;
+        }
+      }
+
       if (metadata._FullAddress === 'true') {
         let finalAddressElement = document.getElementById('typedown-final-address');
         if (!finalAddressElement.classList.contains('dn')) {
@@ -41,12 +48,8 @@
         }
       }
 
-      if (document.getElementById('typedown-previous-steps').children.length > 0) {
-        for (let i = 0; i < document.getElementById('typedown-previous-steps').children.length; i++ ) {
-          let child = document.getElementById('typedown-previous-steps').children[i];
-          child.onclick = _picklistSuggestionOnClick;
-        }
-      }
+      // After State Reversion
+      document.getElementById('prompt-input').focus();
     }
   };
 
@@ -201,6 +204,7 @@
     modalElement.id = 'edq-overlay-container';
     modalElement.innerHTML = modalHtml();
     document.body.appendChild(modalElement);
+    modalElement.querySelector('#prompt-input').focus();
 
     addModalEvents(modalElement, newEvent);
     return modalElement;
@@ -300,6 +304,7 @@
 
     document.getElementById('typedown-previous-steps').appendChild(previousSuggestion);
     userStates.push(newState);
+    document.getElementById('prompt-input').focus();
   }
 
   /*
@@ -324,10 +329,9 @@
 
       if (item.args.metadata.Moniker === metadata.Moniker) {
         userStates.stack = userStates.stack.slice(0, index);
+        item.revertState();
+        break;
       }
-
-      item.revertState();
-      break;
     }
   }
 
@@ -341,8 +345,6 @@
 
     document.getElementById('prompt-select').innerHTML = 'Accept';
     document.getElementById('prompt-input').setAttribute('disabled', 'disabled');
-
-
 
     // Show Final Address
     document.getElementById('typedown-final-address').classList.remove('dn');
@@ -365,6 +367,8 @@
 
       removeModal();
     };
+
+    document.getElementById('prompt-select').focus();
   }
 
   function removeModal() {
@@ -455,6 +459,8 @@
       if (picklistMoniker) {
         picklistMoniker = null;
       }
+
+      modalElement.querySelector('#prompt-input').focus();
     }
 
     modalElement.querySelector('#edq-modal-back').onclick = function() {
@@ -475,6 +481,12 @@
         // pass
       }
 
+      // Enter was pressed
+      if (event.keyCode === 13) {
+        modalElement.querySelector('#prompt-select').click();
+        return;
+      }
+
       // <any> Says that the Object can by any type.
       // We want to combine our template parameters with the custom callback.
       xhr = searchMethod((<any>Object).assign(getMethodParams(event, picklistMoniker), {
@@ -485,7 +497,7 @@
 
           // There are picklists
           if (picklistUiUpdate(data)) {
-            document.getElementById('typedown-result').onclick = function(newEvent) {
+            document.getElementById('typedown-results').onclick = function(newEvent) {
               // An event isn't necessarily an element so we cast it here.
               let eventTarget = (<Element>newEvent.target);
 
@@ -512,11 +524,9 @@
               }
             };
 
-          // There are no more picklists -- at final stage of selection process.
+          // There are no more picklists -- at final stage of selection process (full address)
           } else {
             finalAddressUiUpdate(data);
-
-            // Reset searchMethod and other information back to their original:
             searchMethod = verifier.doSearch;
             picklistMoniker = null;
           }
@@ -542,8 +552,37 @@
     picklists.forEach((picklist) => {
       let element = document.createElement('div');
       element.setAttribute('picklist-metadata', JSON.stringify(picklist));
+      element.tabIndex = 0;
       element.innerText = picklist.Picklist;
       element.className = 'pointer shadow-hover picklist-item';
+      element.onkeypress = function(event) {
+        // If 'Enter' is not selected.
+        if (event.keyCode !== 13) {
+          return;
+        }
+
+        let eventTarget = (<Element>event.target);
+        let oldSearchMethod = searchMethod;
+        let oldPicklistMoniker = picklistMoniker;
+
+        let picklistMetaData = JSON.parse(eventTarget.getAttribute('picklist-metadata'));
+
+        if (!picklistMetaData.PartialAddress) {
+          return;
+
+        } else if (picklistMetaData._CanStep === "true") {
+          searchMethod = verifier.doRefine;
+          picklistMoniker = picklistMetaData.Moniker;
+
+        } else if (picklistMetaData._FullAddress === "true") {
+          searchMethod = verifier.doGetAddress;
+          picklistMoniker = picklistMetaData.Moniker;
+        }
+
+        afterPicklistSelect(event, picklistMetaData, oldSearchMethod, oldPicklistMoniker);
+        return;
+      }
+
       resultElement.appendChild(element);
     });
 
