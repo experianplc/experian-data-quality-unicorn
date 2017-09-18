@@ -50,6 +50,7 @@
 
       // After State Reversion
       document.getElementById('prompt-input').focus();
+      document.getElementById('prompt-input').dispatchEvent(new KeyboardEvent('keyup', { key: '' }));
     }
   };
 
@@ -278,12 +279,6 @@
     oldSearchMethod : Function,
     oldPicklistMoniker: string) {
 
-    // An EventTarget doesn't necessarily have the property value, so TypeScript is throwing an
-    // error here. Casting this to an HTMLInputElement will solve the problem in this case.
-    const htmlEventTarget = <HTMLInputElement>event.target
-    htmlEventTarget.onkeyup(event);
-    htmlEventTarget.value = null;
-
     let previousTypedownSteps = document.getElementById('typedown-previous-steps');
     let previousSuggestion = generatePicklistSuggestion(picklistMetaData);
 
@@ -301,6 +296,12 @@
         'metadata': picklistMetaData
       }
     });
+
+    // An EventTarget doesn't necessarily have the property value, so TypeScript is throwing an
+    // error here. Casting this to an HTMLInputElement will solve the problem in this case.
+    const htmlEventTarget = <HTMLInputElement>event.target
+    htmlEventTarget.onkeyup(event);
+    htmlEventTarget.value = null;
 
     document.getElementById('typedown-previous-steps').appendChild(previousSuggestion);
     userStates.push(newState);
@@ -555,7 +556,7 @@
       element.tabIndex = 0;
       element.innerText = picklist.Picklist;
       element.className = 'pointer shadow-hover picklist-item';
-      element.onkeypress = function(event) {
+      element.onkeyup = function(event) {
         // If 'Enter' is not selected.
         if (event.keyCode !== 13) {
           return;
