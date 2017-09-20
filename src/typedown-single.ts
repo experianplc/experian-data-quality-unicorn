@@ -312,17 +312,21 @@
    * Generates a picklist suggestion element to be appended to the history
    */
   function generatePicklistSuggestion(picklistMetaData : PicklistObject): Element {
-    let previousSuggestion = document.createElement('div');
+    let previousSuggestion = document.createElement('a');
     let initialPaddingOffset = 1; // rem
     previousSuggestion.style.paddingLeft = `${document.getElementById('typedown-previous-steps').children.length + initialPaddingOffset}rem`;
     previousSuggestion.innerHTML = picklistMetaData.Picklist;
-    previousSuggestion.className = 'pointer shadow-hover picklist-item';
+    previousSuggestion.className = 'pointer shadow-hover picklist-item db link black';
+    previousSuggestion.href = '#';
+    previousSuggestion.tabIndex = 0;
     previousSuggestion.setAttribute('picklist-metadata', JSON.stringify(picklistMetaData));
     previousSuggestion.onclick = _picklistSuggestionOnClick;
     return previousSuggestion;
   }
 
   function _picklistSuggestionOnClick(event : MouseEvent) {
+    event.preventDefault();
+
     let metadata = JSON.parse((<Element>event.target).getAttribute('picklist-metadata'));
 
     for (let index = 0; index < userStates.stack.length; index++) {
@@ -422,6 +426,7 @@
   // Global Variables:
   let picklistMoniker = null;
   let searchMethod = verifier.doSearch;
+  const ENTER_KEY_CODE = 13;
 
 
   /** Adds event listeners to the modal
@@ -482,12 +487,6 @@
         // pass
       }
 
-      // Enter was pressed
-      if (event.keyCode === 13) {
-        modalElement.querySelector('#prompt-select').click();
-        return;
-      }
-
       // <any> Says that the Object can by any type.
       // We want to combine our template parameters with the custom callback.
       xhr = searchMethod((<any>Object).assign(getMethodParams(event, picklistMoniker), {
@@ -499,6 +498,8 @@
           // There are picklists
           if (picklistUiUpdate(data)) {
             document.getElementById('typedown-results').onclick = function(newEvent) {
+              event.preventDefault();
+
               // An event isn't necessarily an element so we cast it here.
               let eventTarget = (<Element>newEvent.target);
 
@@ -550,40 +551,13 @@
     let resultElement = document.createElement('div');
     resultElement.id = 'typedown-results';
 
-    picklists.forEach((picklist) => {
-      let element = document.createElement('div');
+    picklists.forEach((picklist, index) => {
+      let element = document.createElement('a');
       element.setAttribute('picklist-metadata', JSON.stringify(picklist));
+      element.href = "#";
       element.tabIndex = 0;
       element.innerText = picklist.Picklist;
-      element.className = 'pointer shadow-hover picklist-item';
-      element.onkeyup = function(event) {
-        // If 'Enter' is not selected.
-        if (event.keyCode !== 13) {
-          return;
-        }
-
-        let eventTarget = (<Element>event.target);
-        let oldSearchMethod = searchMethod;
-        let oldPicklistMoniker = picklistMoniker;
-
-        let picklistMetaData = JSON.parse(eventTarget.getAttribute('picklist-metadata'));
-
-        if (!picklistMetaData.PartialAddress) {
-          return;
-
-        } else if (picklistMetaData._CanStep === "true") {
-          searchMethod = verifier.doRefine;
-          picklistMoniker = picklistMetaData.Moniker;
-
-        } else if (picklistMetaData._FullAddress === "true") {
-          searchMethod = verifier.doGetAddress;
-          picklistMoniker = picklistMetaData.Moniker;
-        }
-
-        afterPicklistSelect(event, picklistMetaData, oldSearchMethod, oldPicklistMoniker);
-        return;
-      }
-
+      element.className = 'pointer shadow-hover picklist-item db link black';
       resultElement.appendChild(element);
     });
 
