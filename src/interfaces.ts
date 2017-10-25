@@ -52,7 +52,35 @@ interface UnicornObject {
   EMAIL_TIMEOUT: number,
   PHONE_TIMEOUT: number,
 
-  USE_REVERSE_PHONE_APPEND: boolean
+  USE_REVERSE_PHONE_APPEND: boolean,
+  REVERSE_PHONE_APPEND_MAPPINGS: Array<ReversePhoneAppendMapping>
+}
+
+interface ReversePhoneAppendMapping {
+  element: Element,
+  fields: Array<string>,
+  separator: string
+}
+
+interface RPAObject {
+  "Number"?: string,
+  AccountType?: string,
+  PhoneType?: string,
+  Name?: string,
+  FirstName?: string,
+  MiddleInitial?: string,
+  LastName?: string,
+  Address?: {
+     Country?: string,
+     Locality1?: string,
+     Number1?: string,
+     Postcode1?: string,
+     Province1?: string,
+     Street1?: string,
+     Certainty?: string,
+  },
+  Country?: string,
+  Certainty?: string,
 }
 
 interface Element {

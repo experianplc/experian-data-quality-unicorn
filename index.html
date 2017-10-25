@@ -15,17 +15,25 @@
     <!-- Keys -->
     <script>
       window.EdqConfig = {
-        PRO_WEB_AUTH_TOKEN: '46832a16-80c0-43d8-af8e-05b3dde5aaaf',
-        PHONE_VALIDATE_PLUS_AUTH_TOKEN: '1793360f-3d97-451a-81b8-d7e765c48894',
-        GLOBAL_PHONE_VALIDATE_AUTH_TOKEN: '1793360f-3d97-451a-81b8-d7e765c48894',
-        EMAIL_VALIDATE_AUTH_TOKEN: '1793360f-3d97-451a-81b8-d7e765c48894',
+        PRO_WEB_AUTH_TOKEN: 'c5727665-4b88-49f4-bb5b-4d90489325c6',
+        PHONE_VALIDATE_PLUS_AUTH_TOKEN: 'c5727665-4b88-49f4-bb5b-4d90489325c6',
+        GLOBAL_PHONE_VALIDATE_AUTH_TOKEN: 'c5727665-4b88-49f4-bb5b-4d90489325c6',
+        EMAIL_VALIDATE_AUTH_TOKEN: 'c5727665-4b88-49f4-bb5b-4d90489325c6',
 
-        GLOBAL_INTUITIVE_AUTH_TOKEN: '8c9faaa4-a5d2-4036-808d-11208a2e52d8',
+        GLOBAL_INTUITIVE_AUTH_TOKEN: 'c5727665-4b88-49f4-bb5b-4d90489325c6',
         GLOBAL_INTUITIVE_TAKE: 7,
         GLOBAL_INTUITIVE_ISO3_COUNTRY: 'USA',
 
         EMAIL_ELEMENTS: [document.getElementById('email')],
-        PHONE_ELEMENTS: [document.getElementById('phone')]
+        PHONE_ELEMENTS: [document.getElementById('phone')],
+
+        USE_REVERSE_PHONE_APPEND: true,
+
+        REVERSE_PHONE_APPEND_MAPPINGS: {
+          elements: ['AccountType'],
+          field: document.getElementById('email'),
+          separator: ','
+        }
       };
     </script>
 

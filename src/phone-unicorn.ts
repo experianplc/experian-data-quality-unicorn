@@ -42,6 +42,12 @@
 
   const USE_REVERSE_PHONE_APPEND = EDQ_CONFIG.USE_REVERSE_PHONE_APPEND;
 
+  const REVERSE_PHONE_APPEND_MAPPINGS = EDQ_CONFIG.REVERSE_PHONE_APPEND_MAPPINGS;
+
+  if (!REVERSE_PHONE_APPEND_MAPPINGS) {
+    throw 'REVERSE_PHONE_APPEND_MAPPINGS not specified in EdqConfig';
+  }
+
   /* ********************************* */
 
   const changeIcon = function(element, base64DataUri) {
@@ -65,11 +71,39 @@
   }
 
   let phoneFn = EDQ.phone.globalPhoneValidate;
+  let enableAppend = false;
+
   if (USE_REVERSE_PHONE_APPEND) {
     phoneFn = EDQ.phone.reversePhoneAppend;
+    enableAppend = true;
   }
 
-  const activatePhoneValidation = ((elements, fn = phoneFn) => {
+  /** Map the specified elements back to the specified fields
+   *
+   * @param {Array} elements
+   * @param {Element} field
+   * @param {Object} data
+   *
+   * @returns {undefined}
+   */
+  let mapElementsToField = function({elements, field, separator = ' ', data}) {
+    try {
+      const fieldValue = elements.map((elementValue) => {
+        return eval(`data.${elementValue}`);
+      });
+
+      /* Regex to find the last instance of the separator, if present */
+      let regex = new RegExp(separator + '$');
+
+      /* Remove the separator if there are no matches */
+      const newValue = fieldValue.join(separator).replace(regex, '');
+      field.value = newValue;
+    } catch(e) {
+      console.log(e);
+    }
+  };
+
+  const activatePhoneValidation = ((elements, fn = phoneFn, enableAppend = false) => {
     for (let i = 0; i < elements.length; i++) {
       let phoneElement = elements[i];
       let oldOnChangeFn = phoneElement.onchange;
@@ -80,7 +114,14 @@
       phoneElement.onchange = ((event) => {
         phoneElement.removeAttribute('edq-metadata');
 
-        let elementValue = (<HTMLInputElement>event.currentTarget).value;
+        let elementValue = null;
+      
+        try {
+          elementValue = (<HTMLInputElement>event.currentTarget).value;
+        } catch(e) {
+          elementValue = (<HTMLInputElement>event.target).value;
+        }
+
         if (!elementValue) {
           changeIcon(phoneElement, '');
           return;
@@ -90,7 +131,7 @@
 
         let removeSpecial = function(string) {
           let newString = string.replace(/[`~!@#$%^&*()_|\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
-          return newString;
+          return newString.replace(' ', '');
         };
 
         let globalPhoneString = ((string) => {
@@ -123,7 +164,6 @@
             phoneElement.setAttribute('edq-metadata', JSON.stringify(data));
 
             if (EDQ_CONFIG.DEBUG) {
-              console.log('Data:');
               console.log(data);
               console.log('Error:');
               console.log(error);
@@ -135,6 +175,17 @@
               changeIcon(phoneElement, INVALID_BASE64_ICON);
             } else if (error) {
               changeIcon(phoneElement, '');
+            }
+
+            if (REVERSE_PHONE_APPEND_MAPPINGS && USE_REVERSE_PHONE_APPEND) {
+              REVERSE_PHONE_APPEND_MAPPINGS.forEach((mapper) => {
+                mapElementsToField({
+                  elements: mapper.elements,
+                  field: mapper.field,
+                  separator: mapper.separator,
+                  data
+                });
+              });
             }
 
             try {
@@ -169,7 +220,7 @@
    * @returns {undefined}
    */
   EDQ.phone.activateGlobalPhoneValidation = ((element) => {
-    activatePhoneValidation(element, EDQ.phone.globalPhoneValidate);
+    activatePhoneValidation(element, EDQ.phone.globalPhoneValidate, false);
   });
 
   /**
@@ -186,7 +237,7 @@
    * @returns {undefined}
    */
   EDQ.phone.activateReversePhoneAppendValidation = ((element) => {
-    activatePhoneValidation(element, EDQ.phone.reversePhoneAppend);
+    activatePhoneValidation(element, EDQ.phone.reversePhoneAppend, true);
   });
 
 }).call(this);
