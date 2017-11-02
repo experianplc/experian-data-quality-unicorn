@@ -235,15 +235,17 @@ var autoComplete = (function(){
    *
    *  @type {Object}
    */
-  let EDQ_CONFIG = <UnicornObject> window.EdqConfig || <UnicornObject> {};
+  let EDQ_CONFIG = function() {
+    return <UnicornObject> window.EdqConfig || <UnicornObject> {};
+  }
 
-  let globalIntuitiveElement = EDQ_CONFIG.GLOBAL_INTUITIVE_ELEMENT;
-  let mapping = EDQ_CONFIG.GLOBAL_INTUITIVE_MAPPING;
-  let debug = EDQ_CONFIG.DEBUG;
+  let globalIntuitiveElement = EDQ_CONFIG().GLOBAL_INTUITIVE_ELEMENT;
+  let mapping = EDQ_CONFIG().GLOBAL_INTUITIVE_MAPPING;
+  let debug = EDQ_CONFIG().DEBUG;
 
-  if (EDQ_CONFIG.GLOBAL_INTUITIVE_PLACEHOLDER) {
+  if (EDQ_CONFIG().GLOBAL_INTUITIVE_PLACEHOLDER) {
     document.getElementById(globalIntuitiveElement).setAttribute('placeholder',
-      EDQ_CONFIG.GLOBAL_INTUITIVE_PLACEHOLDER);
+      EDQ_CONFIG().GLOBAL_INTUITIVE_PLACEHOLDER);
   }
 
   if (debug) {
@@ -336,8 +338,8 @@ var autoComplete = (function(){
 
     xhr = EDQ.address.globalIntuitive.search({
       query: term,
-      country: EDQ_CONFIG.GLOBAL_INTUITIVE_ISO3_COUNTRY || 'USA',
-      take: EDQ_CONFIG.GLOBAL_INTUITIVE_TAKE || 7,
+      country: EDQ_CONFIG().GLOBAL_INTUITIVE_ISO3_COUNTRY || 'USA',
+      take: EDQ_CONFIG().GLOBAL_INTUITIVE_TAKE || 7,
       callback: function(data, error) {
         try {
           response(data.results);
