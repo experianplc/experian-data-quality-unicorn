@@ -75,7 +75,8 @@
         element.textContent = `Did you mean: ${data.Corrections[0]}?`;;
 
         element.addEventListener('click', ((event) => {
-          emailElement.value = event.target.textContent.match(/: (.*)/)[1];
+          const email = event.target.textContent.match(/: (.*)(\?)/)[1];
+          emailElement.value = email;
           removeSuggestion();
           changeIcon(emailElement, VERIFIED_BASE64_ICON);
         }));
