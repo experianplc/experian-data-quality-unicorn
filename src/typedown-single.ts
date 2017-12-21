@@ -1,92 +1,12 @@
+import { UserState } from './classes/UserState';
+import { UserStates } from './classes/UserStates';
+
+
 (function () {
-
-  /* UserState represents the state of both the UI at the time and the "back-end", which 
-   * consists of things like the function used for search and the parameters */
-
-  /*
-   *
-   * @param {HTML} ui - the HTML that was present at that step, e.g. picklists after doSearch
-   * @param {Function} fn - the type of function used for verification, e.g. doSearch or doRefine
-   * @param {Object} args - arguments to be used after initial search, e.g. a moniker.
-   * @param {Object} self - reference to the original self.
-   */
-  function UserState({ui = null, fn = null, args, self = null}) {
-    this.ui = ui;
-    this.fn = fn;
-    this.args = args;
-    this.self = self;
-  }
-
-  UserState.prototype = {
-    revertState: function() {
-      let args = this.args;
-      document.getElementById('prompt-text').innerHTML = args['prompt text'] ;
-      document.getElementById('prompt-input').value = args['input value'];
-      document.getElementById('typedown-result').innerHTML = args['suggestions'];
-
-      let typedownPreviousSteps = document.getElementById('typedown-previous-steps');
-      typedownPreviousSteps.innerHTML = args['previous suggestions'];
-
-      searchMethod = args['search method'];
-      picklistMoniker = args['moniker'];
-      let metadata = args['metadata'];
-
-      if (document.getElementById('typedown-previous-steps').children.length > 0) {
-        for (let i = 0; i < document.getElementById('typedown-previous-steps').children.length; i++ ) {
-          let child = document.getElementById('typedown-previous-steps').children[i];
-          child.onclick = _picklistSuggestionOnClick;
-        }
-      }
-
-      if (metadata._FullAddress === 'true') {
-        let finalAddressElement = document.getElementById('typedown-final-address');
-        if (!finalAddressElement.classList.contains('dn')) {
-          document.getElementById('typedown-final-address').classList.add('dn');
-          document.getElementById('typedown-result').classList.remove('dn');
-          document.getElementById('typedown-previous-steps').classList.remove('dn');
-          document.getElementById('prompt-input').removeAttribute('disabled');
-        }
-      }
-
-      // After State Reversion
-      document.getElementById('prompt-input').focus();
-      document.getElementById('prompt-input').dispatchEvent(new KeyboardEvent('keyup', { key: '' }));
-    }
-  };
-
-  function UserStates() {
-    this.stack = []
-  }
-
-  UserStates.prototype = {
-
-    /*
-     * @param {UserState} state
-     *
-     * @returns {undefined}
-     */
-    push: function(state) {
-      this.stack.push(state);
-    },
-
-    /*
-     * @returns {UserState}
-     */
-    revertPop: function() {
-      let temp = this.stack.pop();
-      temp.revertState();
-      return temp;
-    },
-
-    pop: function() {
-      let temp = this.stack.pop();
-      return temp;
-    }
-  };
-
 
   // Scoped variables
   const EDQ_CONFIG = <UnicornObject> window.EdqConfig || <UnicornObject> {};
+
   let EDQ;
   if (window.EDQ) {
     EDQ = window.EDQ;
@@ -186,7 +106,6 @@
 
   /** Closes the modal by removing it from the DOM
    *
-   * @returns {undefined}
    */
   function closeModal() {
     document.getElementById('edq-overlay-container').remove();
@@ -194,9 +113,8 @@
 
   /** Creates the modal and adds it to the DOM
    *
-   * @returns {Element}
    */
-  function openModal(newEvent) {
+  function openModal(newEvent): Element {
     if (document.getElementById('edq-overlay-container')) {
       return document.getElementById('edq-overlay-container');
     }
@@ -217,7 +135,7 @@
    *
    * @returns {Event} newEvent
    */
-  function createNewEvent(oldEvent) {
+  function createNewEvent(oldEvent): Event {
     // This handles the case where the browser is not IE
     if (typeof Event === "function") {
       return new oldEvent.constructor(oldEvent.type, oldEvent);
@@ -231,15 +149,12 @@
 
 
   /*
-   * Generates method parameters for the Typedown searches
+   ** Generates method parameters for the Typedown searches
    *
-   * @param {Event} event
-   * @param {String} moniker
-   *
-   * @returns Object - method parameters
    */
-  function getMethodParams(event=null, moniker=null) {
+  function getMethodParams(event?: Event, moniker?: String): Object {
     let layout = EDQ_CONFIG.PRO_WEB_LAYOUT;
+    const eventTarget = <HTMLInputElement>event.target
 
     // doRefine
     if (event && moniker) {
@@ -248,14 +163,14 @@
         refineOptions: {},
         layout,
         moniker,
-        refinement: event.target.value,
+        refinement: eventTarget.value,
         formattedAddressInPicklist: false
       }
       // doSearch
     } else if (event && !moniker) {
       return {
         country: EDQ_CONFIG.PRO_WEB_COUNTRY, /* ISO-3 Country, e.g. USA */
-        addressQuery: event.target.value,
+        addressQuery: eventTarget.value,
         engineOptions: {},
         engineType: 'Typedown',
         layout,
@@ -283,19 +198,15 @@
     let previousSuggestion = generatePicklistSuggestion(picklistMetaData);
 
     let newState = new UserState({
-      args: {
-        'engine': '',
-        'country': '',
-        'prompt text': document.getElementById('prompt-text').innerHTML,
-        'input value': document.getElementById('prompt-input').value,
-        'suggestions': document.getElementById('typedown-result').innerHTML,
-        'previous suggestions': document.getElementById('typedown-previous-steps').innerHTML,
-        'search method': oldSearchMethod,
-        'event': event,
-        'moniker': oldPicklistMoniker,
-        'metadata': picklistMetaData
-      }
-    });
+      'prompt text': document.getElementById('prompt-text').innerHTML,
+      'input value': document.getElementById('prompt-input').value,
+      'suggestions': document.getElementById('typedown-result').innerHTML,
+      'previous suggestions': document.getElementById('typedown-previous-steps').innerHTML,
+      'search method': oldSearchMethod,
+      'event': event,
+      'moniker': oldPicklistMoniker,
+      'metadata': picklistMetaData
+    }, this);
 
     // An EventTarget doesn't necessarily have the property value, so TypeScript is throwing an
     // error here. Casting this to an HTMLInputElement will solve the problem in this case.

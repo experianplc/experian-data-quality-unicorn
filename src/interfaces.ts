@@ -16,15 +16,6 @@ interface Node {
   onclick?: any
 }
 
-interface PicklistObject {
-  Moniker: string,
-  PartialAddress: string,
-  Picklist: string,
-  PostCode: string,
-  _Multiples: string,
-  _CanStep: string
-}
-
 interface PegasusObject {
   DEBUG?: boolean,
 

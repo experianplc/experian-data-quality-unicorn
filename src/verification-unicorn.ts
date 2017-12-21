@@ -395,7 +395,7 @@ var autoComplete = (function () {
       useOriginalAddress(newEvent);
     }
 
-    modalElement.querySelector('#edq-close-modal').onclick= function() {
+    modalElement.querySelector('#edq-close-modal').onclick = function() {
       modalElement.remove();
       const suggestionBox = document.querySelector('#edq-verification-suggestion-box');
       if (suggestionBox) {
@@ -407,26 +407,25 @@ var autoComplete = (function () {
   /**
    * Completes the verification process, and uses the callback
    *
-   * @param {Element} element
    * @param {Event} event
    *
    * @returns {undefined}
    */
   function finalCallback(newEvent) {
-    let originalTarget = newEvent['originalTarget'];
+    let savedTarget = newEvent['savedTarget'];
     let callback = EDQ_CONFIG.PRO_WEB_CALLBACK;
     if (callback) {
       if (typeof(callback) === "string") {
         eval(callback);
       } else if (typeof(callback) === "function") {
-        callback(newEvent.originalTarget, newEvent);
+        callback(newEvent.savedTarget, newEvent);
       } else {
         throw "PRO_WEB_CALLBACK must be either text resolving to javascript or a function";
       }
 
     } else {
       // Reverting the element changes appears to make things a bit easier.
-      originalTarget[`on${newEvent.type}`] = newEvent['originalEvent'];
+      savedTarget[`on${newEvent.type}`] = newEvent['originalEvent'];
     }
   }
 
@@ -814,9 +813,18 @@ var autoComplete = (function () {
     const triggerElement = pair.element;
     const originalTriggerEvent = triggerElement[`on${eventType}`];
 
+    // For Firefox/Chrome support
+    // See: https://stackoverflow.com/questions/95731/why-does-an-onclick-property-set-with-setattribute-fail-to-work-in-ie
+    triggerElement.setAttribute(`on${eventType}`, `function(event) {
+      var newEvent = createNewEvent(event);
+      newEvent['savedTarget'] = triggerElement.cloneNode();
+      newEvent['originalEvent'] = originalTriggerEvent;
+      submitForm(newEvent);
+    }`);
+
     triggerElement[`on${eventType}`] = function(event) {
       let newEvent = createNewEvent(event);
-      newEvent['originalTarget'] = triggerElement.cloneNode();
+      newEvent['savedTarget'] = triggerElement.cloneNode();
       newEvent['originalEvent'] = originalTriggerEvent;
       submitForm(newEvent);
     }
