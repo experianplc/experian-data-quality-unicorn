@@ -1,14 +1,15 @@
 {
   "name": "address-unicorn",
   "version": "1.0.0",
-  "description": "ProWebOnDemand Unicorn with Verification",
+  "description": "ProWebOnDemand Unicorn with Verification, Typedown",
   "main": "index.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "test": "node_modules/intern/bin/intern-runner.js config=test/intern",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "start": "tsc"
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +19,7 @@
     "webpack": "^3.6.0"
   },
   "dependencies": {
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "typescript": "^2.6.2"
   }
 }
