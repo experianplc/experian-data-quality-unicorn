@@ -1,0 +1,4 @@
+interface Node {
+  onclick?: any
+}
+
