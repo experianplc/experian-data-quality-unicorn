@@ -2,7 +2,8 @@
   "name": "edq",
   "version": "1.0.0",
   "scripts": {
-    "build": "./node_modules/.bin/babel src -d lib"
+    "build": "./node_modules/.bin/babel src -d lib",
+    "tsc": "tsc"
   },
   "devDependencies": {
     "babel-cli": "^6.0.0",
