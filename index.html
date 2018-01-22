@@ -4,7 +4,7 @@
   <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
   <meta content="utf-8" http-equiv="encoding">
   <!-- <link rel="stylesheet" href="https://unpkg.com/tachyons@4.7.0/css/tachyons.min.css"/> -->
-  <link rel="stylesheet" href="lib/pro-web.css"/>
+  <link rel="stylesheet" href="http://assets.qas.com/development/address-unicorn/pro-web.css"/>
 </head>
 
 <body>
@@ -26,7 +26,12 @@
       PRO_WEB_SERVICE_URL: 'http://bosedqproxy.qas.com/pro-web',
       SOAP_ACTION_URL: 'http://www.qas.com/web-2013-12',
       PRO_WEB_AUTH_TOKEN: '46832a16-80c0-43d8-af8e-05b3dde5aaaf',
-      PRO_WEB_SUBMIT_ELEMENT: document.getElementById('form-submit'),
+      PRO_WEB_SUBMIT_TRIGGERS: [
+        {
+          type: 'click',
+          element: document.getElementById('form-submit'),
+        }
+      ],
       PRO_WEB_LAYOUT: 'Ellucian',
       PRO_WEB_COUNTRY: 'USA',
       PRO_WEB_MAPPING: [
@@ -68,7 +73,7 @@
     };
   </script>
 
-  <script src="http://bossalesdemostaging.qas.com/assets/edq.js"></script>
+  <script src="http://assets.qas.com/development/pegasus/edq.js"></script>
   <script src="lib/verification-unicorn.js"></script>
 </body>
 </html>
