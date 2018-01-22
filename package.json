@@ -8,15 +8,14 @@
   },
   "scripts": {
     "test": "node_modules/intern/bin/intern-runner.js config=test/intern",
-    "watch": "webpack --watch",
-    "tsc": "tsc"
+    "tsc": "tsc ; webpack"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "intern": "^3.4.4",
     "ts-loader": "^2.3.7",
-    "webpack": "^3.6.0"
+    "webpack": "^3.10.0"
   },
   "dependencies": {
     "lodash": "^4.17.4",
