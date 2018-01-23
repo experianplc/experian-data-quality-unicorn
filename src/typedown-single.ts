@@ -24,7 +24,7 @@ import { UserStates } from './classes/UserStates';
   /* The template for the modal */
   function modalHtml() {
     return `<div class="edq-overlay" id="edq-overlay">
-      <div class="w-75 center v-top v-mid-ns mt4-m mt6-l">
+      <div id="edq-modal" class="w-75 center v-top v-mid-ns mt4-m mt6-l">
         <div class="bg-black-10">
           <!-- New/Back, Mode, and Datamap -->
           <div class="pl3 pt3">
@@ -36,12 +36,10 @@ import { UserStates } from './classes/UserStates';
             |
 
             <input type="radio" name="verification-mode" value="typedown">Typedown</input>
-            <input type="radio" name="verification-mode" value="single-line">Single Line</input>
 
             | Datamap:
             <select>
               <option>United States of America</option>
-              <option>Canada</option>
             </select>
 
             <span id="edq-close-modal"
@@ -104,13 +102,6 @@ import { UserStates } from './classes/UserStates';
       </div>`;
   };
 
-  /** Closes the modal by removing it from the DOM
-   *
-   */
-  function closeModal() {
-    document.getElementById('edq-overlay-container').remove();
-  }
-
   /** Creates the modal and adds it to the DOM
    *
    */
@@ -118,6 +109,8 @@ import { UserStates } from './classes/UserStates';
     if (document.getElementById('edq-overlay-container')) {
       return document.getElementById('edq-overlay-container');
     }
+
+    document.querySelector('html').style.backgroundColor = 'grey';
 
     let modalElement = document.createElement('div');
     modalElement.id = 'edq-overlay-container';
@@ -349,6 +342,7 @@ import { UserStates } from './classes/UserStates';
    */
   function addModalEvents(modalElement, newEvent) {
     modalElement.querySelector('#edq-close-modal').onclick = function() {
+      document.querySelector('html').style.backgroundColor = '';
       modalElement.querySelector('#edq-modal-new').onclick();
       removeModal();
     };
