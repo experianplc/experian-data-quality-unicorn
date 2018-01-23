@@ -90,6 +90,7 @@
   font-family: sans-serif;
 }
 
+#edq-overlay-container #typedown-result { height: 256px; overflow-y: scroll; }
 /*** Layout -- Modify at your own risk ***/
 #edq-overlay-container .w-100 { width: 100%; }
 #edq-overlay-container .w-80 { width: 80%; }
