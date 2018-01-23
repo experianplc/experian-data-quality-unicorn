@@ -1,8 +1,9 @@
-import { UserState } from './classes/UserState';
-import { UserStates } from './classes/UserStates';
+import { UserState } from './classes/user-state';
+import { UserStates } from './classes/user-states';
+import { modal } from './functions/modal';
+import { stateMapper } from './functions/state-mapper';
 
-
-(function () {
+(function() {
 
   // Scoped variables
   const EDQ_CONFIG = <UnicornObject> window.EdqConfig || <UnicornObject> {};
@@ -21,90 +22,32 @@ import { UserStates } from './classes/UserStates';
 
   let userStates = new UserStates();
 
-  /* The template for the modal */
-  function modalHtml() {
-    return `<div class="edq-overlay" id="edq-overlay">
-      <div id="edq-modal" class="w-75 center v-top v-mid-ns mt4-m mt6-l">
-        <div class="bg-black-10">
-          <!-- New/Back, Mode, and Datamap -->
-          <div class="pl3 pt3">
-            <span>
-              <button id="edq-modal-new" class="pointer pl1">New</button>
-              <button id="edq-modal-back" class="pointer pr1">Back</button>
-            </span>
+  let picklistMoniker = null;
+  let searchMethod = verifier.doSearch;
 
-            |
 
-            <input type="radio" name="verification-mode" value="typedown">Typedown</input>
-
-            | Datamap:
-            <select>
-              <option>United States of America</option>
-            </select>
-
-            <span id="edq-close-modal"
-                  class="bg-black b white pointer fr ba f5 ph1 mr3">
-              x
-            </span>
-          </div>
-
-          <div class="pa2 bb b--black-10"></div>
-
-          <!-- Prompt and selection field -->
-          <div class="pl3 mt3 pb3">
-            <div id="prompt-text" class="b">Enter ZIP code, city name, county name or state code</div>
-            <input id="prompt-input">
-            <button id="prompt-select" class="pointer">Select</button>
-          </div>
-        </div>
-
-        <!-- Current steps -->
-        <div class="h5 ba">
-          <div id="typedown-previous-steps">
-          </div>
-
-          <div id="typedown-result" class="ml4">
-            Continue typing (too many matches)
-          </div>
-
-          <div id="typedown-final-address" class="ml4 dn">
-            <div>
-              <span class="dib w-10">Address Line One</span>
-              <span class="dib w-80"><input class="w-100" id="typedown-final--address-line-one"></span>
-            </div>
-            <div>
-              <span class="dib w-10">Address Line Two</span>
-              <input class="dib w-80" id="typedown-final--address-line-two">
-            </div>
-            <div>
-              <span class="dib w-10">City</span>
-              <input class="dib w-80" id="typedown-final--city">
-            </div>
-            <div>
-              <span class="dib w-10">State</span>
-              <input class="dib w-80" id="typedown-final--state">
-            </div>
-            <div>
-              <span class="dib w-10">Postal Code</span>
-              <input class="dib w-80" id="typedown-final--postal-code">
-            </div>
-            <div>
-              <span class="dib w-10">Country Code</span>
-              <input class="dib w-80" id="typedown-final--country-code">
-            </div>
-          </div>
-        </div>
-
-        <!-- Number of matches -->
-        <div class="cf bg-black-10 h-100">
-          <span class="fr mr5">| Matches: <span id="picklist-matches-count">1</span></span>
-        </div>
-      </div>`;
+  function setPicklistMoniker(value) {
+    picklistMoniker = value;
   };
 
-  /** Creates the modal and adds it to the DOM
-   *
-   */
+  function getPicklistMoniker() {
+    return picklistMoniker;
+  };
+
+  function setSearchMethod(value) {
+    searchMethod = value;
+  }
+
+  function getSearchMethod() {
+    return searchMethod;
+  }
+
+  const userStateContext = {
+    setPicklistMoniker,
+    setSearchMethod,
+    _picklistSuggestionOnClick
+  }
+
   function openModal(newEvent): Element {
     if (document.getElementById('edq-overlay-container')) {
       return document.getElementById('edq-overlay-container');
@@ -114,7 +57,7 @@ import { UserStates } from './classes/UserStates';
 
     let modalElement = document.createElement('div');
     modalElement.id = 'edq-overlay-container';
-    modalElement.innerHTML = modalHtml();
+    modalElement.innerHTML = modal();
     document.body.appendChild(modalElement);
     modalElement.querySelector('#prompt-input').focus();
 
@@ -139,8 +82,6 @@ import { UserStates } from './classes/UserStates';
     return newEvent;
   }
 
-
-
   /*
    ** Generates method parameters for the Typedown searches
    *
@@ -159,7 +100,8 @@ import { UserStates } from './classes/UserStates';
         refinement: eventTarget.value,
         formattedAddressInPicklist: false
       }
-      // doSearch
+
+    // doSearch
     } else if (event && !moniker) {
       return {
         country: EDQ_CONFIG.PRO_WEB_COUNTRY, /* ISO-3 Country, e.g. USA */
@@ -169,7 +111,8 @@ import { UserStates } from './classes/UserStates';
         layout,
         formattedAddressInPicklist: false,
       }
-      // doGetAddress
+
+    // doGetAddress
     } else if (!event && moniker) {
       return {
         moniker,
@@ -326,13 +269,6 @@ import { UserStates } from './classes/UserStates';
     return true;
   }
 
-  // This is an anti-pattern, but is conveninent for an application of this size. 
-  // Global Variables:
-  let picklistMoniker = null;
-  let searchMethod = verifier.doSearch;
-  const ENTER_KEY_CODE = 13;
-
-
   /** Adds event listeners to the modal
    *
    * @param {Element} modalElement
@@ -367,8 +303,8 @@ import { UserStates } from './classes/UserStates';
         searchMethod = verifier.doSearch;
       }
 
-      if (picklistMoniker) {
-        picklistMoniker = null;
+      if (getPicklistMoniker()) {
+        setPicklistMoniker(null);
       }
 
       modalElement.querySelector('#prompt-input').focus();
@@ -384,7 +320,7 @@ import { UserStates } from './classes/UserStates';
 
     let xhr;
     modalElement.querySelector('#prompt-input').onkeyup = function(event) {
-
+      console.log(`Prompt Input Moniker: ${getPicklistMoniker()}`);
       // The purpose of this is to cancel any requests that are currently in progress.
       try {
         xhr.abort();
@@ -394,7 +330,7 @@ import { UserStates } from './classes/UserStates';
 
       // <any> Says that the Object can by any type.
       // We want to combine our template parameters with the custom callback.
-      xhr = searchMethod((<any>Object).assign(getMethodParams(event, picklistMoniker), {
+      xhr = searchMethod((<any>Object).assign(getMethodParams(event, getPicklistMoniker()), {
         callback: function(data, error) {
           if (error) {
             return;
@@ -410,7 +346,7 @@ import { UserStates } from './classes/UserStates';
 
               if (eventTarget.classList.contains('picklist-item')) {
                 let oldSearchMethod = searchMethod;
-                let oldPicklistMoniker = picklistMoniker;
+                let oldPicklistMoniker = getPicklistMoniker();
 
                 let picklistMetaData = JSON.parse(eventTarget.getAttribute('picklist-metadata'));
 
@@ -419,14 +355,19 @@ import { UserStates } from './classes/UserStates';
 
                 } else if (picklistMetaData._CanStep === "true") {
                   searchMethod = verifier.doRefine;
-                  picklistMoniker = picklistMetaData.Moniker;
+                  setPicklistMoniker(picklistMetaData.Moniker);
 
                 } else if (picklistMetaData._FullAddress === "true") {
                   searchMethod = verifier.doGetAddress;
-                  picklistMoniker = picklistMetaData.Moniker;
+                  setPicklistMoniker(picklistMetaData.Moniker);
                 }
 
-                afterPicklistSelect(event, picklistMetaData, oldSearchMethod, oldPicklistMoniker);
+                afterPicklistSelect.bind(userStateContext)(
+                  event, 
+                  picklistMetaData, 
+                  oldSearchMethod, 
+                  oldPicklistMoniker
+                );
                 return;
               }
             };
@@ -435,7 +376,7 @@ import { UserStates } from './classes/UserStates';
           } else {
             finalAddressUiUpdate(data);
             searchMethod = verifier.doSearch;
-            picklistMoniker = null;
+            setPicklistMoniker(null);
           }
         }
       }));
@@ -520,7 +461,7 @@ import { UserStates } from './classes/UserStates';
   function updateValuesFromMapping(mappings, rawAddress) {
     mappings.forEach((fieldElement) => {
       if (fieldElement.field.tagName === "SELECT") {
-        setStateSelectedIndex(fieldElement.field, rawAddress[fieldElement.elements[0]]);
+        stateMapper(fieldElement.field, rawAddress[fieldElement.elements[0]]);
         return;
       }
 
@@ -530,152 +471,6 @@ import { UserStates } from './classes/UserStates';
         }).join(fieldElement.separator);
     });
 
-  }
-
-  /** Build a map pairing each option innerText with the index for quick switching
-   *
-   * @param {Element} field
-   * @param {String} value - a state value returned from ProWeb, e.g. MA
-   *
-   * @returns {undefined}
-   */
-  function setStateSelectedIndex(field, value) {
-    let stateIndexMap = {};
-    for (let i = 0; i < field.length; i++) {
-      stateIndexMap[field.children[i].innerText.toLowerCase()] = field.children[i].index;
-    }
-
-    // TODO: Support other places other than the United States
-    const us_states_abbr_to_full =  {
-      'al': 'alabama',
-      'ak': 'alaska',
-      'as': 'american samoa',
-      'az': 'arizona',
-      'ar': 'arkansas',
-      'ca': 'california',
-      'co': 'colorado',
-      'ct': 'connecticut',
-      'de': 'delaware',
-      'dc': 'district of columbia',
-      'fm': 'federated states of micronesia',
-      'fl': 'florida',
-      'ga': 'georgia',
-      'gu': 'guam',
-      'hi': 'hawaii',
-      'id': 'idaho',
-      'il': 'illinois',
-      'in': 'indiana',
-      'ia': 'iowa',
-      'ks': 'kansas',
-      'ky': 'kentucky',
-      'la': 'louisiana',
-      'me': 'maine',
-      'mh': 'marshall islands',
-      'md': 'maryland',
-      'ma': 'massachusetts',
-      'mi': 'michigan',
-      'mn': 'minnesota',
-      'ms': 'mississippi',
-      'mo': 'missouri',
-      'mt': 'montana',
-      'ne': 'nebraska',
-      'nv': 'nevada',
-      'nh': 'new hampshire',
-      'nj': 'new jersey',
-      'nm': 'new mexico',
-      'ny': 'new york',
-      'nc': 'north carolina',
-      'nd': 'north dakota',
-      'mp': 'northern mariana islands',
-      'oh': 'ohio',
-      'ok': 'oklahoma',
-      'or': 'oregon',
-      'pw': 'palau',
-      'pa': 'pennsylvania',
-      'pr': 'puerto rico',
-      'ri': 'rhode island',
-      'sc': 'south carolina',
-      'sd': 'south dakota',
-      'tn': 'tennessee',
-      'tx': 'texas',
-      'ut': 'utah',
-      'vt': 'vermont',
-      'vi': 'virgin islands',
-      'va': 'virginia',
-      'wa': 'washington',
-      'wv': 'west virginia',
-      'wi': 'wisconsin',
-      'wy': 'wyoming'
-    };
-
-    const us_states_full_to_abbr = {
-        'alabama': 'al',
-        'alaska': 'ak',
-        'american samoa': 'as',
-        'arizona': 'az',
-        'arkansas': 'ar',
-        'california': 'ca',
-        'colorado': 'co',
-        'connecticut': 'ct',
-        'delaware': 'de',
-        'district of columbia': 'dc',
-        'federated states of micronesia': 'fm',
-        'florida': 'fl',
-        'georgia': 'ga',
-        'guam': 'gu',
-        'hawaii': 'hi',
-        'idaho': 'id',
-        'illinois': 'il',
-        'indiana': 'in',
-        'iowa': 'ia',
-        'kansas': 'ks',
-        'kentucky': 'ky',
-        'louisiana': 'la',
-        'maine': 'me',
-        'marshall islands': 'mh',
-        'maryland': 'md',
-        'massachusetts': 'ma',
-        'michigan': 'mi',
-        'minnesota': 'mn',
-        'mississippi': 'ms',
-        'missouri': 'mo',
-        'montana': 'mt',
-        'nebraska': 'ne',
-        'nevada': 'nv',
-        'new hampshire': 'nh',
-        'new jersey': 'nj',
-        'new mexico': 'nm',
-        'new york': 'ny',
-        'north carolina': 'nc',
-        'north dakota': 'nd',
-        'northern mariana islands': 'mp',
-        'ohio': 'oh',
-        'oklahoma': 'ok',
-        'oregon': 'or',
-        'palau': 'pw',
-        'pennsylvania': 'pa',
-        'puerto rico': 'pr',
-        'rhode island': 'ri',
-        'south carolina': 'sc',
-        'south dakota': 'sd',
-        'tennessee': 'tn',
-        'texas': 'tx',
-        'utah': 'ut',
-        'vermont': 'vt',
-        'virgin islands': 'vi',
-        'virginia': 'va',
-        'washington': 'wa',
-        'west virginia': 'wv',
-        'wisconsin': 'wi',
-        'wyoming': 'wy'
-      };
-
-    const lowerCaseValue = value.toLowerCase();
-    if (us_states_full_to_abbr[lowerCaseValue]) {
-      field.selectedIndex = [stateIndexMap[us_states_full_to_abbr[lowerCaseValue]]];
-    } else if (us_states_abbr_to_full[lowerCaseValue]) {
-      field.selectedIndex = [stateIndexMap[lowerCaseValue]];
-    }
   }
 
   /** Functionality for what should occur after a phone press
@@ -708,11 +503,10 @@ import { UserStates } from './classes/UserStates';
     } catch(e) {
       // Pass the internet explorer error
     }
-
   };
 
   EDQ_CONFIG.PRO_WEB_TYPEDOWN_TRIGGER.onclick = function(event) {
     event.preventDefault();
     openModal(createNewEvent(event));
   };
-}).call(this);
+})();

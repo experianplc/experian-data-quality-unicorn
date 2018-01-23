@@ -1,4 +1,4 @@
-import { UserState } from './UserState';
+import { UserState } from './user-state';
 
 /*
  * A custom class that implements a queue. 
@@ -18,9 +18,9 @@ export class UserStates {
   };
 
   revertPop(): UserState {
-    const temp = this.stack.pop();
-    temp.revertState();
-    return temp;
+    const userState = this.stack.pop();
+    userState.revertState();
+    return userState;
   };
 
   pop(): UserState {

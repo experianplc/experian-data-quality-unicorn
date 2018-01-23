@@ -43,9 +43,8 @@ export class UserState {
     let args = this.args;
     this._setDomState();
 
-    this.context.searchMethod = args['search method'];
-    this.context.picklistMoniker = args['moniker'];
-
+    this.context.setSearchMethod(args['search method']);
+    this.context.setPicklistMoniker(args['moniker']);
     this._setEventsPreviousSteps();
 
     if (args['metadata']._FullAddress === 'true') {
