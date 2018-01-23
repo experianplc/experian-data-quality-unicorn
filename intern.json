@@ -1,0 +1,5 @@
+{
+  "suites": "",
+  "functionalSuites": "lib/test/functional/**/*.js",
+  "environments": ["selenium"]
+}
