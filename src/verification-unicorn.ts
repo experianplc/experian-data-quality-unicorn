@@ -271,7 +271,7 @@ var autoComplete = (function () {
   /* The template for the modal */
   const modalHtml = function(mode) {
     return `<div class="edq-overlay" id="edq-overlay">
-      <div class="w-100 w-50-ns center v-top v-mid-ns mt4-m mt6-l">
+      <div class="w-100 w-50-ns center ba v-top v-mid-ns mt4-m mt6-l">
         <div class="edq-modal-header-color ph3 pv2 tc">
           <div id="edq-close-modal" class="pointer f6 fw6 fr pv2 ph2">
             x
