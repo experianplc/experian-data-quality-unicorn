@@ -9,18 +9,19 @@
   "scripts": {
     "pretest": "npm run build",
     "test": "intern",
-    "build": "tsc && webpack",
-    "tsc": "tsc && webpack"
+    "build": "gulp"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "gulp": "^3.9.1",
     "intern": "^4.0.0",
     "ts-loader": "^2.3.7",
     "webpack": "^3.10.0"
   },
   "dependencies": {
     "chromedriver": "^2.35.0",
+    "gulp-cli": "^2.0.1",
     "lodash": "^4.17.4",
     "systemjs": "^0.20.19",
     "typescript": "^2.6.2"

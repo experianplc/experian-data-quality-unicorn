@@ -1,6 +1,6 @@
 import { UserState } from './classes/user-state';
 import { UserStates } from './classes/user-states';
-import { modal } from './functions/modal';
+import { modal } from './functions/typedown-modal';
 import { stateMapper } from './functions/state-mapper';
 
 (function() {

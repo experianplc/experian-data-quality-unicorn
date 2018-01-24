@@ -24,7 +24,7 @@
     window.EdqConfig = {
       PRO_WEB_TIMEOUT: 2500,
       SOAP_ACTION_URL: 'http://www.qas.com/web-2013-12',
-      PRO_WEB_AUTH_TOKEN: '46832a16-80c0-43d8-af8e-05b3dde5aaaf',
+      PRO_WEB_AUTH_TOKEN: 'c5727665-4b88-49f4-bb5b-4d90489325c6',
       PRO_WEB_SUBMIT_TRIGGERS: [
         {
           type: 'click',
@@ -65,12 +65,19 @@
         {
           field: document.getElementById('zip'),
           elements: ['ZIP Code', '+4 code'],
-          separator: ' ',
+          separator: '-',
           modalFieldSelector: '#interaction-address--original-postal-code',
         },
       ]
     };
   </script>
 
+
+  <script type="text/javascript" src="http://assets.qas.com/development/pegasus/edq.js">
+  </script>
+  <!--<script type="text/javascript" src="http://assets.qas.com/development/address-unicorn/verification-unicorn.js">
+  </script> -->
+
+  <script type="text/javascript" src="lib/verification-unicorn.js"></script>
 </body>
 </html>
