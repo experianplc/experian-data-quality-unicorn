@@ -72,7 +72,7 @@ export function modal() {
         </div>
 
         <!-- Number of matches -->
-        <div class="cf bg-black-10 h-100">
+        <div class="cf bg-black-10">
           <span class="fr mr5">| Matches: <span id="picklist-matches-count">1</span></span>
         </div>
       </div>`;
