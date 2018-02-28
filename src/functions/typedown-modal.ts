@@ -11,7 +11,7 @@ export function modal() {
 
             |
 
-            <input type="radio" name="verification-mode" value="typedown">Typedown</input>
+            <input type="radio" checked name="verification-mode" value="typedown">Typedown</input>
 
             | Datamap:
             <select>
