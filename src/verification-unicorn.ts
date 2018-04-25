@@ -176,7 +176,7 @@ if (!('remove' in Element.prototype)) {
 
       fieldElement.field.value
         = fieldElement.elements.map((addressElement) => {
-          return rawAddress[addressElement];
+          return rawAddress[addressElement] == '[object Object]' ? '' : rawAddress[addressElement];
         }).join(fieldElement.separator);
     });
 
@@ -235,23 +235,16 @@ if (!('remove' in Element.prototype)) {
             }
 
             displayOriginalAddress();
-            let interactionAddressField = {};
-
-            // TODO: This is currently coupled with the layout EDQDemoLayout, this should be customizable, and fixed
-            let interactionFieldMapping = {
-              'address-line-one': 'AddressLine1',
-              'address-line-two': 'AddressLine2',
-              'locality': 'CityLocality',
-              'province': 'StateProvince',
-              'postal-code': 'PostalCode'
-            };
-
-            const rawAddress = createRawAddressMap(addressLines);
-            const modalFields = ['address-line-one', 'address-line-two', 'locality', 'province', 'postal-code'];
-            modalFields.forEach((field) => {
-              interactionAddressField[field] = modalElement.querySelector(`#interaction-address--${field}`)
-              interactionAddressField[field].innerText = rawAddress[interactionFieldMapping[field]];
+            let interactionAddressField: object = {};
+            const rawAddress: object = createRawAddressMap(addressLines);
+            EDQ_CONFIG.PRO_WEB_MAPPING.forEach((mapping) => {
+              interactionAddressField[mapping['modalFieldSelector']] =
+                modalElement.querySelector(mapping['modalFieldSelector'].replace('original-', ''));
+              interactionAddressField[mapping['modalFieldSelector']].innerText = mapping['elements'].map((element) => {
+                return rawAddress[element];
+              }).join(mapping['separator']);
             });
+
 
             break;
 
