@@ -3,6 +3,8 @@ interface UnicornObject {
 
   PHONE_ELEMENTS?: Array<string>,
   EMAIL_ELEMENTS?: Array<string>,
+  PHONE_ELEMENTS?: Array<Element>,
+  EMAIL_ELEMENTS?: Array<Element>,
 
   LOADING_BASE64_ICON?: string,
   VERIFIED_BASE64_ICON?: string,
@@ -22,4 +24,14 @@ interface UnicornObject {
   SOAP_ACTION_URL: string,
 
   PRO_WEB_TYPEDOWN_TRIGGER: Element
+  GLOBAL_INTUITIVE_PLACEHOLDER?: string,
+  GLOBAL_INTUITIVE_MAPPING?: Array<Object>,
+  GLOBAL_INTUITIVE_TAKE?: number,
+  GLOBAL_INTUITIVE_ISO3_COUNTRY: 'USA',
+
+  EMAIL_TIMEOUT: number,
+  PHONE_TIMEOUT: number,
+
+  USE_REVERSE_PHONE_APPEND: boolean,
+  REVERSE_PHONE_APPEND_MAPPINGS: Array<ReversePhoneAppendMapping>
 }
