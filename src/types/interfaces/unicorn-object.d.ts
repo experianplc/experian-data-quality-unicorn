@@ -1,8 +1,6 @@
 interface UnicornObject {
   DEBUG?: boolean,
 
-  PHONE_ELEMENTS?: Array<string>,
-  EMAIL_ELEMENTS?: Array<string>,
   PHONE_ELEMENTS?: Array<Element>,
   EMAIL_ELEMENTS?: Array<Element>,
 
@@ -11,8 +9,6 @@ interface UnicornObject {
   INVALID_BASE64_ICON?: string,
   UNKNOWN_BASE64_ICON?: string,
 
-  GLOBAL_INTUITIVE_ELEMENT?: string,
-  GLOBAL_INTUITIVE_MAPPING?: Array<Object>,
 
   PRO_WEB_MAPPING: Array<any>,
   PRO_WEB_COUNTRY: string,
@@ -24,6 +20,7 @@ interface UnicornObject {
   SOAP_ACTION_URL: string,
 
   PRO_WEB_TYPEDOWN_TRIGGER: Element
+  GLOBAL_INTUITIVE_ELEMENT?: string,
   GLOBAL_INTUITIVE_PLACEHOLDER?: string,
   GLOBAL_INTUITIVE_MAPPING?: Array<Object>,
   GLOBAL_INTUITIVE_TAKE?: number,

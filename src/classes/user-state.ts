@@ -10,7 +10,7 @@ export class UserState {
   private _setDomState() {
     let args = this.args;
     document.getElementById('prompt-text').innerHTML = args['prompt text'] ;
-    document.getElementById('prompt-input').value = args['input value'];
+    (document.getElementById('prompt-input') as HTMLInputElement).value = args['input value'];
     document.getElementById('typedown-result').innerHTML = args['suggestions'];
     document.getElementById('typedown-previous-steps').innerHTML = args['previous suggestions'];;
   }

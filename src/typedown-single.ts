@@ -48,18 +48,19 @@ import { stateMapper } from './functions/state-mapper';
     _picklistSuggestionOnClick
   }
 
-  function openModal(newEvent): Element {
+  function openModal(newEvent: Event): Element {
     if (document.getElementById('edq-overlay-container')) {
       return document.getElementById('edq-overlay-container');
     }
 
-    document.querySelector('html').style.backgroundColor = 'grey';
+    const htmlElement : HTMLElement  = document.querySelector('html');
+    htmlElement.style.backgroundColor = 'grey';
 
-    let modalElement = document.createElement('div');
+    let modalElement : HTMLElement = document.createElement('div');
     modalElement.id = 'edq-overlay-container';
     modalElement.innerHTML = modal();
     document.body.appendChild(modalElement);
-    modalElement.querySelector('#prompt-input').focus();
+    (modalElement.querySelector('#prompt-input') as HTMLElement).focus();
 
     addModalEvents(modalElement, newEvent);
     return modalElement;
@@ -135,7 +136,7 @@ import { stateMapper } from './functions/state-mapper';
 
     let newState = new UserState({
       'prompt text': document.getElementById('prompt-text').innerHTML,
-      'input value': document.getElementById('prompt-input').value,
+      'input value': (document.getElementById('prompt-input') as HTMLInputElement).value,
       'suggestions': document.getElementById('typedown-result').innerHTML,
       'previous suggestions': document.getElementById('typedown-previous-steps').innerHTML,
       'search method': oldSearchMethod,
@@ -200,12 +201,13 @@ import { stateMapper } from './functions/state-mapper';
 
     // Show Final Address
     document.getElementById('typedown-final-address').classList.remove('dn');
-    document.getElementById('typedown-final--address-line-one').value = addressLinesObject['AddressLine1'];
-    document.getElementById('typedown-final--address-line-two').value = addressLinesObject['AddressLine2'];
-    document.getElementById('typedown-final--city').value = addressLinesObject['CityLocality'];
-    document.getElementById('typedown-final--state').value = addressLinesObject['StateProvince'];
-    document.getElementById('typedown-final--postal-code').value = addressLinesObject['PostalCode'];
-    document.getElementById('typedown-final--country-code').value = addressLinesObject['Three character ISO country code'];
+
+    (document.getElementById('typedown-final--address-line-one') as HTMLInputElement).value = addressLinesObject['AddressLine1'];
+    (document.getElementById('typedown-final--address-line-two') as HTMLInputElement).value = addressLinesObject['AddressLine2'];
+    (document.getElementById('typedown-final--city') as HTMLInputElement).value = addressLinesObject['CityLocality'];
+    (document.getElementById('typedown-final--state') as HTMLInputElement).value = addressLinesObject['StateProvince'];
+    (document.getElementById('typedown-final--postal-code') as HTMLInputElement).value = addressLinesObject['PostalCode'];
+    (document.getElementById('typedown-final--country-code') as HTMLInputElement).value = addressLinesObject['Three character ISO country code'];
 
     // Hide Result and Previous Suggestions
     document.getElementById('typedown-result').classList.add('dn');

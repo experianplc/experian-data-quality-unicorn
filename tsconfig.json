@@ -1,6 +1,7 @@
 {
   "types": [
-    "intern"
+    "intern",
+    "auto-complete"
   ],
 
   "compilerOptions": {
@@ -19,8 +20,12 @@
     "outDir": "lib"
   },
 
-  "include": ["src/**/*", "test/**/*"],
+  "include": [
+    "./src/**/*",
+    "./test/**/*"
+  ],
+  "skipLibCheck": true,
 
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules/**/*"],
   "compileOnSave": false
 }

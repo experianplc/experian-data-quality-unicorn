@@ -5,7 +5,7 @@ import { stateMapper } from './functions/state-mapper';
 // Polyfills for compatiability
 // Create Element.remove() function if not exist
 if (!('remove' in Element.prototype)) {
-    Element.prototype.remove = function() {
+    (Element.prototype as any).remove = function() {
         if (this.parentNode) {
             this.parentNode.removeChild(this);
         }
@@ -286,16 +286,8 @@ if (!('remove' in Element.prototype)) {
 
               renderItem: function(item, search) {
 
-                /** The HTML shown for each picklist item
-                 *
-                 * @param {String} moniker
-                 * @param {String} picklist
-                 * @param {String} postCode
-                 * @param {Boolean} multiples
-                 *
-                 * @returns {String}
-                 */
-                function picklistHtml(moniker, picklist, postCode, multiples) {
+                /** The HTML shown for each picklist item */
+                function picklistHtml(moniker: string, picklist : string, postCode : string, multiples : boolean) : string{
                   return `<div
                           class="${multiples ? 'edq-disabled-address' : 'edq-global-intuitive-address-suggestion'}"
                           data-moniker='${moniker}'>
@@ -304,10 +296,10 @@ if (!('remove' in Element.prototype)) {
                        </div>`;
                 }
 
-                const picklist = String(item.Picklist);
-                const postCode = String(item.Postcode);
-                const moniker = String(item.Moniker);
-                
+                const picklist = item.Picklist;
+                const postCode = item.Postcode;
+                const moniker = item.Moniker;
+
                 return picklistHtml(moniker, picklist, postCode, item._UnresolvableRange === "true" || item._Multiples === "true")
               },
 

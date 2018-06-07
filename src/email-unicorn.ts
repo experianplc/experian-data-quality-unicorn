@@ -101,11 +101,12 @@
    *
    * @returns {Element}
    */
-  const addCorrection = ((correction) => {
-    var element = document.createElement('a');
+  const addCorrection = ((correction: string): HTMLAnchorElement => {
+    let element = document.createElement('a');
     element.href = '';
-    element.textContent = 'Did you mean ' + correction + '?';
-    element.style.fontSize = '0.5rem';
+    element.textContent = `Did you mean ${correction}?`;
+    let style = element.style;
+    style.fontSize = '0.5rem';
     return element;
   });
 
