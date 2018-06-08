@@ -27,6 +27,7 @@
     "gulp-cli": "^2.0.1",
     "lodash": "^4.17.4",
     "systemjs": "^0.20.19",
-    "typescript": "^2.6.2"
+    "typescript": "^2.6.2",
+    "autocompletion": "git+https://github.com/experianplc/autocompletion.git"
   }
 }

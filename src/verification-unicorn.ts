@@ -1,4 +1,4 @@
-import autoComplete from './functions/auto-complete';
+import autoComplete from '../node_modules/autocompletion/lib/autocompletion.js';
 import { generateModal } from './functions/verification-modal';
 import { stateMapper } from './functions/state-mapper';
 

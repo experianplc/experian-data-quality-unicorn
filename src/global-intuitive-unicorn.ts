@@ -1,4 +1,4 @@
-import autoComplete from './functions/auto-complete';
+import autoComplete from '../node_modules/autocompletion/lib/autocompletion.js';
 
 (function(){
   window.autoComplete = autoComplete;

@@ -1,7 +1,7 @@
 {
   "types": [
     "intern",
-    "auto-complete"
+    "autocompletion"
   ],
 
   "compilerOptions": {
