@@ -1,0 +1,20 @@
+interface RPAObject {
+  "Number"?: string,
+  AccountType?: string,
+  PhoneType?: string,
+  Name?: string,
+  FirstName?: string,
+  MiddleInitial?: string,
+  LastName?: string,
+  Address?: {
+     Country?: string,
+     Locality1?: string,
+     Number1?: string,
+     Postcode1?: string,
+     Province1?: string,
+     Street1?: string,
+     Certainty?: string,
+  },
+  Country?: string,
+  Certainty?: string,
+}
