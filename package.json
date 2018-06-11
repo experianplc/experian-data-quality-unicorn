@@ -9,7 +9,7 @@
   "scripts": {
     "pretest": "npm run build",
     "test": "intern",
-    "build": "gulp"
+    "build": "rm -rf lib; gulp"
   },
   "author": "",
   "license": "ISC",
@@ -23,11 +23,13 @@
     "qunitjs": "^2.3.0"
   },
   "dependencies": {
-    "chromedriver": "^2.35.0",
+    "autocompletion": "git+https://github.com/experianplc/autocompletion.git",
+    "chromedriver": "^2.39.0",
     "gulp-cli": "^2.0.1",
     "lodash": "^4.17.4",
+    "selenium-standalone": "^6.15.0",
+    "selenium-webdriver": "^4.0.0-alpha.1",
     "systemjs": "^0.20.19",
-    "typescript": "^2.6.2",
-    "autocompletion": "git+https://github.com/experianplc/autocompletion.git"
+    "typescript": "^2.6.2"
   }
 }
