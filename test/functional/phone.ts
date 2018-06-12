@@ -3,6 +3,7 @@ import keys from '@theintern/leadfoot/keys';
 
 const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
+const GLOBAL_PHONE_VALIDATE_AUTH_TOKEN = process.env.GLOBAL_PHONE_VALIDATE_AUTH_TOKEN;
 
 /* Pages unique for Email Validate Tests */
 function fillInPhoneNumber(text: string) {
@@ -32,6 +33,10 @@ registerSuite('Experian Unicorn - Phone validate Tests', {
     return this.remote
       .setFindTimeout(10000)
       .get('localhost:8000/phone-index.html')
+      .execute(function(authToken) {
+        window.EdqConfig['GLOBAL_PHONE_VALIDATE_AUTH_TOKEN'] = authToken;
+      }, [GLOBAL_PHONE_VALIDATE_AUTH_TOKEN])
+
   },
 
   tests: {

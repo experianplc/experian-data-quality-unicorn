@@ -9,6 +9,7 @@
     "typeRoots": ["../node_modules/@types"]
   },
   "include": [
-      "functional/**/*.ts"
+      "functional/**/*.ts",
+      "../src/types"
   ]
 }

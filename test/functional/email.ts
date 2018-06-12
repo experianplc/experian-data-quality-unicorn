@@ -3,6 +3,7 @@ import keys from '@theintern/leadfoot/keys';
 
 const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
+const EMAIL_VALIDATE_AUTH_TOKEN = process.env.EMAIL_VALIDATE_AUTH_TOKEN
 
 /* Pages unique for Email Validate Tests */
 function fillInEmailAddress(text: string) {
@@ -32,6 +33,9 @@ registerSuite('Experian Unicorn - Email validate Tests', {
     return this.remote
       .setFindTimeout(10000)
       .get('localhost:8000/email-index.html')
+      .execute(function(authToken) {
+        window.EdqConfig['EMAIL_VALIDATE_AUTH_TOKEN'] = authToken;
+      }, [EMAIL_VALIDATE_AUTH_TOKEN])
   },
 
   tests: {

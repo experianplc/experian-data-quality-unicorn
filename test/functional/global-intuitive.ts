@@ -2,7 +2,7 @@ import intern from 'intern';
 
 const { registerSuite } = intern.getInterface('object');
 const { assert } = intern.getPlugin('chai');
-
+const GLOBAL_INTUITIVE_AUTH_TOKEN = process.env.GLOBAL_INTUITIVE_AUTH_TOKEN;
 
 /* Pages unique for Global Intuitive Tests */
 function fillInAddressField(text: string) {
@@ -26,9 +26,8 @@ function addressPopulated() {
   return function() {
     return this.parent
       .findByCssSelector('#city')
-      .getAttribute('value')
+      .getProperty('value')
       .then((val) => {
-        console.log(val);
         assert.equal(true, Boolean(val), 'City value populated. Global Intuitive functional');
       })
   };
@@ -39,6 +38,10 @@ registerSuite('Experian Unicorn - Global Intuitive Tests', {
     return this.remote
       .setFindTimeout(10000)
       .get('localhost:8000/global-intuitive-index.html')
+      .execute(function(authToken) {
+        window.EdqConfig['GLOBAL_INTUITIVE_AUTH_TOKEN'] = authToken;
+      }, [GLOBAL_INTUITIVE_AUTH_TOKEN])
+
   },
 
   tests: {
@@ -50,7 +53,7 @@ registerSuite('Experian Unicorn - Global Intuitive Tests', {
         .then((text) => {
           assert.equal(true, Boolean(text), "Global Intuitive can populate items");
         })
-    }
+    },
 
     'Global Intuitive suggestion can be clicked and populate fields': function() {
       return this.remote
@@ -58,11 +61,10 @@ registerSuite('Experian Unicorn - Global Intuitive Tests', {
         .then(showSuggestions())
           .findByCssSelector('.edq-global-intuitive-address-suggestion')
           .click()
-          .sleep(3000) 
+          .sleep(3000)
           .end()
         .then(addressPopulated())
     }
   }
 
 });
-
