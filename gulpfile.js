@@ -7,6 +7,7 @@ gulp.task('default', function(done) {
   command(`webpack --config ${path.join(__dirname, 'config/verification-webpack.js')}`);
   command(`webpack --config ${path.join(__dirname, 'config/typedown-webpack.js')}`);
   command(`webpack --config ${path.join(__dirname, 'config/email-webpack.js')}`);
+  command(`webpack --config ${path.join(__dirname, 'config/phone-webpack.js')}`);
   command(`webpack --config ${path.join(__dirname, 'config/global-intuitive-webpack.js')}`);
 });
 
