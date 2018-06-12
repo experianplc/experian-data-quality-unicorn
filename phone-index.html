@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <link rel="stylesheet" href="assets/pro-web.css"/>
+</head>
+
+<body>
+  <div id="form">
+    <input id="phone">
+  </div>
+
+  <script>
+    window.EdqConfig = {
+      GLOBAL_PHONE_VALIDATE_AUTH_TOKEN: '',
+      REVERSE_PHONE_APPEND_MAPPINGS: [],
+      PHONE_ELEMENTS: [
+        document.querySelector('#phone')
+      ]
+    };
+  </script>
+
+  <script src="http://assets.qas.com/production/pegasus/edq.js"></script>
+  <script src="lib/phone-unicorn.js"></script>
+</body>
+</html>
