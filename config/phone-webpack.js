@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/phone-unicorn.ts',
+  entry: '../src/phone-unicorn.ts',
   output: {
     path: path.resolve(__dirname, '../lib'),
     filename: 'phone-unicorn.js',

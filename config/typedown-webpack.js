@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/typedown-single.ts',
+  entry: '../src/typedown-single.ts',
   output: {
     path: path.resolve(__dirname, '../lib'),
     filename: 'typedown-single.js',

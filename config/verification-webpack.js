@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/verification-unicorn.ts',
+  entry: '../src/verification-unicorn.ts',
   output: {
     path: path.resolve(__dirname, '../lib'),
     filename: 'verification-unicorn.js',

@@ -20,7 +20,7 @@ function checkForMetadata() {
   return function() {
       return this.parent
         .findByCssSelector('#email')
-        .sleep(3000) 
+        .sleep(3000)
         .getAttribute('edq-metadata')
         .then((text) => {
           assert.equal(true, Boolean(text), "Email validate functions");
@@ -32,7 +32,7 @@ registerSuite('Experian Unicorn - Email validate Tests', {
   beforeEach: function() {
     return this.remote
       .setFindTimeout(10000)
-      .get('localhost:8000/email-index.html')
+      .get('localhost:8000/test/pages/email-index.html')
       .execute(function(authToken) {
         window.EdqConfig['EMAIL_VALIDATE_AUTH_TOKEN'] = authToken;
       }, [EMAIL_VALIDATE_AUTH_TOKEN])

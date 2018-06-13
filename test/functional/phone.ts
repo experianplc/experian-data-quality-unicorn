@@ -32,7 +32,7 @@ registerSuite('Experian Unicorn - Phone validate Tests', {
   beforeEach: function() {
     return this.remote
       .setFindTimeout(10000)
-      .get('localhost:8000/phone-index.html')
+      .get('localhost:8000/test/pages/phone-index.html')
       .execute(function(authToken) {
         window.EdqConfig['GLOBAL_PHONE_VALIDATE_AUTH_TOKEN'] = authToken;
       }, [GLOBAL_PHONE_VALIDATE_AUTH_TOKEN])

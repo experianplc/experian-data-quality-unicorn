@@ -17,6 +17,7 @@
     "checkJs": true,
     "sourceMap": true,
     "allowJs": true,
+    "skipLibCheck": true,
     "outDir": "lib"
   },
 
@@ -24,7 +25,6 @@
     "./src/**/*",
     "./test/**/*"
   ],
-  "skipLibCheck": true,
 
   "exclude": ["node_modules/**/*"],
   "compileOnSave": false

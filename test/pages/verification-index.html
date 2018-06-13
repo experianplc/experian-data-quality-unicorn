@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <!-- <link rel="stylesheet" href="https://unpkg.com/tachyons@4.7.0/css/tachyons.min.css"/> -->
+  <link rel="stylesheet" href="../../assets/pro-web.css"/>
+</head>
+
+<body>
+  <div id="form">
+    <input id="address-line-one" placeholder="line 1">
+    <input id="address-line-two" placeholder="line 2">
+    <input id="city" placeholder="city">
+    <input id="state" placeholder="state">
+    <input id="zip" placeholder="zip">
+
+    <button onclick="alert('OVERRIDE ME')" id="form-submit">
+      Submit
+    </button>
+  </div>
+
+  <script>
+    window.EdqConfig = {
+      PRO_WEB_AUTH_TOKEN: 'c5727665-4b88-49f4-bb5b-4d90489325c6',
+      PRO_WEB_SUBMIT_TRIGGERS: [
+        {
+          type: 'click',
+          element: document.getElementById('form-submit'),
+        }
+      ],
+      PRO_WEB_TIMEOUT: 2500,
+      PRO_WEB_LAYOUT: 'EDQDemoLayout',
+      PRO_WEB_COUNTRY: 'USA',
+      PRO_WEB_MAPPING: [
+        {
+          field: document.getElementById('address-line-one'),
+          elements: ['AddressLine1'],
+          separator: '',
+          modalFieldSelector: '#interaction-address--original-address-line-one',
+        },
+
+        {
+          field: document.getElementById('address-line-two'),
+          elements: ['AddressLine2'],
+          separator: '',
+          modalFieldSelector: '#interaction-address--original-address-line-two',
+        },
+
+        {
+          field: document.getElementById('city'),
+          elements: ['CityLocality'],
+          separator: '',
+          modalFieldSelector: '#interaction-address--original-locality',
+        },
+
+        {
+          field: document.getElementById('state'),
+          elements: ['StateProvince'],
+          separator: '',
+          modalFieldSelector: '#interaction-address--original-province',
+        },
+
+        {
+          field: document.getElementById('zip'),
+          elements: ['PostalCode'],
+          separator: ' ',
+          modalFieldSelector: '#interaction-address--original-postal-code',
+        },
+      ]
+    };
+  </script>
+
+
+  <script type="text/javascript" src="http://assets.qas.com/development/pegasus/edq.js"></script>
+  <script type="text/javascript" src="../../lib/verification-unicorn.js"></script>
+</body>
+</html>

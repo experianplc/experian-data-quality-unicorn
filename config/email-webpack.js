@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/email-unicorn.ts',
+  entry: '../src/email-unicorn.ts',
   output: {
     path: path.resolve(__dirname, '../lib'),
     filename: 'email-unicorn.js',
