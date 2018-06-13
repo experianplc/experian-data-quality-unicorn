@@ -9,7 +9,7 @@
   "scripts": {
     "pretest": "npm run build",
     "test": "intern",
-    "build": "rm -rf lib; gulp"
+    "build": "rm -rf lib; gulp --gulpfile config/gulpfile.js"
   },
   "author": "",
   "license": "ISC",
