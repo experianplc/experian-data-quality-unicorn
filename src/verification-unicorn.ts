@@ -296,9 +296,10 @@ if (!('remove' in Element.prototype)) {
                        </div>`;
                 }
 
-                const picklist = item.Picklist;
-                const postCode = item.Postcode;
-                const moniker = item.Moniker;
+                // Needed for backwards compatiability with older browsers
+                const picklist = String(item.Picklist);
+                const postCode = String(item.Postcode);
+                const moniker = String(item.Moniker);
 
                 return picklistHtml(moniker, picklist, postCode, item._UnresolvableRange === "true" || item._Multiples === "true")
               },
