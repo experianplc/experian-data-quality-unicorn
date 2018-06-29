@@ -58,7 +58,7 @@ registerSuite('Experian Unicorn - Pro Web Verification Tests', {
   beforeEach: function() {
     return this.remote
       .setFindTimeout(10000)
-      .get('localhost:8000/test/pages/typedown-index.html')
+      .get('localhost:8000/tests/pages/typedown-index.html')
       .execute(function(authToken) {
         window.EdqConfig['PRO_WEB_AUTH_TOKEN'] = authToken;
       }, [PRO_WEB_AUTH_TOKEN])

@@ -34,7 +34,7 @@ registerSuite('Experian Unicorn - Global Intuitive Tests', {
     beforeEach: function () {
         return this.remote
             .setFindTimeout(10000)
-            .get('localhost:8000/test/pages/global-intuitive-index.html')
+            .get('localhost:8000/tests/pages/global-intuitive-index.html')
             .execute(function (authToken) {
             window.EdqConfig['GLOBAL_INTUITIVE_AUTH_TOKEN'] = authToken;
         }, [GLOBAL_INTUITIVE_AUTH_TOKEN]);

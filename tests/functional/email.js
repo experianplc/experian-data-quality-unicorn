@@ -30,7 +30,7 @@ registerSuite('Experian Unicorn - Email validate Tests', {
     beforeEach: function () {
         return this.remote
             .setFindTimeout(10000)
-            .get('localhost:8000/test/pages/email-index.html')
+            .get('localhost:8000/tests/pages/email-index.html')
             .execute(function (authToken) {
             window.EdqConfig['EMAIL_VALIDATE_AUTH_TOKEN'] = authToken;
         }, [EMAIL_VALIDATE_AUTH_TOKEN]);
