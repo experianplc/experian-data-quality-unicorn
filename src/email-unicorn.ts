@@ -183,7 +183,7 @@
           }
         });
 
-        xhr.timeout = EDQ_CONFIG.EMAIL_TIMEOUT || 2500;
+        xhr.timeout = EDQ_CONFIG.EMAIL_TIMEOUT || 10000;
       });
 
     };
