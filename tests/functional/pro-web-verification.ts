@@ -83,6 +83,25 @@ function addressPopulated(selector, value, assertionMessage) {
 }
 
 
+registerSuite('Experian Unicorn - Pro Web On Premise Verification Tests', {
+  beforeEach: function() {
+    return this.remote
+      .setFindTimeout(10000)
+      .get('localhost:8000/tests/pages/verification-on-premise-index.html')
+      .sleep(2000)
+  },
+
+  tests: {
+    'Verification works with custom namespace': function() {
+      return this.remote
+        .then(fillInAddressField(correctAddress))
+        .then(submitAddress())
+        .sleep(1000)
+        .then(addressPopulated('#zip', '02110-1685', 'Postal Code value populated. Automatic verification functional'))
+    }
+  }
+});
+
 registerSuite('Experian Unicorn - Pro Web Verification Tests', {
   beforeEach: function() {
     return this.remote
@@ -128,7 +147,7 @@ registerSuite('Experian Unicorn - Pro Web Verification Tests', {
             .end()
           .sleep(1000)
           .then(addressPopulated('#zip', '10128-5451', 'Postal Code value populated. Multiple address functional'))
-    }
+    },
   }
 
 });

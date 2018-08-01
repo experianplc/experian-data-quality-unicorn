@@ -117,6 +117,12 @@ if (!('remove' in Element.prototype)) {
    * @returns {undefined}
    */
   function finalCallback(newEvent) {
+    // This option should only happen if you're manually calling submitForm as opposed to letting
+    // the configuration automatically bind events. In this case there's no saved event to call
+    if (EDQ_CONFIG.NO_SAVED_TARGET) {
+      return;
+    }
+
     let savedTarget = newEvent['savedTarget'];
     let callback = EDQ_CONFIG.PRO_WEB_CALLBACK;
     if (callback) {
@@ -374,5 +380,9 @@ if (!('remove' in Element.prototype)) {
       submitForm(newEvent);
     }
   });
+
+  // Publicly exposed methods
+  EDQ.address.proWeb.submitForm = submitForm;
+  EDQ.address.proWebOnDemand.submitForm = submitForm;
 
 }).call(this);

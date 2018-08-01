@@ -49,12 +49,13 @@ function addressPopulated() {
       .findByCssSelector('#zip')
       .getProperty('value')
       .then((val) => {
-        assert.equal('02109-3204', val, 'Postal code value populated. Verification functional');
+        const filled = val.split("-")[1].length > 1;
+        assert.equal(true, filled, 'Postal code value populated. Verification functional');
       })
   };
 };
 
-registerSuite('Experian Unicorn - Pro Web Verification Tests', {
+registerSuite('Experian Unicorn - Pro Web Typedown Tests', {
   beforeEach: function() {
     return this.remote
       .setFindTimeout(10000)

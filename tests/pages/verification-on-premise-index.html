@@ -23,7 +23,8 @@
 
   <script>
     window.EdqConfig = {
-      PRO_WEB_AUTH_TOKEN: "",
+      SOAP_ACTION_URL: "http://www.qas.com/web-2010-04",
+      PRO_WEB_SERVICE_URL: "http://bosedqproxy.qas.com/pro-web-645",
       PRO_WEB_SUBMIT_TRIGGERS: [
         {
           type: 'click',
@@ -31,41 +32,41 @@
         }
       ],
       PRO_WEB_TIMEOUT: 2500,
-      PRO_WEB_LAYOUT: 'EDQDemoLayout',
+      PRO_WEB_LAYOUT: 'PeopleSoft Layout Fluid',
       PRO_WEB_COUNTRY: 'USA',
       PRO_WEB_MAPPING: [
         {
           field: document.getElementById('address-line-one'),
-          elements: ['AddressLine1'],
-          separator: '',
+          elements: ['Primary number', 'Street'],
+          separator: ' ',
           modalFieldSelector: '#interaction-address--original-address-line-one',
         },
 
         {
           field: document.getElementById('address-line-two'),
-          elements: ['AddressLine2'],
+          elements: ['Building/firm name'],
           separator: '',
           modalFieldSelector: '#interaction-address--original-address-line-two',
         },
 
         {
           field: document.getElementById('city'),
-          elements: ['CityLocality'],
+          elements: ['City name'],
           separator: '',
           modalFieldSelector: '#interaction-address--original-locality',
         },
 
         {
           field: document.getElementById('state'),
-          elements: ['StateProvince'],
+          elements: ['State name'],
           separator: '',
           modalFieldSelector: '#interaction-address--original-province',
         },
 
         {
           field: document.getElementById('zip'),
-          elements: ['PostalCode'],
-          separator: ' ',
+          elements: ['ZIP Code', '+4 code'],
+          separator: '-',
           modalFieldSelector: '#interaction-address--original-postal-code',
         },
       ]
